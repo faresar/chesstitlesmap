@@ -9,18 +9,39 @@
 <body>
 
   <h1>Hello Yunes!</h1>
-   <div id="data-container"></div>
-    <script>
-        fetch('https://api-n240.onrender.com/api/titled-players')
-            .then(response => response.json())
-            .then(data => {
-                const container = document.getElementById('data-container');
-                data.results.forEach(federation => {
-                    container.innerHTML += `<p>${federation.fed}: GM-${federation.gm}, IM-${federation.im}, FM-${federation.fm}</p>`;
-                });
-            })
-            .catch(error => console.error('Error:', error));
-    </script>
+  <div id="data-container">
+    <table id="federation-table">
+        <thead>
+            <tr>
+                <th>Federation</th>
+                <th>GM</th>
+                <th>IM</th>
+                <th>FM</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be inserted here -->
+        </tbody>
+    </table>
+</div>
+<script>
+    fetch('https://api-n240.onrender.com/api/titled-players')
+        .then(response => response.json())
+        .then(data => {
+            const tableBody = document.querySelector('#federation-table tbody');
+            data.results.forEach(federation => {
+                tableBody.innerHTML += `
+                    <tr>
+                        <td>${federation.fed}</td>
+                        <td>${federation.gm}</td>
+                        <td>${federation.im}</td>
+                        <td>${federation.fm}</td>
+                    </tr>
+                `;
+            });
+        })
+        .catch(error => console.error('Error:', error));
+</script>
 
 </body>
 </html>
