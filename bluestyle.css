@@ -1,8 +1,23 @@
 body {
-    background-color: lightblue;
+    background-color: olive;
     }
     
 h1 {
     color: navy;
     margin-left: 20px;
     }
+
+<style>
+    #federation-table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+    #federation-table th, #federation-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+    #federation-table th {
+        background-color: #f2f2f2;
+    }
+</style>
