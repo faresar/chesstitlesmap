@@ -20,7 +20,6 @@ h1 {
     #federation-table th {
         background-color: #f2f2f2;
     }
-</style>
 
 #yemen-players-container table {
     border-collapse: collapse;
@@ -46,3 +45,6 @@ h1 {
 #yemen-players-container tr:hover {
     background-color: #f5f5f5;
 }
+</style>
+
+
