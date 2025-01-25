@@ -21,33 +21,41 @@ h1 {
         background-color: #f2f2f2;
     }
 
+#yemen-players-container {
+    overflow-x: auto;
+}
+
 #yemen-players-container table {
     border-collapse: collapse;
     width: 100%;
     margin-top: 20px;
     font-size: 14px;
+    table-layout: fixed;
 }
 
 #yemen-players-container th, #yemen-players-container td {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 #yemen-players-container th {
-    background-color: #f2f2f2;
+    background-color: #4CAF50;
+    color: white;
     font-weight: bold;
 }
 
 #yemen-players-container tr:nth-child(even) {
-    background-color: #f9f9f9;
+    background-color: #f2f2f2;
 }
 
 #yemen-players-container tr:hover {
-    background-color: #f5f5f5;
+    background-color: #ddd;
 }
 
-/* Responsive design for smaller screens */
 @media screen and (max-width: 600px) {
     #yemen-players-container table {
         font-size: 12px;
@@ -57,6 +65,7 @@ h1 {
         padding: 6px;
     }
 }
+
 
 </style>
 
