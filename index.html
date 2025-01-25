@@ -16,19 +16,54 @@
 <div id="yemen-players-container"></div>
 <script>
     document.getElementById('fetch-yemen-players').addEventListener('click', function(e) {
-        e.preventDefault();
-        fetch('https://api-n240.onrender.com/api/yemen-players')
-            .then(response => response.json())
-            .then(data => {
-                const container = document.getElementById('yemen-players-container');
-                container.innerHTML = '<table><thead><tr><th>ID Number</th><th>Name</th></tr></thead><tbody>';
-                data.forEach(player => {
-                    container.innerHTML += `<tr><td>${player.id_number}</td><td>${player.name}</td></tr>`;
-                });
-                container.innerHTML += '</tbody></table>';
-            })
-            .catch(error => console.error('Error:', error));
-    });
+    e.preventDefault();
+    const container = document.getElementById('yemen-players-container');
+    container.innerHTML = 'Loading...';
+    
+    fetch('https://your-api-url.onrender.com/api/yemen-players')
+        .then(response => response.json())
+        .then(data => {
+            let tableHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Sex</th>
+                            <th>Title</th>
+                            <th>Women's Title</th>
+                            <th>Rating</th>
+                            <th>Birthday</th>
+                            <th>Flag</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            data.forEach(player => {
+                tableHTML += `
+                    <tr>
+                        <td>${player.id_number}</td>
+                        <td>${player.name}</td>
+                        <td>${player.sex}</td>
+                        <td>${player.tit || '-'}</td>
+                        <td>${player.wtit || '-'}</td>
+                        <td>${player.rating}</td>
+                        <td>${new Date(player.b_day).toLocaleDateString()}</td>
+                        <td>${player.flag}</td>
+                    </tr>
+                `;
+            });
+            
+            tableHTML += '</tbody></table>';
+            container.innerHTML = tableHTML;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            container.innerHTML = 'Error loading data. Please try again.';
+        });
+});
+
 </script>
   
   <div id="data-container">
