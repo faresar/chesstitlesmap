@@ -15,7 +15,7 @@
 <script>
     document.getElementById('fetch-yemen-players').addEventListener('click', function(e) {
         e.preventDefault();
-        fetch('https://your-api-url.onrender.com/api/yemen-players')
+        fetch('https://api-n240.onrender.com/api/yemen-players')
             .then(response => response.json())
             .then(data => {
                 const container = document.getElementById('yemen-players-container');
