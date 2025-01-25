@@ -9,6 +9,26 @@
 <body>
 
   <h1>Chess titles per country!</h1>
+
+  <a href="#" id="fetch-yemen-players">Yemen Players</a>
+<div id="yemen-players-container"></div>
+<script>
+    document.getElementById('fetch-yemen-players').addEventListener('click', function(e) {
+        e.preventDefault();
+        fetch('https://your-api-url.onrender.com/api/yemen-players')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('yemen-players-container');
+                container.innerHTML = '<table><thead><tr><th>ID Number</th><th>Name</th></tr></thead><tbody>';
+                data.forEach(player => {
+                    container.innerHTML += `<tr><td>${player.id_number}</td><td>${player.name}</td></tr>`;
+                });
+                container.innerHTML += '</tbody></table>';
+            })
+            .catch(error => console.error('Error:', error));
+    });
+</script>
+  
   <div id="data-container">
     <table id="federation-table">
         <thead>
