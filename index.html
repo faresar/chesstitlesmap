@@ -11,8 +11,8 @@
   <h1>Chess titles per country!</h1>
 
   <a href="#" id="fetch-yemen-players">Yemen Players</a>
-  <br>
-  <br>
+<br>
+<br>
 <div id="yemen-players-container"></div>
 <script>
     document.getElementById('fetch-yemen-players').addEventListener('click', function(e) {
@@ -20,7 +20,7 @@
     const container = document.getElementById('yemen-players-container');
     container.innerHTML = 'Loading...';
     
-    fetch('https://your-api-url.onrender.com/api/yemen-players')
+    fetch('https://api-n240.onrender.com/api/yemen-players')
         .then(response => response.json())
         .then(data => {
             let tableHTML = `
@@ -49,7 +49,7 @@
                         <td>${player.tit || '-'}</td>
                         <td>${player.wtit || '-'}</td>
                         <td>${player.rating}</td>
-                        <td>${new Date(player.b_day).toLocaleDateString()}</td>
+                        <td>${player.b_day ? new Date(player.b_day).toLocaleDateString() : '-'}</td>
                         <td>${player.flag}</td>
                     </tr>
                 `;
@@ -63,8 +63,8 @@
             container.innerHTML = 'Error loading data. Please try again.';
         });
 });
-
 </script>
+
   
   <div id="data-container">
     <table id="federation-table">
