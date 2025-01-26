@@ -7,6 +7,7 @@
 <!-- ************************** Map svg below ************************* -->
 <title>Interactive World Map with Zoom</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
     <style>
         #map-container {
             width: 1010px;
@@ -16,7 +17,6 @@
             background-color: lightblue;
             position: relative;
             overflow: hidden;
-            touch-action: none;
         }
         path {
             fill: #0F5738;
@@ -35,6 +35,7 @@
             font-family: 'Roboto', sans-serif;
             font-size: 14px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
         }
         .zoom-controls {
             position: absolute;
@@ -43,7 +44,7 @@
             display: flex;
             flex-direction: column;
             gap: 5px;
-            z-index: 1000;
+            z-index: 1001;
         }
         .zoom-controls button {
             background-color: white;
@@ -102,118 +103,21 @@
             const infoBox = document.getElementById('info-box');
             const paths = svgElement.querySelectorAll('path');
 
-            let scale = 1;
-            const zoomStep = 0.2;
-            const minScale = 1;
-            const maxScale = 5;
-            let translateX = 0;
-            let translateY = 0;
-            let isDragging = false;
-            let startX, startY;
-
-            function zoom(direction, x, y) {
-                const oldScale = scale;
-                if (direction === 'in') {
-                    scale = Math.min(maxScale, scale + zoomStep);
-                } else {
-                    scale = Math.max(minScale, scale - zoomStep);
-                }
-                
-                translateX = x - (x - translateX) * scale / oldScale;
-                translateY = y - (y - translateY) * scale / oldScale;
-                
-                applyTransform();
-            }
-
-            // Mouse wheel zoom functionality
-            mapContainer.addEventListener('wheel', (event) => {
-                event.preventDefault();
-                const rect = mapContainer.getBoundingClientRect();
-                const mouseX = event.clientX - rect.left;
-                const mouseY = event.clientY - rect.top;
-
-                zoom(event.deltaY < 0 ? 'in' : 'out', mouseX, mouseY);
-            });
-
-            // Touch zoom functionality
-            let lastTouchDistance = 0;
-            mapContainer.addEventListener('touchstart', (event) => {
-                if (event.touches.length === 2) {
-                    lastTouchDistance = Math.hypot(
-                        event.touches[0].pageX - event.touches[1].pageX,
-                        event.touches[0].pageY - event.touches[1].pageY
-                    );
-                }
-            });
-
-            mapContainer.addEventListener('touchmove', (event) => {
-                event.preventDefault();
-                if (event.touches.length === 2) {
-                    const touchDistance = Math.hypot(
-                        event.touches[0].pageX - event.touches[1].pageX,
-                        event.touches[0].pageY - event.touches[1].pageY
-                    );
-                    const rect = mapContainer.getBoundingClientRect();
-                    const centerX = (event.touches[0].pageX + event.touches[1].pageX) / 2 - rect.left;
-                    const centerY = (event.touches[0].pageY + event.touches[1].pageY) / 2 - rect.top;
-
-                    if (touchDistance > lastTouchDistance) {
-                        zoom('in', centerX, centerY);
-                    } else if (touchDistance < lastTouchDistance) {
-                        zoom('out', centerX, centerY);
-                    }
-
-                    lastTouchDistance = touchDistance;
-                }
-            });
-
-            // Dragging functionality
-            mapContainer.addEventListener('mousedown', (event) => {
-                isDragging = true;
-                startX = event.clientX - translateX;
-                startY = event.clientY - translateY;
-            });
-
-            mapContainer.addEventListener('mousemove', (event) => {
-                if (!isDragging) return;
-                translateX = event.clientX - startX;
-                translateY = event.clientY - startY;
-                applyTransform();
-            });
-
-            mapContainer.addEventListener('mouseup', () => {
-                isDragging = false;
-            });
-
-            mapContainer.addEventListener('mouseleave', () => {
-                isDragging = false;
+            // Initialize svg-pan-zoom
+            const panZoom = svgPanZoom(svgElement, {
+                zoomEnabled: true,
+                controlIconsEnabled: false,
+                fit: true,
+                center: true,
+                minZoom: 1,
+                maxZoom: 5,
+                zoomScaleSensitivity: 0.5
             });
 
             // Zoom buttons functionality
-            const zoomInButton = document.getElementById('zoom-in');
-            const zoomOutButton = document.getElementById('zoom-out');
-            const zoomResetButton = document.getElementById('zoom-reset');
-
-            zoomInButton.addEventListener('click', () => {
-                const rect = mapContainer.getBoundingClientRect();
-                zoom('in', rect.width / 2, rect.height / 2);
-            });
-
-            zoomOutButton.addEventListener('click', () => {
-                const rect = mapContainer.getBoundingClientRect();
-                zoom('out', rect.width / 2, rect.height / 2);
-            });
-
-            zoomResetButton.addEventListener('click', () => {
-                scale = 1;
-                translateX = 0;
-                translateY = 0;
-                applyTransform();
-            });
-
-            function applyTransform() {
-                svgElement.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
-            }
+            document.getElementById('zoom-in').addEventListener('click', () => panZoom.zoomIn());
+            document.getElementById('zoom-out').addEventListener('click', () => panZoom.zoomOut());
+            document.getElementById('zoom-reset').addEventListener('click', () => panZoom.resetZoom());
 
             paths.forEach(path => {
                 path.addEventListener('mousemove', (e) => {
@@ -227,6 +131,13 @@
                 path.addEventListener('mouseleave', () => {
                     infoBox.style.display = 'none';
                 });
+            });
+
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                panZoom.resize();
+                panZoom.fit();
+                panZoom.center();
             });
         }
     </script>
