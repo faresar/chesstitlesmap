@@ -4,21 +4,111 @@
   <meta charset="UTF-8">
   <title>Chess Titles!</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- ************************** Map svg below ************************* -->
+ <title>Interactive World Map</title>
+    <style>
+        #map-container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        path {
+            fill: #ccc;
+            transition: fill 0.3s;
+        }
+        path:hover {
+            fill: #ff9900;
+        }
+        .tooltip {
+            position: absolute;
+            background: white;
+            border: 1px solid #ddd;
+            padding: 5px;
+            pointer-events: none;
+        }
+    </style>
+<!-- ************************** End of Map svg above ************************* -->  
   <link rel="stylesheet" href="bluestyle.css">
 </head>
 <body>
 
 
 
-  <h1>Chess titles per country!</h1>
+  
 
   
   <br>
   <br>
-<center></center><img src="world (1).svg" alt="SVG Image" width="1000" height="600"></center>
+  <div id="map-container"></div>
+
+    <script>
+        // Load the SVG file
+        fetch('world (1).svg')
+            .then(response => response.text())
+            .then(svgContent => {
+                document.getElementById('map-container').innerHTML = svgContent;
+                initializeMap();
+            });
+
+        function initializeMap() {
+            const paths = document.querySelectorAll('path');
+            const tooltip = document.createElement('div');
+            tooltip.classList.add('tooltip');
+            document.body.appendChild(tooltip);
+
+            paths.forEach(path => {
+                path.addEventListener('mousemove', (e) => {
+                    tooltip.style.display = 'block';
+                    tooltip.style.left = e.pageX + 10 + 'px';
+                    tooltip.style.top = e.pageY + 10 + 'px';
+                    tooltip.textContent = path.getAttribute('id') || 'Unknown';
+                });
+
+                path.addEventListener('mouseout', () => {
+                    tooltip.style.display = 'none';
+                });
+            });
+        }
+
+        // Example function to update colors based on data
+        function updateColors(data) {
+            Object.entries(data).forEach(([id, value]) => {
+                const path = document.getElementById(id);
+                if (path) {
+                    path.style.fill = getColor(value);
+                }
+            });
+        }
+
+        function getColor(value) {
+            // Implement color scale based on value
+            // This is a simple example, you might want to use a more sophisticated scale
+            if (value < 25) return '#fee5d9';
+            if (value < 50) return '#fcae91';
+            if (value < 75) return '#fb6a4a';
+            return '#de2d26';
+        }
+
+        // Example usage:
+        // updateColors({'US': 75, 'CA': 50, 'MX': 25});
+    </script>
   <br>
   <br>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <!-- ************************** DB stuff below ************************* -->
   <a href="#" id="fetch-yemen-players">Yemen Players</a>
 <br>
 <br>
