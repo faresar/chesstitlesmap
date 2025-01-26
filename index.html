@@ -5,7 +5,7 @@
   <title>Chess Titles!</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
 <!-- ************************** Map svg below ************************* -->
-  <title>Interactive World Map</title>
+  <title>Interactive World Map with Zoom</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
     <style>
         #map-container {
@@ -15,6 +15,7 @@
             border: 1px solid lightblue;
             background-color: lightblue;
             position: relative;
+            overflow: hidden;
         }
         path {
             fill: #0F5738;
@@ -34,6 +35,25 @@
             font-size: 14px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
+        .zoom-controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .zoom-controls button {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 5px;
+            cursor: pointer;
+            font-family: 'Roboto', sans-serif;
+        }
+        .zoom-controls button:hover {
+            background-color: #f0f0f0;
+        }
     </style>
 <!-- ************************** End of Map svg above ************************* -->  
   <link rel="stylesheet" href="bluestyle.css">
@@ -48,7 +68,12 @@
   <br>
   <br>
   <!-- **************************  Map svg below ************************* -->  
-<div id="map-container"></div>
+<div id="map-container">
+        <div class="zoom-controls">
+            <button id="zoom-in">+</button>
+            <button id="zoom-out">-</button>
+        </div>
+    </div>
     <div class="info-box" id="info-box"></div>
 
     <script>
@@ -56,17 +81,33 @@
         fetch('world (1).svg')
             .then(response => response.text())
             .then(svgContent => {
-                document.getElementById('map-container').innerHTML = svgContent;
+                document.getElementById('map-container').innerHTML += svgContent;
                 initializeMap();
             });
 
         function initializeMap() {
             const mapContainer = document.getElementById('map-container');
-            const paths = document.querySelectorAll('path');
-            const infoBox = document.getElementById('info-box');
+            const svgElement = mapContainer.querySelector('svg');
+            svgElement.setAttribute('width', '100%');
+            svgElement.setAttribute('height', '100%');
 
-            mapContainer.addEventListener('mouseleave', () => {
-                infoBox.style.display = 'none';
+            const infoBox = document.getElementById('info-box');
+            const paths = svgElement.querySelectorAll('path');
+
+            let scale = 1;
+            const zoomStep = 0.2;
+
+            // Zoom controls
+            document.getElementById('zoom-in').addEventListener('click', () => {
+                scale += zoomStep;
+                svgElement.style.transform = `scale(${scale})`;
+                svgElement.style.transformOrigin = 'center';
+            });
+
+            document.getElementById('zoom-out').addEventListener('click', () => {
+                scale = Math.max(1, scale - zoomStep);
+                svgElement.style.transform = `scale(${scale})`;
+                svgElement.style.transformOrigin = 'center';
             });
 
             paths.forEach(path => {
@@ -83,26 +124,6 @@
                 });
             });
         }
-
-        // Example function to update colors based on data
-        function updateColors(data) {
-            Object.entries(data).forEach(([id, value]) => {
-                const path = document.getElementById(id);
-                if (path) {
-                    path.style.fill = getColor(value);
-                }
-            });
-        }
-
-        function getColor(value) {
-            if (value < 25) return '#fee5d9';
-            if (value < 50) return '#fcae91';
-            if (value < 75) return '#fb6a4a';
-            return '#de2d26';
-        }
-
-        // Example usage:
-        // updateColors({'US': 75, 'CA': 50, 'MX': 25});
     </script>
     <!-- ************************** end of Map svg above ************************* -->  
   <br>
