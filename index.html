@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
 <!-- ************************** Map svg below ************************* -->
   <title>Interactive World Map</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
     <style>
         #map-container {
             width: 1010px;
@@ -24,11 +25,14 @@
         }
         .info-box {
             position: absolute;
-            background: white;
-            border: 1px solid #ddd;
-            padding: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            padding: 8px 12px;
             pointer-events: none;
             display: none;
+            font-family: 'Roboto', sans-serif;
+            font-size: 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
     </style>
 <!-- ************************** End of Map svg above ************************* -->  
@@ -45,9 +49,7 @@
   <br>
   <!-- **************************  Map svg below ************************* -->  
 <div id="map-container"></div>
-    <div class="info-box" id="info-box">
-        <h3>Country Code: <span id="country-code"></span></h3>
-    </div>
+    <div class="info-box" id="info-box"></div>
 
     <script>
         // Load the SVG file
@@ -62,7 +64,6 @@
             const mapContainer = document.getElementById('map-container');
             const paths = document.querySelectorAll('path');
             const infoBox = document.getElementById('info-box');
-            const countryCodeSpan = document.getElementById('country-code');
 
             mapContainer.addEventListener('mouseleave', () => {
                 infoBox.style.display = 'none';
@@ -71,7 +72,7 @@
             paths.forEach(path => {
                 path.addEventListener('mousemove', (e) => {
                     const countryCode = path.getAttribute('id');
-                    countryCodeSpan.textContent = countryCode || 'Unknown';
+                    infoBox.textContent = countryCode || 'Unknown';
                     infoBox.style.display = 'block';
                     infoBox.style.left = e.pageX + 10 + 'px';
                     infoBox.style.top = e.pageY + 10 + 'px';
