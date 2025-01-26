@@ -5,23 +5,13 @@
   <title>Chess Titles!</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
 <!-- ************************** Map svg below ************************* -->
-<title>Interactive World Map with Zoom</title>
+ <title>Interactive World Map with Zoom</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
     <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-        }
         #map-container {
-            width: 100%;
-            height: 100%;
-            max-width: 1010px;
-            max-height: 666px;
+            width: 1010px;
+            height: 666px;
             margin: 0 auto;
             border: 1px solid lightblue;
             background-color: lightblue;
@@ -32,7 +22,7 @@
             fill: #0F5738;
             transition: fill 0.3s;
         }
-        path:hover, path:active {
+        path:hover {
             fill: #ff9900;
         }
         .info-box {
@@ -168,55 +158,29 @@
             });
 
             // Enable touch gestures
-            const hammertime = new Hammer(mapContainer);
-            hammertime.get('pinch').set({ enable: true });
-            hammertime.on('pinch', function(ev) {
-                const scale = ev.scale;
-                const center = panZoom.getSizes().viewBox;
-                const centerX = center.x + center.width / 2;
-                const centerY = center.y + center.height / 2;
-                panZoom.zoom({ x: centerX, y: centerY, scale: scale });
-            });
-
-            // Double-tap to zoom
-            hammertime.on('doubletap', function(ev) {
-                const center = panZoom.getSizes().viewBox;
-                const centerX = center.x + center.width / 2;
-                const centerY = center.y + center.height / 2;
-                panZoom.zoomIn();
-                panZoom.pan({ x: centerX, y: centerY });
-            });
-
-            // Momentum scrolling
-            let lastDeltaX = 0;
-            let lastDeltaY = 0;
-            let momentum = null;
-
-            hammertime.on('panstart', function() {
-                cancelAnimationFrame(momentum);
-            });
-
-            hammertime.on('panmove', function(ev) {
-                lastDeltaX = ev.deltaX;
-                lastDeltaY = ev.deltaY;
-                panZoom.panBy({ x: -ev.deltaX, y: -ev.deltaY });
-            });
-
-            hammertime.on('panend', function() {
-                let decayX = lastDeltaX;
-                let decayY = lastDeltaY;
-
-                function decelerate() {
-                    decayX *= 0.9;
-                    decayY *= 0.9;
-                    panZoom.panBy({ x: -decayX, y: -decayY });
-
-                    if (Math.abs(decayX) > 0.5 || Math.abs(decayY) > 0.5) {
-                        momentum = requestAnimationFrame(decelerate);
-                    }
+            let lastDistance = 0;
+            mapContainer.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 2) {
+                    lastDistance = Math.hypot(
+                        e.touches[0].pageX - e.touches[1].pageX,
+                        e.touches[0].pageY - e.touches[1].pageY
+                    );
                 }
+            });
 
-                momentum = requestAnimationFrame(decelerate);
+            mapContainer.addEventListener('touchmove', (e) => {
+                if (e.touches.length === 2) {
+                    const distance = Math.hypot(
+                        e.touches[0].pageX - e.touches[1].pageX,
+                        e.touches[0].pageY - e.touches[1].pageY
+                    );
+                    if (distance > lastDistance) {
+                        panZoom.zoomIn();
+                    } else if (distance < lastDistance) {
+                        panZoom.zoomOut();
+                    }
+                    lastDistance = distance;
+                }
             });
         }
     </script>
