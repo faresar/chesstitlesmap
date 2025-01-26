@@ -47,9 +47,14 @@
             background-color: white;
             border: 1px solid #ddd;
             border-radius: 4px;
-            padding: 5px;
+            width: 30px;
+            height: 30px;
             cursor: pointer;
             font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .zoom-controls button:hover {
             background-color: #f0f0f0;
@@ -72,6 +77,7 @@
         <div class="zoom-controls">
             <button id="zoom-in">+</button>
             <button id="zoom-out">-</button>
+            <button id="zoom-reset">R</button>
         </div>
     </div>
     <div class="info-box" id="info-box"></div>
@@ -96,8 +102,8 @@
 
             let scale = 1;
             const zoomStep = 0.2;
-            const minScale = 1; // Original size
-            const maxScale = 3; // 3x zoom
+            const minScale = 1;
+            const maxScale = 5; // Increased max zoom
             let translateX = 0;
             let translateY = 0;
             let isDragging = false;
@@ -113,11 +119,9 @@
 
             // Dragging functionality
             mapContainer.addEventListener('mousedown', (event) => {
-                if (scale > 1) {
-                    isDragging = true;
-                    startX = event.clientX - translateX;
-                    startY = event.clientY - translateY;
-                }
+                isDragging = true;
+                startX = event.clientX - translateX;
+                startY = event.clientY - translateY;
             });
 
             mapContainer.addEventListener('mousemove', (event) => {
@@ -138,6 +142,7 @@
             // Zoom buttons functionality
             const zoomInButton = document.getElementById('zoom-in');
             const zoomOutButton = document.getElementById('zoom-out');
+            const zoomResetButton = document.getElementById('zoom-reset');
 
             zoomInButton.addEventListener('click', () => {
                 scale = Math.min(maxScale, scale + zoomStep);
@@ -146,10 +151,13 @@
 
             zoomOutButton.addEventListener('click', () => {
                 scale = Math.max(minScale, scale - zoomStep);
-                if (scale === 1) {
-                    translateX = 0;
-                    translateY = 0;
-                }
+                applyTransform();
+            });
+
+            zoomResetButton.addEventListener('click', () => {
+                scale = 1;
+                translateX = 0;
+                translateY = 0;
                 applyTransform();
             });
 
