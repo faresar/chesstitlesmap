@@ -36,12 +36,13 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         .zoom-controls {
-            position: absolute;
+            position: fixed;
             top: 10px;
             left: 10px;
             display: flex;
             flex-direction: column;
             gap: 5px;
+            z-index: 1000;
         }
         .zoom-controls button {
             background-color: white;
@@ -103,7 +104,7 @@
             let scale = 1;
             const zoomStep = 0.2;
             const minScale = 1;
-            const maxScale = 5; // Increased max zoom
+            const maxScale = 5;
             let translateX = 0;
             let translateY = 0;
             let isDragging = false;
@@ -112,8 +113,18 @@
             // Mouse wheel zoom functionality
             mapContainer.addEventListener('wheel', (event) => {
                 event.preventDefault();
+                const rect = svgElement.getBoundingClientRect();
+                const mouseX = event.clientX - rect.left;
+                const mouseY = event.clientY - rect.top;
+
                 const delta = event.deltaY > 0 ? -zoomStep : zoomStep;
-                scale = Math.min(maxScale, Math.max(minScale, scale + delta));
+                const newScale = Math.min(maxScale, Math.max(minScale, scale + delta));
+
+                // Adjust translation to keep zoom centered on mouse pointer
+                translateX -= (mouseX / scale - mouseX / newScale);
+                translateY -= (mouseY / scale - mouseY / newScale);
+
+                scale = newScale;
                 applyTransform();
             });
 
