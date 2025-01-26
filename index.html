@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
 <!-- ************************** Map svg below ************************* -->
   <title>Interactive World Map</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.1.1/svg.min.js"></script>
     <style>
         #map-container {
             width: 1010px;
@@ -15,23 +14,21 @@
             border: 1px solid lightblue;
             background-color: lightblue;
             position: relative;
-            overflow: hidden;
         }
         path {
-            fill: #75AF96;
+            fill: #0F5738;
             transition: fill 0.3s;
         }
         path:hover {
             fill: #ff9900;
         }
         .info-box {
-            position: fixed;
+            position: absolute;
             background: white;
             border: 1px solid #ddd;
             padding: 10px;
             pointer-events: none;
             display: none;
-            z-index: 1000;
         }
     </style>
 <!-- ************************** End of Map svg above ************************* -->  
@@ -63,13 +60,7 @@
 
         function initializeMap() {
             const mapContainer = document.getElementById('map-container');
-            const svgElement = mapContainer.querySelector('svg');
-            svgElement.setAttribute('width', '100%');
-            svgElement.setAttribute('height', '100%');
-
-            const draw = SVG(svgElement).panZoom({zoomMin: 0.5, zoomMax: 20});
-
-            const paths = svgElement.querySelectorAll('path');
+            const paths = document.querySelectorAll('path');
             const infoBox = document.getElementById('info-box');
             const countryCodeSpan = document.getElementById('country-code');
 
@@ -82,8 +73,8 @@
                     const countryCode = path.getAttribute('id');
                     countryCodeSpan.textContent = countryCode || 'Unknown';
                     infoBox.style.display = 'block';
-                    infoBox.style.left = e.clientX + 10 + 'px';
-                    infoBox.style.top = e.clientY + 10 + 'px';
+                    infoBox.style.left = e.pageX + 10 + 'px';
+                    infoBox.style.top = e.pageY + 10 + 'px';
                 });
 
                 path.addEventListener('mouseleave', () => {
