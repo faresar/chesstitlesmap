@@ -5,7 +5,7 @@
   <title>Chess Titles!</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
 <!-- ************************** Map svg below ************************* -->
-<title>Interactive World Map with Zoom</title>
+ <title>Interactive World Map with Zoom</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
     <style>
@@ -26,7 +26,7 @@
             fill: #ff9900;
         }
         .info-box {
-            position: absolute;
+            position: fixed;
             background: rgba(255, 255, 255, 0.9);
             border-radius: 8px;
             padding: 8px 12px;
@@ -132,26 +132,38 @@
                 const countryCode = path.getAttribute('id');
                 infoBox.textContent = countryCode || 'Unknown';
                 infoBox.style.display = 'block';
-                infoBox.style.left = e.pageX + 10 + 'px';
-                infoBox.style.top = e.pageY + 10 + 'px';
+                
+                const rect = infoBox.getBoundingClientRect();
+                infoBox.style.left = `${e.clientX - rect.width / 2}px`;
+                infoBox.style.top = `${e.clientY - rect.height - 10}px`;
             }
 
             function hideInfoBox() {
                 infoBox.style.display = 'none';
             }
 
+            let selectedCountry = null;
+
             paths.forEach(path => {
                 path.addEventListener('mousemove', (e) => showInfoBox(e, path));
-                path.addEventListener('mouseleave', hideInfoBox);
+                path.addEventListener('mouseleave', () => {
+                    if (!selectedCountry) hideInfoBox();
+                });
                 
                 path.addEventListener('touchstart', (e) => {
                     e.preventDefault(); // Prevent default touch behavior
                     if (e.touches.length === 1) {
+                        selectedCountry = path;
                         showInfoBox(e.touches[0], path);
                     }
                 });
-                
-                path.addEventListener('touchend', hideInfoBox);
+            });
+
+            mapContainer.addEventListener('touchstart', (e) => {
+                if (e.target.tagName !== 'path') {
+                    selectedCountry = null;
+                    hideInfoBox();
+                }
             });
 
             // Handle window resize
