@@ -5,18 +5,20 @@
   <title>Chess Titles!</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
 <!-- ************************** Map svg below ************************* -->
-    <title>Interactive World Map</title>
+   <title>Interactive World Map</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.1.1/svg.min.js"></script>
     <style>
         #map-container {
             width: 1010px;
             height: 666px;
             margin: 0 auto;
-            border: 1.5px solid black;
+            border: 1px solid lightblue;
             background-color: lightblue;
             position: relative;
+            overflow: hidden;
         }
         path {
-            fill: #ccc;
+            fill: #75AF96;
             transition: fill 0.3s;
         }
         path:hover {
@@ -29,6 +31,7 @@
             padding: 10px;
             pointer-events: none;
             display: none;
+            z-index: 1000;
         }
     </style>
 <!-- ************************** End of Map svg above ************************* -->  
@@ -60,7 +63,13 @@
 
         function initializeMap() {
             const mapContainer = document.getElementById('map-container');
-            const paths = document.querySelectorAll('path');
+            const svgElement = mapContainer.querySelector('svg');
+            svgElement.setAttribute('width', '100%');
+            svgElement.setAttribute('height', '100%');
+
+            const draw = SVG(svgElement).panZoom();
+
+            const paths = svgElement.querySelectorAll('path');
             const infoBox = document.getElementById('info-box');
             const countryCodeSpan = document.getElementById('country-code');
 
