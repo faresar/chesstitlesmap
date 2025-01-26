@@ -8,6 +8,7 @@
 <title>Interactive World Map with Zoom</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
     <style>
         #map-container {
             width: 1010px;
@@ -117,18 +118,27 @@
             // Zoom buttons functionality
             document.getElementById('zoom-in').addEventListener('click', () => panZoom.zoomIn());
             document.getElementById('zoom-out').addEventListener('click', () => panZoom.zoomOut());
-            document.getElementById('zoom-reset').addEventListener('click', () => panZoom.resetZoom());
+            document.getElementById('zoom-reset').addEventListener('click', () => {
+                panZoom.resetZoom();
+                panZoom.resetPan();
+                panZoom.center();
+            });
+
+            function showInfoBox(e, path) {
+                const countryCode = path.getAttribute('id');
+                infoBox.textContent = countryCode || 'Unknown';
+                infoBox.style.display = 'block';
+                infoBox.style.left = e.pageX + 10 + 'px';
+                infoBox.style.top = e.pageY + 10 + 'px';
+            }
 
             paths.forEach(path => {
-                path.addEventListener('mousemove', (e) => {
-                    const countryCode = path.getAttribute('id');
-                    infoBox.textContent = countryCode || 'Unknown';
-                    infoBox.style.display = 'block';
-                    infoBox.style.left = e.pageX + 10 + 'px';
-                    infoBox.style.top = e.pageY + 10 + 'px';
-                });
-
+                path.addEventListener('mousemove', (e) => showInfoBox(e, path));
+                path.addEventListener('touchstart', (e) => showInfoBox(e.touches[0], path));
                 path.addEventListener('mouseleave', () => {
+                    infoBox.style.display = 'none';
+                });
+                path.addEventListener('touchend', () => {
                     infoBox.style.display = 'none';
                 });
             });
@@ -138,6 +148,18 @@
                 panZoom.resize();
                 panZoom.fit();
                 panZoom.center();
+            });
+
+            // Enable touch gestures
+            const hammertime = new Hammer(mapContainer);
+            hammertime.get('pinch').set({ enable: true });
+            hammertime.on('pinch', function(ev) {
+                const scale = ev.scale;
+                if (scale > 1) {
+                    panZoom.zoomIn();
+                } else if (scale < 1) {
+                    panZoom.zoomOut();
+                }
             });
         }
     </script>
