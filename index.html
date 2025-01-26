@@ -5,7 +5,7 @@
   <title>Chess Titles!</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
 <!-- ************************** Map svg below ************************* -->
-   <title>Interactive World Map</title>
+  <title>Interactive World Map</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.1.1/svg.min.js"></script>
     <style>
         #map-container {
@@ -25,7 +25,7 @@
             fill: #ff9900;
         }
         .info-box {
-            position: absolute;
+            position: fixed;
             background: white;
             border: 1px solid #ddd;
             padding: 10px;
@@ -54,7 +54,7 @@
 
     <script>
         // Load the SVG file
-        fetch('world (1).svg')
+        fetch('world(1).svg')
             .then(response => response.text())
             .then(svgContent => {
                 document.getElementById('map-container').innerHTML = svgContent;
@@ -67,7 +67,7 @@
             svgElement.setAttribute('width', '100%');
             svgElement.setAttribute('height', '100%');
 
-            const draw = SVG(svgElement).panZoom();
+            const draw = SVG(svgElement).panZoom({zoomMin: 0.5, zoomMax: 20});
 
             const paths = svgElement.querySelectorAll('path');
             const infoBox = document.getElementById('info-box');
@@ -82,8 +82,8 @@
                     const countryCode = path.getAttribute('id');
                     countryCodeSpan.textContent = countryCode || 'Unknown';
                     infoBox.style.display = 'block';
-                    infoBox.style.left = e.pageX + 10 + 'px';
-                    infoBox.style.top = e.pageY + 10 + 'px';
+                    infoBox.style.left = e.clientX + 10 + 'px';
+                    infoBox.style.top = e.clientY + 10 + 'px';
                 });
 
                 path.addEventListener('mouseleave', () => {
