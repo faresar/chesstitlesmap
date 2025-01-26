@@ -6,23 +6,20 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
 <!-- ************************** Map svg below ************************* -->
     <title>Interactive World Map</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.1.1/svg.min.js"></script>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f0f0f0;
-        }
         #map-container {
-            width: 90%;
-            height: 80vh;
-            background-color: lightblue;
-            border: 1.5px solid black;
-            overflow: hidden;
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            border: 2px solid lightblue;
+            position: relative;
+        }
+        path {
+            fill: #ccc;
+            transition: fill 0.3s;
+        }
+        path:hover {
+            fill: #ff9900;
         }
         .tooltip {
             position: absolute;
@@ -33,9 +30,8 @@
         }
         .info-box {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 200px;
+            top: 10px;
+            right: 10px;
             background: white;
             border: 1px solid #ddd;
             padding: 10px;
@@ -55,11 +51,9 @@
   <br>
   <br>
   <!-- **************************  Map svg below ************************* -->  
-  <div id="map-container"></div>
+   <div id="map-container"></div>
     <div class="info-box" id="info-box">
-        <h3 id="country-name"></h3>
-        <img id="country-flag" src="" alt="Country Flag" style="width: 100px; height: auto;">
-        <p id="titled-players"></p>
+        <h3>Country Code: <span id="country-code"></span></h3>
     </div>
 
     <script>
@@ -72,23 +66,13 @@
             });
 
         function initializeMap() {
-            const mapContainer = document.getElementById('map-container');
-            const svgElement = mapContainer.querySelector('svg');
-            svgElement.setAttribute('width', '100%');
-            svgElement.setAttribute('height', '100%');
-
-            const draw = SVG(svgElement);
-            draw.panZoom();
-
-            const paths = svgElement.querySelectorAll('path');
+            const paths = document.querySelectorAll('path');
             const tooltip = document.createElement('div');
             tooltip.classList.add('tooltip');
             document.body.appendChild(tooltip);
 
             const infoBox = document.getElementById('info-box');
-            const countryName = document.getElementById('country-name');
-            const countryFlag = document.getElementById('country-flag');
-            const titledPlayers = document.getElementById('titled-players');
+            const countryCodeSpan = document.getElementById('country-code');
 
             paths.forEach(path => {
                 path.addEventListener('mousemove', (e) => {
@@ -103,18 +87,8 @@
                 });
 
                 path.addEventListener('click', () => {
-                    const countryId = path.getAttribute('id');
-                    // Here you would fetch the country data from your database or JSON file
-                    // For now, we'll use placeholder data
-                    const countryData = {
-                        name: countryId,
-                        flagUrl: 'https://via.placeholder.com/100x60',
-                        titledPlayers: Math.floor(Math.random() * 100)
-                    };
-
-                    countryName.textContent = countryData.name;
-                    countryFlag.src = countryData.flagUrl;
-                    titledPlayers.textContent = `Titled Players: ${countryData.titledPlayers}`;
+                    const countryCode = path.getAttribute('id');
+                    countryCodeSpan.textContent = countryCode || 'Unknown';
                     infoBox.style.display = 'block';
                 });
             });
