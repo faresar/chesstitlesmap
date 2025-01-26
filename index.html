@@ -8,10 +8,11 @@
     <title>Interactive World Map</title>
     <style>
         #map-container {
-            width: 100%;
-            max-width: 1000px;
+            width: 1010px;
+            height: 666px;
             margin: 0 auto;
-            border: 2px solid lightblue;
+            border: 1.5px solid black;
+            background-color: lightblue;
             position: relative;
         }
         path {
@@ -21,20 +22,12 @@
         path:hover {
             fill: #ff9900;
         }
-        .tooltip {
-            position: absolute;
-            background: white;
-            border: 1px solid #ddd;
-            padding: 5px;
-            pointer-events: none;
-        }
         .info-box {
             position: absolute;
-            top: 10px;
-            right: 10px;
             background: white;
             border: 1px solid #ddd;
             padding: 10px;
+            pointer-events: none;
             display: none;
         }
     </style>
@@ -51,7 +44,7 @@
   <br>
   <br>
   <!-- **************************  Map svg below ************************* -->  
-   <div id="map-container"></div>
+<div id="map-container"></div>
     <div class="info-box" id="info-box">
         <h3>Country Code: <span id="country-code"></span></h3>
     </div>
@@ -66,30 +59,26 @@
             });
 
         function initializeMap() {
+            const mapContainer = document.getElementById('map-container');
             const paths = document.querySelectorAll('path');
-            const tooltip = document.createElement('div');
-            tooltip.classList.add('tooltip');
-            document.body.appendChild(tooltip);
-
             const infoBox = document.getElementById('info-box');
             const countryCodeSpan = document.getElementById('country-code');
 
+            mapContainer.addEventListener('mouseleave', () => {
+                infoBox.style.display = 'none';
+            });
+
             paths.forEach(path => {
                 path.addEventListener('mousemove', (e) => {
-                    tooltip.style.display = 'block';
-                    tooltip.style.left = e.pageX + 10 + 'px';
-                    tooltip.style.top = e.pageY + 10 + 'px';
-                    tooltip.textContent = path.getAttribute('id') || 'Unknown';
-                });
-
-                path.addEventListener('mouseout', () => {
-                    tooltip.style.display = 'none';
-                });
-
-                path.addEventListener('click', () => {
                     const countryCode = path.getAttribute('id');
                     countryCodeSpan.textContent = countryCode || 'Unknown';
                     infoBox.style.display = 'block';
+                    infoBox.style.left = e.pageX + 10 + 'px';
+                    infoBox.style.top = e.pageY + 10 + 'px';
+                });
+
+                path.addEventListener('mouseleave', () => {
+                    infoBox.style.display = 'none';
                 });
             });
         }
