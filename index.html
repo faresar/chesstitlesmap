@@ -136,18 +136,22 @@
                 infoBox.style.top = e.pageY + 10 + 'px';
             }
 
+            function hideInfoBox() {
+                infoBox.style.display = 'none';
+            }
+
             paths.forEach(path => {
-                ['mousemove', 'touchstart'].forEach(eventType => {
-                    path.addEventListener(eventType, (e) => {
-                        const event = e.type === 'touchstart' ? e.touches[0] : e;
-                        showInfoBox(event, path);
-                    });
+                path.addEventListener('mousemove', (e) => showInfoBox(e, path));
+                path.addEventListener('mouseleave', hideInfoBox);
+                
+                path.addEventListener('touchstart', (e) => {
+                    e.preventDefault(); // Prevent default touch behavior
+                    if (e.touches.length === 1) {
+                        showInfoBox(e.touches[0], path);
+                    }
                 });
-                ['mouseleave', 'touchend'].forEach(eventType => {
-                    path.addEventListener(eventType, () => {
-                        infoBox.style.display = 'none';
-                    });
-                });
+                
+                path.addEventListener('touchend', hideInfoBox);
             });
 
             // Handle window resize
