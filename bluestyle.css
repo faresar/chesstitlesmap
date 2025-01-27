@@ -1,72 +1,76 @@
 body {
-    background-color: #c8b670;
-    }
-    
-h1 {
-    color: navy;
-    margin-left: 20px;
-    }
-
-<style>
-    #federation-table {
-        border-collapse: collapse;
-        width: 100%;
-    }
-    #federation-table th, #federation-table td {
-        border: 1px solid #ddd;
-        padding: 8px;
-        text-align: left;
-    }
-    #federation-table th {
-        background-color: #f2f2f2;
-    }
-
-#yemen-players-container {
-    overflow-x: auto;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
-#yemen-players-container table {
-    border-collapse: collapse;
-    width: 100%;
-    margin-top: 20px;
-    font-size: 14px;
-    table-layout: fixed;
-}
-
-#yemen-players-container th, #yemen-players-container td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-#yemen-players-container th {
-    background-color: #4CAF50;
+header {
+    background-color: #2c3e50;
     color: white;
-    font-weight: bold;
+    padding: 1rem;
+    text-align: center;
 }
 
-#yemen-players-container tr:nth-child(even) {
-    background-color: #f2f2f2;
+h1 {
+    margin: 0;
 }
 
-#yemen-players-container tr:hover {
-    background-color: #ddd;
+nav {
+    margin-top: 1rem;
 }
 
-@media screen and (max-width: 600px) {
-    #yemen-players-container table {
-        font-size: 12px;
+nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 1rem;
+}
+
+main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+}
+
+#map-container {
+    width: 100%;
+    max-width: 800px;
+    height: 400px;
+    background-color: #ecf0f1;
+    margin-bottom: 2rem;
+}
+
+#stats-container {
+    width: 100%;
+    max-width: 800px;
+    text-align: center;
+}
+
+#ad-container {
+    background-color: #bdc3c7;
+    padding: 1rem;
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+    header {
+        padding: 0.5rem;
     }
-    
-    #yemen-players-container th, #yemen-players-container td {
-        padding: 6px;
+
+    nav {
+        display: flex;
+        flex-direction: column;
+    }
+
+    nav a {
+        margin: 0.5rem 0;
+    }
+
+    #map-container {
+        height: 300px;
     }
 }
-
-
-</style>
-
-
