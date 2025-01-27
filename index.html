@@ -5,27 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chess Titles by Country</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
-    <header>
+    <div id="hero">
+        <div id="globe"></div>
         <h1>Chess Titles by Country</h1>
-        <nav>
-            <a href="#how-to">How to get chess title</a>
-            <a href="#feedback">Feedback</a>
-        </nav>
-    </header>
-    <main>
-        <div id="map-container">
-            <!-- SVG map will be inserted here -->
-        </div>
-        <div id="stats-container">
-            <h2>Statistics and Visuals</h2>
-            <p>Placeholder for stats and visuals</p>
-        </div>
-    </main>
-    <div id="ad-container">
-        <!-- Ad placement -->
     </div>
+    
+    <nav id="circular-menu">
+        <div class="menu-button">♟️</div>
+        <div class="menu-items">
+            <a href="#explore">Explore Titles</a>
+            <a href="#how-to">How to Get a Chess Title</a>
+            <a href="#feedback">Feedback</a>
+        </div>
+    </nav>
+    
+    <main>
+        <section id="map-section">
+            <div id="map-container"></div>
+            <div id="country-info" class="side-panel"></div>
+        </section>
+        
+        <section id="how-to" class="horizontal-scroll">
+            <div class="title-level">
+                <h3>Candidate Master</h3>
+                <div class="chess-piece">♟️</div>
+            </div>
+            <div class="title-level">
+                <h3>FIDE Master</h3>
+                <div class="chess-piece">♞</div>
+            </div>
+            <div class="title-level">
+                <h3>International Master</h3>
+                <div class="chess-piece">♝</div>
+            </div>
+            <div class="title-level">
+                <h3>Grandmaster</h3>
+                <div class="chess-piece">♛</div>
+            </div>
+        </section>
+        
+        <section id="stats">
+            <h2>Global Chess Statistics</h2>
+            <div id="chart-container"></div>
+        </section>
+    </main>
+    
     <script src="script.js"></script>
 </body>
 </html>
