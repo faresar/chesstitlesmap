@@ -29,21 +29,25 @@
         path {
             fill: #0F5738;
             transition: fill 0.3s;
+            cursor: pointer;
         }
         path:hover {
             fill: #ff9900;
         }
         .info-box {
             position: fixed;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 8px;
-            padding: 8px 12px;
+            padding: 15px;
             pointer-events: none;
             display: none;
             font-family: 'Roboto', sans-serif;
             font-size: 14px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 3px 15px rgba(0,0,0,0.2);
             z-index: 1000;
+        }
+        .info-box.visible {
+            display: block;
         }
         .zoom-controls {
             position: absolute;
@@ -58,17 +62,11 @@
             background-color: white;
             border: 1px solid black;
             border-radius: 4px;
-            width: 30px;
-            height: 30px;
+            width: 35px;
+            height: 35px;
             cursor: pointer;
             font-family: 'Roboto', sans-serif;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .zoom-controls button:hover {
-            background-color: #f0f0f0;
+            font-size: 18px;
         }
     </style>
 </head>
@@ -77,7 +75,7 @@
         <div class="zoom-controls">
             <button id="zoom-in">+</button>
             <button id="zoom-out">-</button>
-            <button id="zoom-reset">R</button>
+            <button id="zoom-reset">⌂</button>
         </div>
     </div>
     <div class="info-box" id="info-box"></div>
@@ -86,86 +84,88 @@
         fetch('world_fide.svg')
             .then(response => response.text())
             .then(svgContent => {
-                document.getElementById('map-container').innerHTML += svgContent;
+                document.getElementById('map-container').innerHTML += svgContent.trim();
                 initializeMap();
             });
 
         function initializeMap() {
             const mapContainer = document.getElementById('map-container');
             const svgElement = mapContainer.querySelector('svg');
-            svgElement.setAttribute('width', '100%');
-            svgElement.setAttribute('height', '100%');
-            svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+            
+			const infoBox = document.getElementById("info-box");
+			let selectedCountry = null;
 
-            const infoBox = document.getElementById('info-box');
-            const paths = svgElement.querySelectorAll('path');
+			// Initialize svg-pan-zoom
+			const panZoom = svgPanZoom(svgElement, {
+				zoomEnabled : true,
+				controlIconsEnabled : false,
+				fit : true,
+				center : true,
+				minZoom :1,
+				maxZoom :10,
+				zoomScaleSensitivity : .2,
+			});
 
-            // Initialize svg-pan-zoom
-            const panZoom = svgPanZoom(svgElement, {
-                zoomEnabled: true,
-                controlIconsEnabled: false,
-                fit: true,
-                center: true,
-                minZoom: 1,
-                maxZoom: 50,
-                zoomScaleSensitivity: 0.3
-            });
+			// Zoom buttons functionality
+			document.getElementById("zoom-in").addEventListener("click", () => panZoom.zoomIn());
+			document.getElementById("zoom-out").addEventListener("click", () => panZoom.zoomOut());
+			document.getElementById("zoom-reset").addEventListener("click", () => {
+				panZoom.reset();
+				panZoom.resize().fit().center();
+			});
 
-            // Zoom buttons functionality
-            document.getElementById('zoom-in').addEventListener('click', () => panZoom.zoomIn());
-            document.getElementById('zoom-out').addEventListener('click', () => panZoom.zoomOut());
-            document.getElementById('zoom-reset').addEventListener('click', () => {
-                panZoom.resetZoom();
-                panZoom.resetPan();
-                panZoom.center();
-            });
+			function showInfoBox(content, x, y) {
+				infoBox.innerHTML = `<p>${content}</p>`;
+				infoBox.classList.add('visible');
+				infoBox.style.left = `${x}px`;
+				infoBox.style.top = `${y}px`;
+			}
 
-            function showInfoBox(e, path) {
-                const countryCode = path.getAttribute('id');
-                infoBox.textContent = countryCode || 'Unknown';
-                infoBox.style.display = 'block';
+			function hideInfoBox() {
+				infoBox.classList.remove('visible');
+			}
+
+			const paths = svgElement.querySelectorAll("path");
+
+			paths.forEach(path => {
+                path.addEventListener("mouseenter", (e) => showInfoBox(path.id, e.clientX + 10, e.clientY - infoBox.offsetHeight - 10));
+                path.addEventListener("mouseleave", hideInfoBox);
                 
-                const rect = infoBox.getBoundingClientRect();
-                infoBox.style.left = `${e.clientX - rect.width / 2}px`;
-                infoBox.style.top = `${e.clientY - rect.height - 10}px`;
-            }
-
-            paths.forEach(path => {
-                path.addEventListener('mousemove', (e) => showInfoBox(e, path));
-                path.addEventListener('touchstart', (e) => {
+                path.addEventListener("touchstart", (e) => {
                     if (e.touches.length === 1) {
-                        showInfoBox(e.touches[0], path);
+                        showInfoBox(path.id, e.touches[0].clientX + 10, e.touches[0].clientY - infoBox.offsetHeight - 10);
                     }
                 });
-                path.addEventListener('mouseleave', () => {
-                    infoBox.style.display = 'none';
-                });
-                path.addEventListener('touchend', () => {
-                    infoBox.style.display = 'none';
-                });
-            });
+                
+                path.addEventListener("touchend", hideInfoBox);
+			});
 
-            // Handle window resize
-            window.addEventListener('resize', () => {
-                panZoom.resize();
-                panZoom.fit();
-                panZoom.center();
-            });
-
-            // Enable touch gestures
-            const hammer = new Hammer(mapContainer);
-            hammer.get('pinch').set({ enable: true });
-            
-            let lastScale = 1;
-            hammer.on('pinchstart', function(ev) {
-                lastScale = panZoom.getZoom();
-            });
-
-            hammer.on('pinch', function(ev) {
-                const scale = ev.scale;
-                const newScale = lastScale * scale;
-                panZoom.zoom(newScale);
-            });
+			// Handle window resize
+			window.addEventListener('resize', () => {
+				panZoom.resize().fit().center();
+			});
+			
+			// Enable touch gestures
+			const hammer = new Hammer(mapContainer);
+			hammer.get('pinch').set({ enable:true });
+			
+			let lastScale = panZoom.getZoom();
+			
+			hammer.on('pinchstart', function(ev) {
+				lastScale = panZoom.getZoom();
+			});
+			
+			hammer.on('pinch', function(ev) {
+				const newScale = Math.min(50, Math.max(1, lastScale * ev.scale));
+				panZoom.zoom(newScale);
+				
+				const center = { 
+					x: ev.center.x - mapContainer.getBoundingClientRect().left,
+					y: ev.center.y - mapContainer.getBoundingClientRect().top 
+				};
+				
+				panZoom.pan(center);
+			});
         }
     </script>
 </body>
