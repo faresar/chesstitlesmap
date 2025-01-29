@@ -160,7 +160,9 @@
 			        y: ev.center.y - mapContainer.getBoundingClientRect().top 
 			    };
 			    const newScale = Math.min(50, Math.max(1, startScale * ev.scale));
-			    panZoom.zoomAtPoint(newScale, centerPoint);
+
+			    // Smooth interpolation for zooming
+			    requestAnimationFrame(() => panZoom.zoomAtPoint(newScale, centerPoint));
 			});
 			
         }
