@@ -39,27 +39,15 @@
             background: rgba(255, 255, 255, 0.95);
             border-radius: 8px;
             padding: 15px;
-            pointer-events: none;
+            pointer-events: auto;
             display: none;
             font-family: 'Roboto', sans-serif;
             font-size: 14px;
             box-shadow: 0 3px 15px rgba(0,0,0,0.2);
             z-index: 1000;
-            min-width: 200px;
-            max-width: 300px;
         }
         .info-box.visible {
             display: block;
-            pointer-events: auto;
-        }
-        .close-btn {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: none;
-            border: none;
-            font-size: 16px;
-            cursor: pointer;
         }
         .zoom-controls {
             position: absolute;
@@ -82,7 +70,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
     </style>
 </head>
@@ -94,120 +81,688 @@
             <button id="zoom-reset">⌂</button>
         </div>
     </div>
-    <div class="info-box" id="info-box">
-        <button class="close-btn">×</button>
-        <div class="content"></div>
-    </div>
+    <div class="info-box" id="info-box"></div>
 
     <script>
         fetch('world_fide.svg')
             .then(response => response.text())
             .then(svgContent => {
-                document.getElementById('map-container').innerHTML += svgContent;
+                document.getElementById('map-container').innerHTML += svgContent.trim();
                 initializeMap();
             });
 
         function initializeMap() {
             const mapContainer = document.getElementById('map-container');
             const svgElement = mapContainer.querySelector('svg');
+            
             const infoBox = document.getElementById('info-box');
-            const closeBtn = infoBox.querySelector('.close-btn');
-            const paths = svgElement.querySelectorAll('path');
-            let isPinching = false;
-            let lastScale = 1;
+            
+			let selectedCountry = null;
 
-            // Initialize svg-pan-zoom
-            const panZoom = svgPanZoom(svgElement, {
-                zoomEnabled: true,
-                controlIconsEnabled: false,
-                fit: true,
-                center: true,
-                minZoom: 1,
-                maxZoom: 50,
-                zoomScaleSensitivity: 0.2,
-                beforePan: () => !isPinching
-            });
+			// Initialize svg-pan-zoom
+			const panZoom = svgPanZoom(svgElement, {
+				zoomEnabled : true,
+				controlIconsEnabled : false,
+				fit : true,
+				center : true,
+				minZoom :1,
+				maxZoom :50,
+				zoomScaleSensitivity : .2,
 
-            // Hammer.js for touch gestures
-            const hammer = new Hammer(mapContainer);
-            hammer.get('pinch').set({ enable: true });
+			});
 
-            hammer.on('pinchstart', (e) => {
-                isPinching = true;
-                lastScale = panZoom.getZoom();
-            });
+			const hammer = new Hammer(mapContainer);
+			hammer.get("pinch").set({
+				enable:true
 
-            hammer.on('pinch', (e) => {
-                const center = {
-                    x: e.center.x - mapContainer.getBoundingClientRect().left,
-                    y: e.center.y - mapContainer.getBoundingClientRect().top
-                };
-                const newScale = Math.min(50, Math.max(1, lastScale * e.scale));
-                panZoom.zoomAtPoint(newScale, center);
-            });
+			});
 
-            hammer.on('pinchend', () => {
-                isPinching = false;
-                lastScale = panZoom.getZoom();
-            });
+			let lastScale=1;
 
-            // Zoom controls
-            document.getElementById('zoom-in').addEventListener('click', () => panZoom.zoomIn());
-            document.getElementById('zoom-out').addEventListener('click', () => panZoom.zoomOut());
-            document.getElementById('zoom-reset').addEventListener('click', () => {
-                panZoom.reset();
-                panZoom.resize().fit().center();
-            });
+			hammer.on("pinchstart",(e)=>{
+				lastScale=panZoom.getZoom();
 
-            // Info box handling
-            function showInfoBox(content, x, y) {
-                infoBox.querySelector('.content').textContent = content;
-                infoBox.classList.add('visible');
-                positionInfoBox(x, y);
-            }
+			});
 
-            function positionInfoBox(x, y) {
-                const rect = infoBox.getBoundingClientRect();
-                const maxX = window.innerWidth - rect.width - 10;
-                const maxY = window.innerHeight - rect.height - 10;
-                
-                infoBox.style.left = `${Math.min(Math.max(x - rect.width/2, 10), maxX)}px`;
-                infoBox.style.top = `${Math.min(Math.max(y - rect.height - 20, 10), maxY)}px`;
-            }
+			hammer.on("pinch",(e)=>{
+				const newScale=Math.min(50,Math.max(1,lastScale*e.scale));
+				panZoom.zoom(newScale);
 
-            closeBtn.addEventListener('click', () => {
-                infoBox.classList.remove('visible');
-            });
+			});
 
-            // Desktop hover handling
-            paths.forEach(path => {
-                path.addEventListener('mouseenter', (e) => {
-                    if (!isPinching) {
-                        const rect = path.getBoundingClientRect();
-                        showInfoBox(path.id, rect.left + rect.width/2, rect.top + rect.height/2);
-                    }
-                });
+			document.getElementById("zoom-in").addEventListener("click",()=>{
+				panZoom.zoomIn();
 
-                path.addEventListener('mouseleave', () => {
-                    if (!isPinching) infoBox.classList.remove('visible');
-                });
-            });
+			});
+			
+			document.getElementById("zoom-out").addEventListener("click",()=>{
+				panZoom.zoomOut();
 
-            // Mobile touch handling
-            paths.forEach(path => {
-                path.addEventListener('tap', (e) => {
-                    if (e.touches.length === 1) {
-                        const touch = e.touches[0];
-                        showInfoBox(path.id, touch.clientX, touch.clientY);
-                    }
-                });
-            });
+			});
 
-            // Window resize handler
-            window.addEventListener('resize', () => {
-                panZoom.resize().fit().center();
-            });
-        }
-    </script>
+			document.getElementById("zoom-reset").addEventListener("click",()=>{
+				panZoom.reset();
+				panZoom.resize().fit().center();
+
+			});
+
+
+			function showInfoBox(content,x,y){
+				infoBox.innerHTML=`<p><a href="#">${content}</a></p>`;
+				infoBox.classList.add("visible");
+				
+				infoBox.style.left=`${x}px`;
+				
+				infoBox.style.top=`${y}px`;
+
+
+
+			}
+
+			function hideInfoBox(){
+				infoBox.classList.remove("visible");
+
+
+
+			}
+
+			const paths=svgElement.querySelectorAll("path");
+
+			paths.forEach((path)=>{
+
+				
+					path.addEventListener("mouseenter",(e)=>{
+						if(!selectedCountry){
+							showInfoBox(path.id,e.clientX,e.clientY);
+						}
+					});
+
+
+					path.addEventListener("mouseleave",()=>{
+						if(!selectedCountry){
+							hideInfoBox();
+						}
+					});
+
+					path.addEventListener("click",(e)=>{
+						selectedCountry=path.id;
+
+						showInfoBox(path.id,e.clientX,e.clientY);
+
+					});
+
+
+					path.addEventListener("touchstart",(e)=>{
+						if(e.touches.length===1){
+							selectedCountry=path.id;
+
+							showInfoBox(path.id,e.touches[0].clientX,e.touches[0].clientY);
+
+						}
+					});
+					
+				
+			});
+			
+
+			
+			
+
+			
+			
+
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+
+			
+			
+			
+			
+
+			
+			
+			
+			
+
+			
+			
+
+			
+			
+			
+			
+
+			
+			
+			
+			
+
+			
+			
+			
+			
+
+			
+			
+			
+			
+
+			
+			
+			
+			
+
+			
+			
+			
+			
+
+			
+			
+			
+			
+
+			
+			
+			
+			
+
+			
+			
+			
+			
+
+			
+			
+			
+			
+
+			
+			
+			
+			
+
+			
+			
+			
+			
+
+			
+			
+			
+			
+
+			
+			
+			
+			
+
+			
+			
+			
+			
+
+			
+			
+			
+			
+
+			
+			
+			
+			
+
+			
+			
+			
+		
+
+		
+		
+
+		
+		
+
+		
+		
+
+		
+		
+
+		
+		
+
+		
+		
+
+		
+		
+
+		
+		
+
+		
+		
+
+		
+		
+
+		
+		
+
+		
+		
+
+		
+		
+
+		
+		
+
+		
+		
+
+		
+		
+
+		
+		
+
+		
+		
+
+		
+		
+
+		
+		
+
+		
+		
+
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	
+		
+		
+		
+	
+		
+		
+		
+	
+		
+		
+		
+	
+		
+		
+		
+	
+		
+		
+		
+	
+		
+		
+		
+	
+		
+		
+		
+	
+		
+		
+		
+	
+		
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	
+		
+		
+		
+	
+		
+		
+		
+	
+		
+		
+		
+	
+		
+		
+		
+	
+		
+		
+		
+	
+		
+		
+		
+	
+		
+		
+		
+	
+		
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+
+	
+	
+	
+	
+
+
+	
+	
+	
+	
+
+
+	
+	
+	
+	
+
+
+	
+	
+	
+	
+
+
+	
+	
+	
+	
+
+
+	
+	
+	
+	
+
+
+	
+	
+	
+	
+
+
+	
+	
+	
+	
+
+
+	
+	
+	
+	
+
+
+	
+	
+	
+	
+
+
+	
+	
+	
+	
+
+
+	
+	
+	
+	
+
+
+	
+	
+	
+	
+
+
+	
+	
+	
+	
+	
+</script>
+
+
 </body>
+
+
 </html>
+
+
