@@ -6,7 +6,6 @@
     <title>Chess Title Map</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
     <style>
         body {
             margin: 0;
@@ -100,7 +99,7 @@
             const infoBox = document.getElementById('info-box');
             const paths = svgElement.querySelectorAll('path');
 
-            // Initialize svg-pan-zoom with custom options
+            // Initialize svg-pan-zoom
             const panZoom = svgPanZoom(svgElement, {
                 zoomEnabled: true,
                 controlIconsEnabled: false,
@@ -109,84 +108,57 @@
                 minZoom: 1,
                 maxZoom: 50,
                 zoomScaleSensitivity: 0.3,
-                customEventsHandler: {
-                    haltEventListeners: ['touchstart', 'touchend', 'touchmove', 'touchleave', 'touchcancel'],
-                    init: function(options) {
-                        const hammer = new Hammer(options.svgElement);
-                        hammer.get('pinch').set({ enable: true });
-                        
-                        let prevScale = 1;
-                        let scale = 1;
-                        let isPinching = false;
-
-                        hammer.on('pinchstart', function() {
-                            isPinching = true;
-                            prevScale = scale;
-                        });
-
-                        hammer.on('pinch', function(ev) {
-                            if (isPinching) {
-                                scale = Math.min(50, Math.max(1, prevScale * ev.scale));
-                                const center = {
-                                    x: ev.center.x,
-                                    y: ev.center.y
-                                };
-                                options.instance.zoom(scale);
-                                options.instance.pan({x: center.x, y: center.y});
-                            }
-                        });
-
-                        hammer.on('pinchend', function() {
-                            isPinching = false;
-                            prevScale = scale;
-                        });
-
-                        this.hammer = hammer;
-                    },
-                    destroy: function() {
-                        this.hammer.destroy();
-                    }
+                beforeZoom: function(oldScale, newScale) {
+                    // Prevent extreme zoom changes in a single step
+                    return Math.abs(oldScale - newScale) < 1;
+                },
+                beforePan: function(oldPan, newPan) {
+                    // Limit pan to prevent getting lost
+                    const sizes = this.getSizes();
+                    const gutterWidth = sizes.width * 0.8;
+                    const gutterHeight = sizes.height * 0.8;
+                    
+                    return {
+                        x: Math.max(-gutterWidth, Math.min(gutterWidth, newPan.x)),
+                        y: Math.max(-gutterHeight, Math.min(gutterHeight, newPan.y))
+                    };
                 }
             });
 
-            const zoomInButton = document.getElementById('zoom-in');
-            const zoomOutButton = document.getElementById('zoom-out');
-            const zoomResetButton = document.getElementById('zoom-reset');
-
-            zoomInButton.addEventListener('click', () => {
-                panZoom.zoomIn();
+            // Zoom buttons functionality
+            document.getElementById('zoom-in').addEventListener('click', () => {
+                panZoom.zoomBy(1.2);
                 panZoom.center();
             });
 
-            zoomOutButton.addEventListener('click', () => {
-                panZoom.zoomOut();
+            document.getElementById('zoom-out').addEventListener('click', () => {
+                panZoom.zoomBy(0.8);
                 if (panZoom.getZoom() === panZoom.getMinZoom()) {
                     panZoom.center();
                 }
             });
 
-            zoomResetButton.addEventListener('click', () => {
+            document.getElementById('zoom-reset').addEventListener('click', () => {
                 panZoom.resetZoom();
                 panZoom.resetPan();
                 panZoom.center();
             });
 
             function showInfoBox(e, path) {
-                if (e.touches && e.touches.length > 1) return;
                 const countryCode = path.getAttribute('id');
                 infoBox.textContent = countryCode || 'Unknown';
                 infoBox.style.display = 'block';
-                const x = e.pageX || e.touches[0].pageX;
-                const y = e.pageY || e.touches[0].pageY;
-                infoBox.style.left = `${x - infoBox.offsetWidth/2}px`;
-                infoBox.style.top = `${y - infoBox.offsetHeight - 10}px`;
+                
+                const rect = infoBox.getBoundingClientRect();
+                infoBox.style.left = `${e.clientX - rect.width / 2}px`;
+                infoBox.style.top = `${e.clientY - rect.height - 10}px`;
             }
 
             paths.forEach(path => {
                 path.addEventListener('mousemove', (e) => showInfoBox(e, path));
                 path.addEventListener('touchstart', (e) => {
                     if (e.touches.length === 1) {
-                        showInfoBox(e, path);
+                        showInfoBox(e.touches[0], path);
                     }
                 });
                 path.addEventListener('mouseleave', () => {
@@ -197,6 +169,7 @@
                 });
             });
 
+            // Handle window resize
             window.addEventListener('resize', () => {
                 panZoom.resize();
                 panZoom.fit();
