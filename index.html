@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chess Title Map</title>
-    <title>Interactive World Map with Zoom</title>
+    <title>Chess Title Map</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
     <style>
         body {
             margin: 0;
@@ -24,6 +24,7 @@
             background-color: lightblue;
             position: relative;
             overflow: hidden;
+            touch-action: none;
         }
         path {
             fill: #0F5738;
@@ -69,12 +70,6 @@
         .zoom-controls button:hover {
             background-color: #f0f0f0;
         }
-        @media (max-width: 1010px) {
-            #map-container {
-                width: 100%;
-                height: auto;
-            }
-        }
     </style>
 </head>
 <body>
@@ -88,7 +83,6 @@
     <div class="info-box" id="info-box"></div>
 
     <script>
-        // Load the SVG file
         fetch('world_fide.svg')
             .then(response => response.text())
             .then(svgContent => {
@@ -106,67 +100,96 @@
             const infoBox = document.getElementById('info-box');
             const paths = svgElement.querySelectorAll('path');
 
-            // Initialize svg-pan-zoom with increased zoom capability
+            // Initialize svg-pan-zoom
             const panZoom = svgPanZoom(svgElement, {
                 zoomEnabled: true,
                 controlIconsEnabled: false,
                 fit: true,
                 center: true,
                 minZoom: 1,
-                maxZoom: 50, // Increased from 5 to 50
+                maxZoom: 50,
                 zoomScaleSensitivity: 0.3
             });
 
+            // Initialize Hammer.js
+            const hammer = new Hammer(mapContainer);
+            hammer.get('pinch').set({ enable: true });
+            
+            let lastScale = 1;
+            let startScale = 1;
+            let pinchCenter = null;
+
+            hammer.on('pinchstart', function(e) {
+                startScale = lastScale;
+                const rect = svgElement.getBoundingClientRect();
+                pinchCenter = {
+                    x: (e.center.x - rect.left),
+                    y: (e.center.y - rect.top)
+                };
+            });
+
+            hammer.on('pinch', function(e) {
+                if (pinchCenter) {
+                    const newScale = Math.min(50, Math.max(1, startScale * e.scale));
+                    panZoom.zoom(newScale);
+                    
+                    // Adjust pan to keep pinch center point stable
+                    const currentCTM = svgElement.getCTM();
+                    const point = svgElement.createSVGPoint();
+                    point.x = pinchCenter.x;
+                    point.y = pinchCenter.y;
+                    const transformed = point.matrixTransform(currentCTM.inverse());
+                    panZoom.pan({x: transformed.x, y: transformed.y});
+                }
+            });
+
+            hammer.on('pinchend', function() {
+                lastScale = panZoom.getZoom();
+                pinchCenter = null;
+            });
+
             // Zoom buttons functionality
-            document.getElementById('zoom-in').addEventListener('click', () => panZoom.zoomIn());
+            document.getElementById('zoom-in').addEventListener('click', () => {
+                panZoom.zoomIn();
+                lastScale = panZoom.getZoom();
+            });
+
             document.getElementById('zoom-out').addEventListener('click', () => {
                 panZoom.zoomOut();
                 if (panZoom.getZoom() === panZoom.getMinZoom()) {
                     panZoom.center();
                 }
+                lastScale = panZoom.getZoom();
             });
+
             document.getElementById('zoom-reset').addEventListener('click', () => {
                 panZoom.resetZoom();
                 panZoom.resetPan();
                 panZoom.center();
+                lastScale = 1;
             });
 
             function showInfoBox(e, path) {
                 const countryCode = path.getAttribute('id');
                 infoBox.textContent = countryCode || 'Unknown';
                 infoBox.style.display = 'block';
-                
-                const rect = infoBox.getBoundingClientRect();
-                infoBox.style.left = `${e.clientX - rect.width / 2}px`;
-                infoBox.style.top = `${e.clientY - rect.height - 10}px`;
+                infoBox.style.left = `${e.clientX - infoBox.offsetWidth/2}px`;
+                infoBox.style.top = `${e.clientY - infoBox.offsetHeight - 10}px`;
             }
-
-            function hideInfoBox() {
-                infoBox.style.display = 'none';
-            }
-
-            let selectedCountry = null;
 
             paths.forEach(path => {
                 path.addEventListener('mousemove', (e) => showInfoBox(e, path));
-                path.addEventListener('mouseleave', () => {
-                    if (!selectedCountry) hideInfoBox();
-                });
-                
                 path.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
                     if (e.touches.length === 1) {
-                        selectedCountry = path;
                         showInfoBox(e.touches[0], path);
                     }
                 });
-            });
-
-            mapContainer.addEventListener('touchstart', (e) => {
-                if (e.target.tagName !== 'path') {
-                    selectedCountry = null;
-                    hideInfoBox();
-                }
+                path.addEventListener('mouseleave', () => {
+                    infoBox.style.display = 'none';
+                });
+                path.addEventListener('touchend', () => {
+                    infoBox.style.display = 'none';
+                });
             });
 
             // Handle window resize
@@ -174,32 +197,6 @@
                 panZoom.resize();
                 panZoom.fit();
                 panZoom.center();
-            });
-
-            // Enable touch gestures
-            let lastDistance = 0;
-            mapContainer.addEventListener('touchstart', (e) => {
-                if (e.touches.length === 2) {
-                    lastDistance = Math.hypot(
-                        e.touches[0].pageX - e.touches[1].pageX,
-                        e.touches[0].pageY - e.touches[1].pageY
-                    );
-                }
-            });
-
-            mapContainer.addEventListener('touchmove', (e) => {
-                if (e.touches.length === 2) {
-                    const distance = Math.hypot(
-                        e.touches[0].pageX - e.touches[1].pageX,
-                        e.touches[0].pageY - e.touches[1].pageY
-                    );
-                    if (distance > lastDistance) {
-                        panZoom.zoomIn();
-                    } else if (distance < lastDistance) {
-                        panZoom.zoomOut();
-                    }
-                    lastDistance = distance;
-                }
             });
         }
     </script>
