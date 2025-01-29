@@ -171,6 +171,27 @@
 				
 				panZoom.pan(center);
 			});
+
+			let isDragging = false;
+
+			mapContainer.addEventListener('touchstart', (e) => {
+			    if (e.touches.length === 1) isDragging = true; // Single finger drag
+			    if (e.touches.length === 2) isDragging = false; // Two fingers for zoom/pan
+			    if (e.touches.length > 2) e.preventDefault(); // Ignore more than two fingers
+			});
+
+			mapContainer.addEventListener('touchmove', (e) => {
+			    if (isDragging && e.touches.length === 1) { // Single finger drag
+			        const deltaX = e.touches[0].clientX - mapContainer.offsetLeft; 
+			        const deltaY = e.touches[0].clientY - mapContainer.offsetTop; 
+			        panZoom.panBy({ x: deltaX / panZoom.getZoom(), y: deltaY / panZoom.getZoom() });
+			    }
+			    if (!isDragging && e.touches.length === 2) { // Two fingers for pinch zoom
+			        hammer.emit('pinch', e); 
+			    }
+			    e.preventDefault(); 
+			});
+			
         }
     </script>
 </body>
