@@ -98,7 +98,7 @@
 				fit : true,
 				center : true,
 				minZoom :1,
-				maxZoom :20, // Increased maximum zoom level
+				maxZoom :60, // Increased maximum zoom level to 60
 				zoomScaleSensitivity : .2,
 			});
 
@@ -151,18 +151,20 @@
 			let startScale = panZoom.getZoom();
 			
 			hammer.on('pinchstart', function(ev) {
-				startScale = panZoom.getZoom();
+			    startScale = panZoom.getZoom();
+			    ev.preventDefault(); // Prevent default browser behavior
 			});
 			
-			hammer.on('pinch', function(ev) {
+			hammer.on('pinchmove', function(ev) {
 			    const centerPoint = { 
 			        x: ev.center.x - mapContainer.getBoundingClientRect().left,
 			        y: ev.center.y - mapContainer.getBoundingClientRect().top 
 			    };
-			    const newScale = Math.min(20, Math.max(1, startScale * ev.scale)); // Adjusted for max zoom level
+			    const newScale = Math.min(60, Math.max(1, startScale * ev.scale)); // Adjusted for max zoom level
 
-			    // Smooth interpolation for zooming
-			    requestAnimationFrame(() => panZoom.zoomAtPoint(newScale, centerPoint));
+			    // Apply smooth zooming
+			    panZoom.zoomAtPoint(newScale, centerPoint);
+			    ev.preventDefault(); // Prevent default browser behavior
 			});
 			
         }
