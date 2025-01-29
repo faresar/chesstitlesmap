@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Chess Title Map</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
@@ -100,7 +100,7 @@
             const infoBox = document.getElementById('info-box');
             const paths = svgElement.querySelectorAll('path');
 
-            // Initialize svg-pan-zoom
+            // Initialize svg-pan-zoom with custom options
             const panZoom = svgPanZoom(svgElement, {
                 zoomEnabled: true,
                 controlIconsEnabled: false,
@@ -108,80 +108,85 @@
                 center: true,
                 minZoom: 1,
                 maxZoom: 50,
-                zoomScaleSensitivity: 0.3
-            });
+                zoomScaleSensitivity: 0.3,
+                customEventsHandler: {
+                    haltEventListeners: ['touchstart', 'touchend', 'touchmove', 'touchleave', 'touchcancel'],
+                    init: function(options) {
+                        const hammer = new Hammer(options.svgElement);
+                        hammer.get('pinch').set({ enable: true });
+                        
+                        let prevScale = 1;
+                        let scale = 1;
+                        let isPinching = false;
 
-            // Initialize Hammer.js
-            const hammer = new Hammer(mapContainer);
-            hammer.get('pinch').set({ enable: true });
-            
-            let lastScale = 1;
-            let startScale = 1;
-            let pinchCenter = null;
+                        hammer.on('pinchstart', function() {
+                            isPinching = true;
+                            prevScale = scale;
+                        });
 
-            hammer.on('pinchstart', function(e) {
-                startScale = lastScale;
-                const rect = svgElement.getBoundingClientRect();
-                pinchCenter = {
-                    x: (e.center.x - rect.left),
-                    y: (e.center.y - rect.top)
-                };
-            });
+                        hammer.on('pinch', function(ev) {
+                            if (isPinching) {
+                                scale = Math.min(50, Math.max(1, prevScale * ev.scale));
+                                const center = {
+                                    x: ev.center.x,
+                                    y: ev.center.y
+                                };
+                                options.instance.zoom(scale);
+                                options.instance.pan({x: center.x, y: center.y});
+                            }
+                        });
 
-            hammer.on('pinch', function(e) {
-                if (pinchCenter) {
-                    const newScale = Math.min(50, Math.max(1, startScale * e.scale));
-                    panZoom.zoom(newScale);
-                    
-                    // Adjust pan to keep pinch center point stable
-                    const currentCTM = svgElement.getCTM();
-                    const point = svgElement.createSVGPoint();
-                    point.x = pinchCenter.x;
-                    point.y = pinchCenter.y;
-                    const transformed = point.matrixTransform(currentCTM.inverse());
-                    panZoom.pan({x: transformed.x, y: transformed.y});
+                        hammer.on('pinchend', function() {
+                            isPinching = false;
+                            prevScale = scale;
+                        });
+
+                        this.hammer = hammer;
+                    },
+                    destroy: function() {
+                        this.hammer.destroy();
+                    }
                 }
             });
 
-            hammer.on('pinchend', function() {
-                lastScale = panZoom.getZoom();
-                pinchCenter = null;
-            });
+            const zoomInButton = document.getElementById('zoom-in');
+            const zoomOutButton = document.getElementById('zoom-out');
+            const zoomResetButton = document.getElementById('zoom-reset');
 
-            // Zoom buttons functionality
-            document.getElementById('zoom-in').addEventListener('click', () => {
+            zoomInButton.addEventListener('click', () => {
                 panZoom.zoomIn();
-                lastScale = panZoom.getZoom();
+                panZoom.center();
             });
 
-            document.getElementById('zoom-out').addEventListener('click', () => {
+            zoomOutButton.addEventListener('click', () => {
                 panZoom.zoomOut();
                 if (panZoom.getZoom() === panZoom.getMinZoom()) {
                     panZoom.center();
                 }
-                lastScale = panZoom.getZoom();
             });
 
-            document.getElementById('zoom-reset').addEventListener('click', () => {
+            zoomResetButton.addEventListener('click', () => {
                 panZoom.resetZoom();
                 panZoom.resetPan();
                 panZoom.center();
-                lastScale = 1;
             });
 
             function showInfoBox(e, path) {
+                if (e.touches && e.touches.length > 1) return;
                 const countryCode = path.getAttribute('id');
                 infoBox.textContent = countryCode || 'Unknown';
                 infoBox.style.display = 'block';
-                infoBox.style.left = `${e.clientX - infoBox.offsetWidth/2}px`;
-                infoBox.style.top = `${e.clientY - infoBox.offsetHeight - 10}px`;
+                const x = e.pageX || e.touches[0].pageX;
+                const y = e.pageY || e.touches[0].pageY;
+                infoBox.style.left = `${x - infoBox.offsetWidth/2}px`;
+                infoBox.style.top = `${y - infoBox.offsetHeight - 10}px`;
             }
 
             paths.forEach(path => {
                 path.addEventListener('mousemove', (e) => showInfoBox(e, path));
                 path.addEventListener('touchstart', (e) => {
                     if (e.touches.length === 1) {
-                        showInfoBox(e.touches[0], path);
+                        showInfoBox(e, path);
                     }
                 });
                 path.addEventListener('mouseleave', () => {
@@ -192,7 +197,6 @@
                 });
             });
 
-            // Handle window resize
             window.addEventListener('resize', () => {
                 panZoom.resize();
                 panZoom.fit();
