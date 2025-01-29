@@ -6,6 +6,7 @@
     <title>Chess Title Map</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
     <style>
         body {
             margin: 0;
@@ -28,6 +29,7 @@
         path {
             fill: #0F5738;
             transition: fill 0.3s;
+            vector-effect: non-scaling-stroke;
         }
         path:hover {
             fill: #ff9900;
@@ -92,14 +94,10 @@
         function initializeMap() {
             const mapContainer = document.getElementById('map-container');
             const svgElement = mapContainer.querySelector('svg');
-            svgElement.setAttribute('width', '100%');
-            svgElement.setAttribute('height', '100%');
-            svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-
             const infoBox = document.getElementById('info-box');
             const paths = svgElement.querySelectorAll('path');
 
-            // Initialize svg-pan-zoom
+            // Initialize svg-pan-zoom with improved gesture handling
             const panZoom = svgPanZoom(svgElement, {
                 zoomEnabled: true,
                 controlIconsEnabled: false,
@@ -107,74 +105,90 @@
                 center: true,
                 minZoom: 1,
                 maxZoom: 50,
-                zoomScaleSensitivity: 0.3,
-                beforeZoom: function(oldScale, newScale) {
-                    // Prevent extreme zoom changes in a single step
-                    return Math.abs(oldScale - newScale) < 1;
+                zoomScaleSensitivity: 0.2,
+                beforeZoom: (oldScale, newScale) => {
+                    // Limit zoom delta to prevent jumps
+                    return Math.abs(oldScale - newScale) < 0.5;
                 },
-                beforePan: function(oldPan, newPan) {
-                    // Limit pan to prevent getting lost
-                    const sizes = this.getSizes();
-                    const gutterWidth = sizes.width * 0.8;
-                    const gutterHeight = sizes.height * 0.8;
-                    
-                    return {
-                        x: Math.max(-gutterWidth, Math.min(gutterWidth, newPan.x)),
-                        y: Math.max(-gutterHeight, Math.min(gutterHeight, newPan.y))
-                    };
+                customEventsHandler: {
+                    haltEventListeners: ['touchstart', 'touchend', 'touchmove', 'touchleave', 'touchcancel'],
+                    init: function(options) {
+                        const instance = options.instance;
+                        const hammer = new Hammer(options.svgElement.parentElement);
+                        
+                        // Configure hammer.js
+                        hammer.get('pinch').set({ enable: true });
+                        hammer.get('pan').set({ direction: Hammer.DIRECTION_ALL });
+
+                        // Store initial values
+                        let startScale = 1;
+                        let startPan = { x: 0, y: 0 };
+
+                        // Pinch handlers
+                        hammer.on('pinchstart', function(e) {
+                            startScale = instance.getZoom();
+                            startPan = instance.getPan();
+                        });
+
+                        hammer.on('pinch', function(e) {
+                            const newScale = Math.min(50, Math.max(1, startScale * e.scale));
+                            const center = {
+                                x: e.center.x - mapContainer.getBoundingClientRect().left,
+                                y: e.center.y - mapContainer.getBoundingClientRect().top
+                            };
+                            
+                            // Calculate new pan based on center point
+                            const scaleRatio = newScale / startScale;
+                            const newX = center.x - (center.x - startPan.x) * scaleRatio;
+                            const newY = center.y - (center.y - startPan.y) * scaleRatio;
+
+                            instance.zoomAtPoint(newScale, center);
+                            instance.pan({ x: newX, y: newY });
+                        });
+
+                        // Pan handler
+                        hammer.on('panstart panmove', function(e) {
+                            instance.panBy({
+                                x: e.deltaX,
+                                y: e.deltaY
+                            });
+                        });
+
+                        this.hammer = hammer;
+                    },
+                    destroy: function() {
+                        this.hammer.destroy();
+                    }
                 }
             });
 
-            // Zoom buttons functionality
-            document.getElementById('zoom-in').addEventListener('click', () => {
-                panZoom.zoomBy(1.2);
-                panZoom.center();
-            });
+            // Zoom controls
+            document.getElementById('zoom-in').addEventListener('click', () => panZoom.zoomIn());
+            document.getElementById('zoom-out').addEventListener('click', () => panZoom.zoomOut());
+            document.getElementById('zoom-reset').addEventListener('click', () => panZoom.reset());
 
-            document.getElementById('zoom-out').addEventListener('click', () => {
-                panZoom.zoomBy(0.8);
-                if (panZoom.getZoom() === panZoom.getMinZoom()) {
-                    panZoom.center();
-                }
-            });
-
-            document.getElementById('zoom-reset').addEventListener('click', () => {
-                panZoom.resetZoom();
-                panZoom.resetPan();
-                panZoom.center();
-            });
-
+            // Info box handling
             function showInfoBox(e, path) {
                 const countryCode = path.getAttribute('id');
                 infoBox.textContent = countryCode || 'Unknown';
                 infoBox.style.display = 'block';
-                
-                const rect = infoBox.getBoundingClientRect();
-                infoBox.style.left = `${e.clientX - rect.width / 2}px`;
-                infoBox.style.top = `${e.clientY - rect.height - 10}px`;
+                const x = e.clientX || e.touches[0].clientX;
+                const y = e.clientY || e.touches[0].clientY;
+                infoBox.style.left = `${x - infoBox.offsetWidth/2}px`;
+                infoBox.style.top = `${y - infoBox.offsetHeight - 10}px`;
             }
 
             paths.forEach(path => {
                 path.addEventListener('mousemove', (e) => showInfoBox(e, path));
                 path.addEventListener('touchstart', (e) => {
-                    if (e.touches.length === 1) {
-                        showInfoBox(e.touches[0], path);
-                    }
+                    if (e.touches.length === 1) showInfoBox(e, path);
                 });
-                path.addEventListener('mouseleave', () => {
-                    infoBox.style.display = 'none';
-                });
-                path.addEventListener('touchend', () => {
-                    infoBox.style.display = 'none';
-                });
+                path.addEventListener('mouseleave', () => infoBox.style.display = 'none');
+                path.addEventListener('touchend', () => infoBox.style.display = 'none');
             });
 
-            // Handle window resize
-            window.addEventListener('resize', () => {
-                panZoom.resize();
-                panZoom.fit();
-                panZoom.center();
-            });
+            // Window resize handler
+            window.addEventListener('resize', () => panZoom.resize().fit().center());
         }
     </script>
 </body>
