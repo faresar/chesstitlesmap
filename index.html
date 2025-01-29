@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Chess Title Map</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
@@ -50,6 +50,16 @@
         }
         .info-box.visible {
             display: block;
+            pointer-events: auto;
+        }
+        .close-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
         }
         .zoom-controls {
             position: absolute;
@@ -74,9 +84,6 @@
             justify-content: center;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .zoom-controls button:hover {
-            background-color: #f8f8f8;
-        }
     </style>
 </head>
 <body>
@@ -87,10 +94,12 @@
             <button id="zoom-reset">⌂</button>
         </div>
     </div>
-    <div class="info-box" id="info-box"></div>
+    <div class="info-box" id="info-box">
+        <button class="close-btn">×</button>
+        <div class="content"></div>
+    </div>
 
     <script>
-        // Load the SVG file
         fetch('world_fide.svg')
             .then(response => response.text())
             .then(svgContent => {
@@ -102,10 +111,10 @@
             const mapContainer = document.getElementById('map-container');
             const svgElement = mapContainer.querySelector('svg');
             const infoBox = document.getElementById('info-box');
+            const closeBtn = infoBox.querySelector('.close-btn');
             const paths = svgElement.querySelectorAll('path');
-            
-            let selectedCountry = null;
-            let hammer = null;
+            let isPinching = false;
+            let lastScale = 1;
 
             // Initialize svg-pan-zoom
             const panZoom = svgPanZoom(svgElement, {
@@ -114,29 +123,32 @@
                 fit: true,
                 center: true,
                 minZoom: 1,
-                maxZoom: 10,
+                maxZoom: 50,
                 zoomScaleSensitivity: 0.2,
-                beforePan: (oldPan, newPan) => {
-                    const sizes = panZoom.getSizes();
-                    return {
-                        x: Math.max(-sizes.width * 0.8, Math.min(sizes.width * 0.8, newPan.x)),
-                        y: Math.max(-sizes.height * 0.8, Math.min(sizes.height * 0.8, newPan.y))
-                    };
-                }
+                beforePan: () => !isPinching
             });
 
-            // Initialize Hammer.js for gestures
-            hammer = new Hammer(mapContainer);
+            // Hammer.js for touch gestures
+            const hammer = new Hammer(mapContainer);
             hammer.get('pinch').set({ enable: true });
-            
-            let lastScale = 1;
+
             hammer.on('pinchstart', (e) => {
+                isPinching = true;
                 lastScale = panZoom.getZoom();
             });
 
             hammer.on('pinch', (e) => {
-                const newScale = lastScale * e.scale;
-                panZoom.zoom(newScale);
+                const center = {
+                    x: e.center.x - mapContainer.getBoundingClientRect().left,
+                    y: e.center.y - mapContainer.getBoundingClientRect().top
+                };
+                const newScale = Math.min(50, Math.max(1, lastScale * e.scale));
+                panZoom.zoomAtPoint(newScale, center);
+            });
+
+            hammer.on('pinchend', () => {
+                isPinching = false;
+                lastScale = panZoom.getZoom();
             });
 
             // Zoom controls
@@ -147,51 +159,46 @@
                 panZoom.resize().fit().center();
             });
 
-            // Country selection and info box
-            function showCountryInfo(path, clientX, clientY) {
-                selectedCountry = path.getAttribute('id');
-                infoBox.innerHTML = `
-                    <div class="country-header">
-                        <h3>${selectedCountry}</h3>
-                        <button onclick="document.getElementById('info-box').classList.remove('visible')">×</button>
-                    </div>
-                    <div class="country-content">
-                        <!-- Add your dynamic content here later -->
-                        <p>Total players: Loading...</p>
-                        <p>Federation: Loading...</p>
-                    </div>
-                `;
+            // Info box handling
+            function showInfoBox(content, x, y) {
+                infoBox.querySelector('.content').textContent = content;
                 infoBox.classList.add('visible');
-                positionInfoBox(clientX, clientY);
+                positionInfoBox(x, y);
             }
 
             function positionInfoBox(x, y) {
-                const boxWidth = infoBox.offsetWidth;
-                const boxHeight = infoBox.offsetHeight;
-                const windowWidth = window.innerWidth;
-                const windowHeight = window.innerHeight;
-
-                let posX = x - boxWidth/2;
-                let posY = y - boxHeight - 20;
-
-                // Keep within viewport bounds
-                posX = Math.max(10, Math.min(posX, windowWidth - boxWidth - 10));
-                posY = Math.max(10, Math.min(posY, windowHeight - boxHeight - 10));
-
-                infoBox.style.left = `${posX}px`;
-                infoBox.style.top = `${posY}px`;
+                const rect = infoBox.getBoundingClientRect();
+                const maxX = window.innerWidth - rect.width - 10;
+                const maxY = window.innerHeight - rect.height - 10;
+                
+                infoBox.style.left = `${Math.min(Math.max(x - rect.width/2, 10), maxX)}px`;
+                infoBox.style.top = `${Math.min(Math.max(y - rect.height - 20, 10), maxY)}px`;
             }
 
+            closeBtn.addEventListener('click', () => {
+                infoBox.classList.remove('visible');
+            });
+
+            // Desktop hover handling
             paths.forEach(path => {
-                // Click/tap handling
-                path.addEventListener('click', (e) => {
-                    showCountryInfo(path, e.clientX, e.clientY);
+                path.addEventListener('mouseenter', (e) => {
+                    if (!isPinching) {
+                        const rect = path.getBoundingClientRect();
+                        showInfoBox(path.id, rect.left + rect.width/2, rect.top + rect.height/2);
+                    }
                 });
 
-                // Touch handling
-                path.addEventListener('touchstart', (e) => {
+                path.addEventListener('mouseleave', () => {
+                    if (!isPinching) infoBox.classList.remove('visible');
+                });
+            });
+
+            // Mobile touch handling
+            paths.forEach(path => {
+                path.addEventListener('tap', (e) => {
                     if (e.touches.length === 1) {
-                        showCountryInfo(path, e.touches[0].clientX, e.touches[0].clientY);
+                        const touch = e.touches[0];
+                        showInfoBox(path.id, touch.clientX, touch.clientY);
                     }
                 });
             });
@@ -199,13 +206,6 @@
             // Window resize handler
             window.addEventListener('resize', () => {
                 panZoom.resize().fit().center();
-                if (selectedCountry) {
-                    const activePath = [...paths].find(p => p.getAttribute('id') === selectedCountry);
-                    if (activePath) {
-                        const rect = activePath.getBoundingClientRect();
-                        positionInfoBox(rect.left + rect.width/2, rect.top + rect.height/2);
-                    }
-                }
             });
         }
     </script>
