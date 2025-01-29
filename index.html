@@ -97,7 +97,7 @@
             const infoBox = document.getElementById('info-box');
             const paths = svgElement.querySelectorAll('path');
 
-            // Initialize svg-pan-zoom with improved gesture handling
+            // Initialize svg-pan-zoom
             const panZoom = svgPanZoom(svgElement, {
                 zoomEnabled: true,
                 controlIconsEnabled: false,
@@ -106,51 +106,52 @@
                 minZoom: 1,
                 maxZoom: 50,
                 zoomScaleSensitivity: 0.2,
-                beforeZoom: (oldScale, newScale) => {
-                    // Limit zoom delta to prevent jumps
+                beforeZoom: function(oldScale, newScale) {
                     return Math.abs(oldScale - newScale) < 0.5;
                 },
                 customEventsHandler: {
                     haltEventListeners: ['touchstart', 'touchend', 'touchmove', 'touchleave', 'touchcancel'],
                     init: function(options) {
                         const instance = options.instance;
-                        const hammer = new Hammer(options.svgElement.parentElement);
+                        const hammer = new Hammer(options.svgElement);
                         
-                        // Configure hammer.js
                         hammer.get('pinch').set({ enable: true });
-                        hammer.get('pan').set({ direction: Hammer.DIRECTION_ALL });
+                        hammer.get('pan').set({ direction: Hammer.DIRECTION_ALL, threshold: 0 });
 
-                        // Store initial values
-                        let startScale = 1;
-                        let startPan = { x: 0, y: 0 };
+                        let lastScale = 1;
+                        let lastPanX = 0;
+                        let lastPanY = 0;
 
-                        // Pinch handlers
-                        hammer.on('pinchstart', function(e) {
-                            startScale = instance.getZoom();
-                            startPan = instance.getPan();
+                        hammer.on('panstart', function(ev) {
+                            lastPanX = instance.getPan().x;
+                            lastPanY = instance.getPan().y;
                         });
 
-                        hammer.on('pinch', function(e) {
-                            const newScale = Math.min(50, Math.max(1, startScale * e.scale));
-                            const center = {
-                                x: e.center.x - mapContainer.getBoundingClientRect().left,
-                                y: e.center.y - mapContainer.getBoundingClientRect().top
-                            };
-                            
-                            // Calculate new pan based on center point
-                            const scaleRatio = newScale / startScale;
-                            const newX = center.x - (center.x - startPan.x) * scaleRatio;
-                            const newY = center.y - (center.y - startPan.y) * scaleRatio;
-
-                            instance.zoomAtPoint(newScale, center);
-                            instance.pan({ x: newX, y: newY });
-                        });
-
-                        // Pan handler
-                        hammer.on('panstart panmove', function(e) {
+                        hammer.on('panmove', function(ev) {
                             instance.panBy({
-                                x: e.deltaX,
-                                y: e.deltaY
+                                x: ev.deltaX - lastPanX,
+                                y: ev.deltaY - lastPanY
+                            });
+                            lastPanX = ev.deltaX;
+                            lastPanY = ev.deltaY;
+                        });
+
+                        hammer.on('pinchstart', function(ev) {
+                            lastScale = instance.getZoom();
+                        });
+
+                        hammer.on('pinch', function(ev) {
+                            const center = {
+                                x: ev.center.x - instance.getPan().x,
+                                y: ev.center.y - instance.getPan().y
+                            };
+                            const scaleDiff = ev.scale - 1;
+                            const newScale = lastScale * (1 + scaleDiff);
+
+                            instance.zoom(newScale);
+                            instance.pan({
+                                x: ev.center.x - center.x * newScale / lastScale,
+                                y: ev.center.y - center.y * newScale / lastScale
                             });
                         });
 
@@ -163,11 +164,18 @@
             });
 
             // Zoom controls
-            document.getElementById('zoom-in').addEventListener('click', () => panZoom.zoomIn());
-            document.getElementById('zoom-out').addEventListener('click', () => panZoom.zoomOut());
-            document.getElementById('zoom-reset').addEventListener('click', () => panZoom.reset());
+            document.getElementById('zoom-in').addEventListener('click', () => {
+                const currentZoom = panZoom.getZoom();
+                panZoom.zoom(currentZoom * 1.2);
+            });
+            document.getElementById('zoom-out').addEventListener('click', () => {
+                const currentZoom = panZoom.getZoom();
+                panZoom.zoom(currentZoom / 1.2);
+            });
+            document.getElementById('zoom-reset').addEventListener('click', () => {
+                panZoom.reset();
+            });
 
-            // Info box handling
             function showInfoBox(e, path) {
                 const countryCode = path.getAttribute('id');
                 infoBox.textContent = countryCode || 'Unknown';
@@ -187,8 +195,11 @@
                 path.addEventListener('touchend', () => infoBox.style.display = 'none');
             });
 
-            // Window resize handler
-            window.addEventListener('resize', () => panZoom.resize().fit().center());
+            window.addEventListener('resize', () => {
+                panZoom.resize();
+                panZoom.fit();
+                panZoom.center();
+            });
         }
     </script>
 </body>
