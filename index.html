@@ -98,7 +98,7 @@
 				fit : true,
 				center : true,
 				minZoom :1,
-				maxZoom :10,
+				maxZoom :20, // Increased maximum zoom level
 				zoomScaleSensitivity : .2,
 			});
 
@@ -159,7 +159,7 @@
 			        x: ev.center.x - mapContainer.getBoundingClientRect().left,
 			        y: ev.center.y - mapContainer.getBoundingClientRect().top 
 			    };
-			    const newScale = Math.min(50, Math.max(1, startScale * ev.scale));
+			    const newScale = Math.min(20, Math.max(1, startScale * ev.scale)); // Adjusted for max zoom level
 
 			    // Smooth interpolation for zooming
 			    requestAnimationFrame(() => panZoom.zoomAtPoint(newScale, centerPoint));
