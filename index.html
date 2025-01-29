@@ -87,11 +87,86 @@
             "ARM": "am",
             "BEL": "be",
             "BUR": "bi",
+            "BUL": "bg",
             // Add more mappings as needed...
-            // Example:
-			"BUL":"bg","USA":"us","GBR":"gb","IND":"in","FRA":"fr","DEU":"de"
-			
-			};
+        };
 
-			
-			fetch("world_fide-Copy.txt").
+        // Fetch SVG map and initialize functionality
+        fetch('world_fide-Copy.txt')
+          .then(response => response.text())
+          .then(svgContent => {
+              document.getElementById('map-container').innerHTML = svgContent.trim();
+              initializeMap();
+          });
+
+        function initializeMap() {
+          const mapContainer = document.getElementById('map-container');
+          const svgElement = mapContainer.querySelector('svg');
+          const infoBox = document.getElementById("info-box");
+          
+          let selectedCountry = null;
+
+          // Initialize svg-pan-zoom
+          const panZoom = svgPanZoom(svgElement, {
+              zoomEnabled : true,
+              controlIconsEnabled : false,
+              fit : true,
+              center : true,
+              minZoom :1,
+              maxZoom :72,
+              zoomScaleSensitivity : .2,
+          });
+
+          function showInfoBox(countryCode, x, y) {
+              const alpha2Code = isoAlpha3ToAlpha2[countryCode]; // Map Alpha-3 to Alpha-2
+              const flagIcon = alpha2Code ? `<span class="flag-icon flag-icon-${alpha2Code}"></span>` : '';
+              infoBox.innerHTML = `${flagIcon}<p><a href="${countryCode}.html" target="_blank">${countryCode}</a></p>`;
+              infoBox.classList.add('visible');
+
+              // Position above and close to pointer/touch point
+              const boxHeight = infoBox.offsetHeight || 50; 
+              const boxWidth = infoBox.offsetWidth || 100;
+
+              infoBox.style.left = `${x - boxWidth / 2}px`;
+              infoBox.style.top = `${y - boxHeight}px`; 
+          }
+
+          function hideInfoBox() {
+              if (!selectedCountry) { 
+                  infoBox.classList.remove('visible');
+              }
+          }
+
+          const paths = svgElement.querySelectorAll("path");
+
+          paths.forEach(path => {
+              path.addEventListener("mouseenter", (e) => {
+                  if (!selectedCountry) { 
+                      showInfoBox(path.id, e.clientX, e.clientY);
+                  }
+              });
+              
+              path.addEventListener("mouseleave", (e) => {
+                  if (!selectedCountry && !infoBox.matches(':hover')) hideInfoBox();
+              });
+
+              path.addEventListener("touchstart", (e) => {
+                  if (e.touches.length === 1) { 
+                      selectedCountry = path.id; 
+                      showInfoBox(path.id, e.touches[0].clientX, e.touches[0].clientY);
+                  }
+              });
+          });
+
+          infoBox.addEventListener('mouseenter', () => {
+              infoBox.classList.add('visible'); 
+          });
+          
+          infoBox.addEventListener('mouseleave', () => {
+              if (!selectedCountry) hideInfoBox();
+          });
+          
+      }
+    </script>
+</body>
+</html>
