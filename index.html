@@ -2,11 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chess Title Map</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
     <style>
         body {
             margin: 0;
@@ -29,7 +28,6 @@
         path {
             fill: #0F5738;
             transition: fill 0.3s;
-            vector-effect: non-scaling-stroke;
         }
         path:hover {
             fill: #ff9900;
@@ -84,6 +82,7 @@
     <div class="info-box" id="info-box"></div>
 
     <script>
+        // Load the SVG file
         fetch('world_fide.svg')
             .then(response => response.text())
             .then(svgContent => {
@@ -97,85 +96,34 @@
             const infoBox = document.getElementById('info-box');
             const paths = svgElement.querySelectorAll('path');
 
-            // Initialize svg-pan-zoom
+            // Initialize svg-pan-zoom with basic configuration
             const panZoom = svgPanZoom(svgElement, {
                 zoomEnabled: true,
                 controlIconsEnabled: false,
                 fit: true,
                 center: true,
                 minZoom: 1,
-                maxZoom: 50,
-                zoomScaleSensitivity: 0.2,
-                beforeZoom: function(oldScale, newScale) {
-                    return Math.abs(oldScale - newScale) < 0.5;
-                },
-                customEventsHandler: {
-                    haltEventListeners: ['touchstart', 'touchend', 'touchmove', 'touchleave', 'touchcancel'],
-                    init: function(options) {
-                        const instance = options.instance;
-                        const hammer = new Hammer(options.svgElement);
-                        
-                        hammer.get('pinch').set({ enable: true });
-                        hammer.get('pan').set({ direction: Hammer.DIRECTION_ALL, threshold: 0 });
-
-                        let lastScale = 1;
-                        let lastPanX = 0;
-                        let lastPanY = 0;
-
-                        hammer.on('panstart', function(ev) {
-                            lastPanX = instance.getPan().x;
-                            lastPanY = instance.getPan().y;
-                        });
-
-                        hammer.on('panmove', function(ev) {
-                            instance.panBy({
-                                x: ev.deltaX - lastPanX,
-                                y: ev.deltaY - lastPanY
-                            });
-                            lastPanX = ev.deltaX;
-                            lastPanY = ev.deltaY;
-                        });
-
-                        hammer.on('pinchstart', function(ev) {
-                            lastScale = instance.getZoom();
-                        });
-
-                        hammer.on('pinch', function(ev) {
-                            const center = {
-                                x: ev.center.x - instance.getPan().x,
-                                y: ev.center.y - instance.getPan().y
-                            };
-                            const scaleDiff = ev.scale - 1;
-                            const newScale = lastScale * (1 + scaleDiff);
-
-                            instance.zoom(newScale);
-                            instance.pan({
-                                x: ev.center.x - center.x * newScale / lastScale,
-                                y: ev.center.y - center.y * newScale / lastScale
-                            });
-                        });
-
-                        this.hammer = hammer;
-                    },
-                    destroy: function() {
-                        this.hammer.destroy();
-                    }
-                }
+                maxZoom: 10,
+                zoomScaleSensitivity: 0.1
             });
 
-            // Zoom controls
+            // Zoom controls with fixed behavior
             document.getElementById('zoom-in').addEventListener('click', () => {
-                const currentZoom = panZoom.getZoom();
-                panZoom.zoom(currentZoom * 1.2);
+                panZoom.zoomIn();
             });
+
             document.getElementById('zoom-out').addEventListener('click', () => {
-                const currentZoom = panZoom.getZoom();
-                panZoom.zoom(currentZoom / 1.2);
+                panZoom.zoomOut();
             });
+
             document.getElementById('zoom-reset').addEventListener('click', () => {
                 panZoom.reset();
+                panZoom.resize();
+                panZoom.fit();
+                panZoom.center();
             });
 
+            // Info box handling
             function showInfoBox(e, path) {
                 const countryCode = path.getAttribute('id');
                 infoBox.textContent = countryCode || 'Unknown';
@@ -195,6 +143,35 @@
                 path.addEventListener('touchend', () => infoBox.style.display = 'none');
             });
 
+            // Basic touch handling
+            let lastDistance = 0;
+            
+            mapContainer.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 2) {
+                    lastDistance = Math.hypot(
+                        e.touches[0].clientX - e.touches[1].clientX,
+                        e.touches[0].clientY - e.touches[1].clientY
+                    );
+                }
+            });
+
+            mapContainer.addEventListener('touchmove', (e) => {
+                if (e.touches.length === 2) {
+                    const newDistance = Math.hypot(
+                        e.touches[0].clientX - e.touches[1].clientX,
+                        e.touches[0].clientY - e.touches[1].clientY
+                    );
+                    
+                    if (lastDistance > 0) {
+                        const scale = newDistance / lastDistance;
+                        if (scale > 1.05) panZoom.zoomIn();
+                        if (scale < 0.95) panZoom.zoomOut();
+                    }
+                    lastDistance = newDistance;
+                }
+            });
+
+            // Window resize handler
             window.addEventListener('resize', () => {
                 panZoom.resize();
                 panZoom.fit();
