@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Chess Title Map with Flags</title>
+    <title>Chess Title Map</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css">
+    <script src="https://unpkg.com/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
     <style>
         body {
             margin: 0;
@@ -32,6 +33,9 @@
         }
         path:hover {
             fill: #ff9900;
+        }
+        path.selected {
+            fill: #ff9900; /* Highlight selected country */
         }
         .info-box {
             position: fixed;
@@ -67,106 +71,135 @@
             font-family: 'Roboto', sans-serif;
             font-size: 16px;
         }
-        .flag-icon {
-            margin-right: 5px; /* Space between flag and text */
-        }
     </style>
 </head>
 <body>
-    <div id="map-container"></div>
+    <div id="map-container">
+        <div class="zoom-controls">
+            <button id="zoom-in">+</button>
+            <button id="zoom-out">-</button>
+            <button id="zoom-reset">R</button>
+        </div>
+    </div>
     <div class="info-box" id="info-box"></div>
 
     <script>
-        // Map ISO Alpha-3 codes to Alpha-2 codes for flag icons
-        const isoAlpha3ToAlpha2 = {
-            "AND": "ad",
-            "UAE": "ae",
-            "ANT": "an",
-            "AI": "ai",
-            "ALB": "al",
-            "ARM": "am",
-            "BEL": "be",
-            "BUR": "bi",
-            "BUL": "bg",
-            // Add more mappings as needed...
-        };
-
-        // Fetch SVG map and initialize functionality
-        fetch('world_fide-Copy.txt')
-          .then(response => response.text())
-          .then(svgContent => {
-              document.getElementById('map-container').innerHTML = svgContent.trim();
-              initializeMap();
-          });
+        fetch('world_fide.svg')
+            .then(response => response.text())
+            .then(svgContent => {
+                document.getElementById('map-container').innerHTML += svgContent.trim();
+                initializeMap();
+            });
 
         function initializeMap() {
-          const mapContainer = document.getElementById('map-container');
-          const svgElement = mapContainer.querySelector('svg');
-          const infoBox = document.getElementById("info-box");
-          
-          let selectedCountry = null;
+            const mapContainer = document.getElementById('map-container');
+            const svgElement = mapContainer.querySelector('svg');
+            
+			const infoBox = document.getElementById("info-box");
+			let selectedCountry = null;
 
-          // Initialize svg-pan-zoom
-          const panZoom = svgPanZoom(svgElement, {
-              zoomEnabled : true,
-              controlIconsEnabled : false,
-              fit : true,
-              center : true,
-              minZoom :1,
-              maxZoom :72,
-              zoomScaleSensitivity : .2,
-          });
+			// Initialize svg-pan-zoom
+			const panZoom = svgPanZoom(svgElement, {
+				zoomEnabled : true,
+				controlIconsEnabled : false,
+				fit : true,
+				center : true,
+				minZoom :1,
+				maxZoom :72, // Increased maximum zoom level
+				zoomScaleSensitivity : .2,
+			});
 
-          function showInfoBox(countryCode, x, y) {
-              const alpha2Code = isoAlpha3ToAlpha2[countryCode]; // Map Alpha-3 to Alpha-2
-              const flagIcon = alpha2Code ? `<span class="flag-icon flag-icon-${alpha2Code}"></span>` : '';
-              infoBox.innerHTML = `${flagIcon}<p><a href="${countryCode}.html" target="_blank">${countryCode}</a></p>`;
-              infoBox.classList.add('visible');
+			// Disable double-tap zoom
+			panZoom.disableDblClickZoom();
 
-              // Position above and close to pointer/touch point
-              const boxHeight = infoBox.offsetHeight || 50; 
-              const boxWidth = infoBox.offsetWidth || 100;
+			// Zoom buttons functionality
+			document.getElementById("zoom-in").addEventListener("click", () => panZoom.zoomIn());
+			document.getElementById("zoom-out").addEventListener("click", () => panZoom.zoomOut());
+			document.getElementById("zoom-reset").addEventListener("click", () => {
+				panZoom.reset();
+				panZoom.resize().fit().center();
+			});
 
-              infoBox.style.left = `${x - boxWidth / 2}px`;
-              infoBox.style.top = `${y - boxHeight}px`; 
-          }
+			function showInfoBox(content, x, y) {
+				infoBox.innerHTML = `<p><a href="${content}.html" target="_blank">${content}</a></p>`;
+				infoBox.classList.add('visible');
 
-          function hideInfoBox() {
-              if (!selectedCountry) { 
-                  infoBox.classList.remove('visible');
-              }
-          }
+                // Position above and close to pointer/touch point
+                const boxHeight = infoBox.offsetHeight || 50; // Default height if not rendered yet
+                const boxWidth = infoBox.offsetWidth || 100; // Default width if not rendered yet
 
-          const paths = svgElement.querySelectorAll("path");
+                // Position bottom of info box just above pointer
+                infoBox.style.left = `${x - boxWidth / 2}px`;
+                infoBox.style.top = `${y - boxHeight}px`; // Just above the pointer
+			}
 
-          paths.forEach(path => {
-              path.addEventListener("mouseenter", (e) => {
-                  if (!selectedCountry) { 
-                      showInfoBox(path.id, e.clientX, e.clientY);
-                  }
-              });
-              
-              path.addEventListener("mouseleave", (e) => {
-                  if (!selectedCountry && !infoBox.matches(':hover')) hideInfoBox();
-              });
+			function hideInfoBox() {
+				if (!selectedCountry) { // Only hide if no country is selected
+					infoBox.classList.remove('visible');
+                }
+			}
 
-              path.addEventListener("touchstart", (e) => {
-                  if (e.touches.length === 1) { 
-                      selectedCountry = path.id; 
-                      showInfoBox(path.id, e.touches[0].clientX, e.touches[0].clientY);
-                  }
-              });
-          });
+			const paths = svgElement.querySelectorAll("path");
 
-          infoBox.addEventListener('mouseenter', () => {
-              infoBox.classList.add('visible'); 
-          });
-          
-          infoBox.addEventListener('mouseleave', () => {
-              if (!selectedCountry) hideInfoBox();
-          });
-          
-      }
+			paths.forEach(path => {
+                // Desktop hover behavior
+                path.addEventListener("mouseenter", (e) => {
+                    if (!selectedCountry) { // Only show if no country is selected
+                        showInfoBox(path.id, e.clientX, e.clientY);
+                    }
+                });
+                path.addEventListener("mouseleave", (e) => {
+                    if (!selectedCountry && !infoBox.matches(':hover')) hideInfoBox(); // Hide only if no country is selected and mouse not over info box
+                });
+
+                // Mobile touch behavior
+                path.addEventListener("touchstart", (e) => {
+                    if (e.touches.length === 1) { // Single finger touch
+                        if (selectedCountry) document.querySelector(`path[id="${selectedCountry}"]`).classList.remove('selected');
+                        selectedCountry = path.id; // Set selected country
+                        path.classList.add('selected'); // Highlight selected country
+                        showInfoBox(path.id, e.touches[0].clientX, e.touches[0].clientY);
+                    }
+                });
+			});
+
+			// Keep info box visible when hovered over (desktop)
+			infoBox.addEventListener('mouseenter', () => {
+				infoBox.classList.add('visible'); // Keep visible when mouse is over it
+			});
+			infoBox.addEventListener('mouseleave', () => {
+				if (!selectedCountry) hideInfoBox(); // Hide when mouse leaves and no country is selected
+			});
+
+			// Handle window resize
+			window.addEventListener('resize', () => {
+				panZoom.resize().fit().center();
+			});
+			
+			// Enable touch gestures
+			const hammer = new Hammer(mapContainer);
+			hammer.get('pinch').set({ enable:true });
+			
+			let startScale = panZoom.getZoom();
+			
+			hammer.on('pinchstart', function(ev) {
+			    startScale = panZoom.getZoom();
+			    ev.preventDefault(); // Prevent default browser behavior
+			});
+			
+			hammer.on('pinch', function(ev) {
+			    const centerPoint = { 
+			        x: ev.center.x - mapContainer.getBoundingClientRect().left,
+			        y: ev.center.y - mapContainer.getBoundingClientRect().top 
+			    };
+			    const newScale = Math.min(72, Math.max(1, startScale * ev.scale)); // Adjusted for max zoom level
+
+			    // Apply smooth zooming
+			    panZoom.zoomAtPoint(newScale, centerPoint);
+			    ev.preventDefault(); // Prevent default browser behavior
+			});
+			
+        }
     </script>
 </body>
 </html>
