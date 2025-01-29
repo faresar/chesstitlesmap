@@ -34,6 +34,9 @@
         path:hover {
             fill: #ff9900;
         }
+        path.selected {
+            fill: #ff9900; /* Highlight selected country */
+        }
         .info-box {
             position: fixed;
             background: rgba(255, 255, 255, 0.95);
@@ -121,13 +124,13 @@
 				infoBox.innerHTML = `<p><a href="${content}.html" target="_blank">${content}</a></p>`;
 				infoBox.classList.add('visible');
 
-                // Position above the mouse or touch point
+                // Position above and close to pointer/touch point
                 const boxHeight = infoBox.offsetHeight || 50; // Default height if not rendered yet
                 const boxWidth = infoBox.offsetWidth || 100; // Default width if not rendered yet
 
-                // Position above and centered relative to pointer
+                // Position bottom of info box just above pointer
                 infoBox.style.left = `${x - boxWidth / 2}px`;
-                infoBox.style.top = `${y - boxHeight - 10}px`; // Position above the pointer
+                infoBox.style.top = `${y - boxHeight}px`; // Just above the pointer
 			}
 
 			function hideInfoBox() {
@@ -152,7 +155,9 @@
                 // Mobile touch behavior
                 path.addEventListener("touchstart", (e) => {
                     if (e.touches.length === 1) { // Single finger touch
+                        if (selectedCountry) document.querySelector(`path[id="${selectedCountry}"]`).classList.remove('selected');
                         selectedCountry = path.id; // Set selected country
+                        path.classList.add('selected'); // Highlight selected country
                         showInfoBox(path.id, e.touches[0].clientX, e.touches[0].clientY);
                     }
                 });
