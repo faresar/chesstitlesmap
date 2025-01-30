@@ -133,17 +133,6 @@
           .then(svgContent => {
               document.getElementById('map-container').innerHTML += svgContent.trim();
               initializeMap();
-
-		  // Fetch title counts from JSON file
-        fetch('titled_players_by_fed.json')
-            .then(response => response.json())
-            .then(data => {
-                data.titled_players_by_fed.forEach(entry => {
-                    titleCounts[entry.fed] = entry;
-                });
-            })
-            .catch(error => console.error("Error loading title counts:", error));
-    });
           });
 
         function initializeMap() {
@@ -151,16 +140,6 @@
           const svgElement = mapContainer.querySelector('svg');
           const infoBox = document.getElementById("info-box");
           let selectedCountry = null;
-		// Fetch title counts from JSON file
-fetch('titled_players_by_fed.json')
-    .then(response => response.json())
-    .then(data => {
-        // Convert array to an object for easier access by federation code
-        data.titled_players_by_fed.forEach(entry => {
-            titleCounts[entry.fed] = entry; // Map federation code to its data
-        });
-    })
-    .catch(error => console.error("Error loading title counts:", error));
 
           // Initialize svg-pan-zoom
           const panZoom = svgPanZoom(svgElement, {
@@ -184,34 +163,14 @@ fetch('titled_players_by_fed.json')
               panZoom.resize().fit().center();
           });
 
-         function showInfoBox(countryCode, x, y) {
-    const titles = titleCounts[countryCode] || {}; // Get title counts for the country
-    const currentDate = new Date().toLocaleString('en-US', { 
-        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
-        hour: 'numeric', minute: 'numeric', timeZoneName: 'short'
-    });
+          function showInfoBox(content, x, y) {
+              const flagUrl = `https://ratings.fide.com/svg/${content}.svg`;
 
-    const flagUrl = `https://ratings.fide.com/svg/${countryCode}.svg`;
-
-    infoBox.innerHTML = `
-        <img src="${flagUrl}" alt="${countryCode} Flag" class="flag">
-        <strong>${countryCode}</strong><br>
-        GM: ${titles.GM || 0} | WGM: ${titles.WGM || 0}<br>
-        IM: ${titles.IM || 0} | WIM: ${titles.WIM || 0}<br>
-        FM: ${titles.FM || 0} | WFM: ${titles.WFM || 0}<br>
-        CM: ${titles.CM || 0} | WCM: ${titles.WCM || 0}<br>
-        <small>Current date: ${currentDate}</small>
-    `;
-    infoBox.classList.add('visible');
-
-    // Position above and close to pointer/touch point
-    const boxHeight = infoBox.offsetHeight || 50; // Default height if not rendered yet
-    const boxWidth = infoBox.offsetWidth || 100; // Default width if not rendered yet
-
-    infoBox.style.left = `${x - boxWidth / 2}px`;
-    infoBox.style.top = `${y - boxHeight}px`; // Just above the pointer
-}
-
+              infoBox.innerHTML = `
+                  <img src="${flagUrl}" alt="${content} Flag" class="flag">
+                  <span>${content}</span>
+              `;
+              infoBox.classList.add('visible');
 
               // Position above and close to pointer/touch point
               const boxHeight = infoBox.offsetHeight || 50; // Default height if not rendered yet
