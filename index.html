@@ -141,10 +141,13 @@
     fetch('titled_players_by_fed.json')
         .then(response => response.json())
         .then(data => {
-            titledPlayersData = data.titled_players_by_fed.reduce((acc, item) => {
-                acc[item.fed] = item;
-                return acc;
-            }, {});
+            // Convert the array into an object for quick lookup
+            data.titled_players_by_fed.forEach(item => {
+                titledPlayersData[item.fed] = item;
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching titled players data:', error);
         });
 
     function initializeMap() {
