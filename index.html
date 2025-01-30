@@ -44,12 +44,12 @@
             position: fixed;
             background: rgba(255, 255, 255, 0.95);
             border-radius: 5px;
-            padding: 10px; /* Adjusted padding */
+            padding: 5px 10px; /* Reduced padding for proportional sizing */
             pointer-events: auto; /* Allow interaction with the info box */
             display: none;
             font-family: 'Roboto', sans-serif;
             font-size: 14px; /* Adjusted font size */
-            box-shadow: 0px 3px 15px rgba(0,0,0,.2);
+            box-shadow: 0 3px 15px rgba(0,0,0,0.2);
             z-index: 1000;
         }
         .info-box.visible {
@@ -79,6 +79,11 @@
             height: 16px; /* Same height as text */
             vertical-align: middle; /* Align flag with text */
             margin-right: 5px; /* Space between flag and text */
+        }
+        .title {
+            text-align: center;
+            font-size: calc(1rem + 2vw); /* Responsive font size */
+            margin-top: 20px; /* Add spacing above title */
         }
     </style>
 </head>
@@ -123,58 +128,166 @@
 
     <!-- Scripts -->
     <script>
-        let titleCounts = {}; // Object to store title counts
-
-        // Fetch title counts from JSON file
-        fetch('titled_players_by_fed.json')
-          .then(response => response.json())
-          .then(data => {
-              // Convert array to an object for easier access by federation code
-              data.titled_players_by_fed.forEach(entry => {
-                  titleCounts[entry.fed] = entry; // Map federation code to its data
-              });
+        fetch('world_fide.svg')
+          .then(response => response.text())
+          .then(svgContent => {
+              document.getElementById('map-container').innerHTML += svgContent.trim();
               initializeMap();
-          })
-          .catch(error => console.error("Error loading title counts:", error));
+
+		  // Fetch title counts from JSON file
+        fetch('titled_players_by_fed.json')
+            .then(response => response.json())
+            .then(data => {
+                data.titled_players_by_fed.forEach(entry => {
+                    titleCounts[entry.fed] = entry;
+                });
+            })
+            .catch(error => console.error("Error loading title counts:", error));
+    });
+          });
 
         function initializeMap() {
           const mapContainer = document.getElementById('map-container');
+          const svgElement = mapContainer.querySelector('svg');
           const infoBox = document.getElementById("info-box");
+          let selectedCountry = null;
+		// Fetch title counts from JSON file
+fetch('titled_players_by_fed.json')
+    .then(response => response.json())
+    .then(data => {
+        // Convert array to an object for easier access by federation code
+        data.titled_players_by_fed.forEach(entry => {
+            titleCounts[entry.fed] = entry; // Map federation code to its data
+        });
+    })
+    .catch(error => console.error("Error loading title counts:", error));
 
-          // Fetch SVG map and render it
-          fetch('world_fide.svg')
-              .then(response => response.text())
-              .then(svgContent => {
-                  mapContainer.innerHTML += svgContent.trim();
-                  setupInteractions();
-              });
+          // Initialize svg-pan-zoom
+          const panZoom = svgPanZoom(svgElement, {
+              zoomEnabled : true,
+              controlIconsEnabled : false,
+              fit : true,
+              center : true,
+              minZoom :1,
+              maxZoom :72, // Increased maximum zoom level
+              zoomScaleSensitivity : .2,
+          });
 
-          function setupInteractions() {
-              const svgElement = mapContainer.querySelector('svg');
-              const paths = svgElement.querySelectorAll("path");
+          // Disable double-tap zoom
+          panZoom.disableDblClickZoom();
 
-              paths.forEach(path => {
-                  path.addEventListener("mouseenter", (e) => showInfoBox(path.id, e.clientX, e.clientY));
-                  path.addEventListener("mouseleave", hideInfoBox);
-                  path.addEventListener("touchstart", (e) => {
-                      if (e.touches.length === 1) { // Single finger touch
-                          showInfoBox(path.id, e.touches[0].clientX, e.touches[0].clientY);
-                      }
-                  });
-              });
+          // Zoom buttons functionality
+          document.getElementById("zoom-in").addEventListener("click", () => panZoom.zoomIn());
+          document.getElementById("zoom-out").addEventListener("click", () => panZoom.zoomOut());
+          document.getElementById("zoom-reset").addEventListener("click", () => {
+              panZoom.reset();
+              panZoom.resize().fit().center();
+          });
 
-              infoBox.addEventListener('mouseenter', () => infoBox.classList.add('visible'));
-              infoBox.addEventListener('mouseleave', hideInfoBox);
+         function showInfoBox(countryCode, x, y) {
+    const titles = titleCounts[countryCode] || {}; // Get title counts for the country
+    const currentDate = new Date().toLocaleString('en-US', { 
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+        hour: 'numeric', minute: 'numeric', timeZoneName: 'short'
+    });
+
+    const flagUrl = `https://ratings.fide.com/svg/${countryCode}.svg`;
+
+    infoBox.innerHTML = `
+        <img src="${flagUrl}" alt="${countryCode} Flag" class="flag">
+        <strong>${countryCode}</strong><br>
+        GM: ${titles.GM || 0} | WGM: ${titles.WGM || 0}<br>
+        IM: ${titles.IM || 0} | WIM: ${titles.WIM || 0}<br>
+        FM: ${titles.FM || 0} | WFM: ${titles.WFM || 0}<br>
+        CM: ${titles.CM || 0} | WCM: ${titles.WCM || 0}<br>
+        <small>Current date: ${currentDate}</small>
+    `;
+    infoBox.classList.add('visible');
+
+    // Position above and close to pointer/touch point
+    const boxHeight = infoBox.offsetHeight || 50; // Default height if not rendered yet
+    const boxWidth = infoBox.offsetWidth || 100; // Default width if not rendered yet
+
+    infoBox.style.left = `${x - boxWidth / 2}px`;
+    infoBox.style.top = `${y - boxHeight}px`; // Just above the pointer
+}
+
+
+              // Position above and close to pointer/touch point
+              const boxHeight = infoBox.offsetHeight || 50; // Default height if not rendered yet
+              const boxWidth = infoBox.offsetWidth || 100; // Default width if not rendered yet
+
+              // Position bottom of info box just above pointer
+              infoBox.style.left = `${x - boxWidth / 2}px`;
+              infoBox.style.top = `${y - boxHeight}px`; // Just above the pointer
           }
 
-          function showInfoBox(countryCode, x, y) {
-              const titles = titleCounts[countryCode] || {};
-              const currentDate = new Date().toLocaleString('en-US', { 
-                  weekday:'long', year:'numeric', month:'long', day:'numeric', hour:'numeric', minute:'numeric', timeZoneName:'short'
+          function hideInfoBox() {
+              if (!selectedCountry) { // Only hide if no country is selected
+                  infoBox.classList.remove('visible');
+              }
+          }
+
+          const paths = svgElement.querySelectorAll("path");
+
+          paths.forEach(path => {
+              // Desktop hover behavior
+              path.addEventListener("mouseenter", (e) => {
+                  if (!selectedCountry) { // Only show if no country is selected
+                      showInfoBox(path.id, e.clientX, e.clientY);
+                  }
               });
-              
-              const content = `
-                  GM: ${titles.GM || 0} | WGM: ${titles.WGM || 0}<br>
-                  IM: ${titles.IM || 0} | WIM: ${titles.WIM || 0}<br>
-                  FM: ${titles.FM || 0} | WFM:${titles.WFM || 0}<br> 
-				  CM:${titles.CM||
+              path.addEventListener("mouseleave", (e) => {
+                  if (!selectedCountry && !infoBox.matches(':hover')) hideInfoBox(); // Hide only if no country is selected and mouse not over info box
+              });
+
+              // Mobile touch behavior
+              path.addEventListener("touchstart", (e) => {
+                  if (e.touches.length === 1) { // Single finger touch
+                      if (selectedCountry) document.querySelector(`path[id="${selectedCountry}"]`).classList.remove('selected');
+                      selectedCountry = path.id; // Set selected country
+                      path.classList.add('selected'); // Highlight selected country
+                      showInfoBox(path.id, e.touches[0].clientX, e.touches[0].clientY);
+                  }
+              });
+          });
+
+          // Keep info box visible when hovered over (desktop)
+          infoBox.addEventListener('mouseenter', () => {
+              infoBox.classList.add('visible'); // Keep visible when mouse is over it
+          });
+          infoBox.addEventListener('mouseleave', () => {
+              if (!selectedCountry) hideInfoBox(); // Hide when mouse leaves and no country is selected
+          });
+
+          // Handle window resize
+          window.addEventListener('resize', () => {
+              panZoom.resize().fit().center();
+          });
+
+          // Enable touch gestures with Hammer.js
+          const hammer = new Hammer(mapContainer);
+          hammer.get('pinch').set({ enable:true });
+
+          let startScale = panZoom.getZoom();
+
+          hammer.on('pinchstart', function(ev) {
+                startScale = panZoom.getZoom();
+                ev.preventDefault(); // Prevent default browser behavior
+          });
+
+          hammer.on('pinch', function(ev) {
+                const centerPoint = { 
+                    x: ev.center.x - mapContainer.getBoundingClientRect().left,
+                    y: ev.center.y - mapContainer.getBoundingClientRect().top 
+                };
+                const newScale = Math.min(72, Math.max(1, startScale * ev.scale)); // Adjusted for max zoom level
+
+                // Apply smooth zooming
+                panZoom.zoomAtPoint(newScale, centerPoint);
+                ev.preventDefault(); // Prevent default browser behavior
+          });
+      }
+    </script>
+</body>
+</html>
