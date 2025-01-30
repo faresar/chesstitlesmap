@@ -71,6 +71,12 @@
             font-family: 'Roboto', sans-serif;
             font-size: 16px;
         }
+        .flag {
+            width: auto; /* Adjust flag size to match text */
+            height: 16px; /* Same height as text */
+            vertical-align: middle; /* Align flag with text */
+            margin-right: 5px; /* Space between flag and text */
+        }
     </style>
 </head>
 <body>
@@ -85,121 +91,124 @@
 
     <script>
         fetch('world_fide.svg')
-            .then(response => response.text())
-            .then(svgContent => {
-                document.getElementById('map-container').innerHTML += svgContent.trim();
-                initializeMap();
-            });
+          .then(response => response.text())
+          .then(svgContent => {
+              document.getElementById('map-container').innerHTML += svgContent.trim();
+              initializeMap();
+          });
 
         function initializeMap() {
-            const mapContainer = document.getElementById('map-container');
-            const svgElement = mapContainer.querySelector('svg');
-            
-			const infoBox = document.getElementById("info-box");
-			let selectedCountry = null;
+          const mapContainer = document.getElementById('map-container');
+          const svgElement = mapContainer.querySelector('svg');
+          const infoBox = document.getElementById("info-box");
+          let selectedCountry = null;
 
-			// Initialize svg-pan-zoom
-			const panZoom = svgPanZoom(svgElement, {
-				zoomEnabled : true,
-				controlIconsEnabled : false,
-				fit : true,
-				center : true,
-				minZoom :1,
-				maxZoom :72, // Increased maximum zoom level
-				zoomScaleSensitivity : .2,
-			});
+          // Initialize svg-pan-zoom
+          const panZoom = svgPanZoom(svgElement, {
+              zoomEnabled : true,
+              controlIconsEnabled : false,
+              fit : true,
+              center : true,
+              minZoom :1,
+              maxZoom :72, // Increased maximum zoom level
+              zoomScaleSensitivity : .2,
+          });
 
-			// Disable double-tap zoom
-			panZoom.disableDblClickZoom();
+          // Disable double-tap zoom
+          panZoom.disableDblClickZoom();
 
-			// Zoom buttons functionality
-			document.getElementById("zoom-in").addEventListener("click", () => panZoom.zoomIn());
-			document.getElementById("zoom-out").addEventListener("click", () => panZoom.zoomOut());
-			document.getElementById("zoom-reset").addEventListener("click", () => {
-				panZoom.reset();
-				panZoom.resize().fit().center();
-			});
+          // Zoom buttons functionality
+          document.getElementById("zoom-in").addEventListener("click", () => panZoom.zoomIn());
+          document.getElementById("zoom-out").addEventListener("click", () => panZoom.zoomOut());
+          document.getElementById("zoom-reset").addEventListener("click", () => {
+              panZoom.reset();
+              panZoom.resize().fit().center();
+          });
 
-			function showInfoBox(content, x, y) {
-				infoBox.innerHTML = `<p><a href="${content}.html" target="_blank">${content}</a></p>`;
-				infoBox.classList.add('visible');
+          function showInfoBox(content, x, y) {
+              const flagUrl = `https://ratings.fide.com/svg/${content}.svg`;
 
-                // Position above and close to pointer/touch point
-                const boxHeight = infoBox.offsetHeight || 50; // Default height if not rendered yet
-                const boxWidth = infoBox.offsetWidth || 100; // Default width if not rendered yet
+              infoBox.innerHTML = `
+                  <img src="${flagUrl}" alt="${content} Flag" class="flag">
+                  <span>${content}</span>
+              `;
+              infoBox.classList.add('visible');
 
-                // Position bottom of info box just above pointer
-                infoBox.style.left = `${x - boxWidth / 2}px`;
-                infoBox.style.top = `${y - boxHeight}px`; // Just above the pointer
-			}
+              // Position above and close to pointer/touch point
+              const boxHeight = infoBox.offsetHeight || 50; // Default height if not rendered yet
+              const boxWidth = infoBox.offsetWidth || 100; // Default width if not rendered yet
 
-			function hideInfoBox() {
-				if (!selectedCountry) { // Only hide if no country is selected
-					infoBox.classList.remove('visible');
-                }
-			}
+              // Position bottom of info box just above pointer
+              infoBox.style.left = `${x - boxWidth / 2}px`;
+              infoBox.style.top = `${y - boxHeight}px`; // Just above the pointer
+          }
 
-			const paths = svgElement.querySelectorAll("path");
+          function hideInfoBox() {
+              if (!selectedCountry) { // Only hide if no country is selected
+                  infoBox.classList.remove('visible');
+              }
+          }
 
-			paths.forEach(path => {
-                // Desktop hover behavior
-                path.addEventListener("mouseenter", (e) => {
-                    if (!selectedCountry) { // Only show if no country is selected
-                        showInfoBox(path.id, e.clientX, e.clientY);
-                    }
-                });
-                path.addEventListener("mouseleave", (e) => {
-                    if (!selectedCountry && !infoBox.matches(':hover')) hideInfoBox(); // Hide only if no country is selected and mouse not over info box
-                });
+          const paths = svgElement.querySelectorAll("path");
 
-                // Mobile touch behavior
-                path.addEventListener("touchstart", (e) => {
-                    if (e.touches.length === 1) { // Single finger touch
-                        if (selectedCountry) document.querySelector(`path[id="${selectedCountry}"]`).classList.remove('selected');
-                        selectedCountry = path.id; // Set selected country
-                        path.classList.add('selected'); // Highlight selected country
-                        showInfoBox(path.id, e.touches[0].clientX, e.touches[0].clientY);
-                    }
-                });
-			});
+          paths.forEach(path => {
+              // Desktop hover behavior
+              path.addEventListener("mouseenter", (e) => {
+                  if (!selectedCountry) { // Only show if no country is selected
+                      showInfoBox(path.id, e.clientX, e.clientY);
+                  }
+              });
+              path.addEventListener("mouseleave", (e) => {
+                  if (!selectedCountry && !infoBox.matches(':hover')) hideInfoBox(); // Hide only if no country is selected and mouse not over info box
+              });
 
-			// Keep info box visible when hovered over (desktop)
-			infoBox.addEventListener('mouseenter', () => {
-				infoBox.classList.add('visible'); // Keep visible when mouse is over it
-			});
-			infoBox.addEventListener('mouseleave', () => {
-				if (!selectedCountry) hideInfoBox(); // Hide when mouse leaves and no country is selected
-			});
+              // Mobile touch behavior
+              path.addEventListener("touchstart", (e) => {
+                  if (e.touches.length === 1) { // Single finger touch
+                      if (selectedCountry) document.querySelector(`path[id="${selectedCountry}"]`).classList.remove('selected');
+                      selectedCountry = path.id; // Set selected country
+                      path.classList.add('selected'); // Highlight selected country
+                      showInfoBox(path.id, e.touches[0].clientX, e.touches[0].clientY);
+                  }
+              });
+          });
 
-			// Handle window resize
-			window.addEventListener('resize', () => {
-				panZoom.resize().fit().center();
-			});
-			
-			// Enable touch gestures
-			const hammer = new Hammer(mapContainer);
-			hammer.get('pinch').set({ enable:true });
-			
-			let startScale = panZoom.getZoom();
-			
-			hammer.on('pinchstart', function(ev) {
-			    startScale = panZoom.getZoom();
-			    ev.preventDefault(); // Prevent default browser behavior
-			});
-			
-			hammer.on('pinch', function(ev) {
-			    const centerPoint = { 
-			        x: ev.center.x - mapContainer.getBoundingClientRect().left,
-			        y: ev.center.y - mapContainer.getBoundingClientRect().top 
-			    };
-			    const newScale = Math.min(72, Math.max(1, startScale * ev.scale)); // Adjusted for max zoom level
+          // Keep info box visible when hovered over (desktop)
+          infoBox.addEventListener('mouseenter', () => {
+              infoBox.classList.add('visible'); // Keep visible when mouse is over it
+          });
+          infoBox.addEventListener('mouseleave', () => {
+              if (!selectedCountry) hideInfoBox(); // Hide when mouse leaves and no country is selected
+          });
 
-			    // Apply smooth zooming
-			    panZoom.zoomAtPoint(newScale, centerPoint);
-			    ev.preventDefault(); // Prevent default browser behavior
-			});
-			
-        }
+          // Handle window resize
+          window.addEventListener('resize', () => {
+              panZoom.resize().fit().center();
+          });
+
+          // Enable touch gestures with Hammer.js
+          const hammer = new Hammer(mapContainer);
+          hammer.get('pinch').set({ enable:true });
+
+          let startScale = panZoom.getZoom();
+
+          hammer.on('pinchstart', function(ev) {
+                startScale = panZoom.getZoom();
+                ev.preventDefault(); // Prevent default browser behavior
+          });
+
+          hammer.on('pinch', function(ev) {
+                const centerPoint = { 
+                    x: ev.center.x - mapContainer.getBoundingClientRect().left,
+                    y: ev.center.y - mapContainer.getBoundingClientRect().top 
+                };
+                const newScale = Math.min(72, Math.max(1, startScale * ev.scale)); // Adjusted for max zoom level
+
+                // Apply smooth zooming
+                panZoom.zoomAtPoint(newScale, centerPoint);
+                ev.preventDefault(); // Prevent default browser behavior
+          });
+      }
     </script>
 </body>
 </html>
