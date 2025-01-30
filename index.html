@@ -87,10 +87,13 @@
         let titleCounts = {}; // Object to store title counts
 
         // Fetch title counts from JSON file
-        fetch('title_counts.json')
+        fetch('titled_players_by_fed.json')
           .then(response => response.json())
           .then(data => {
-              titleCounts = data; // Store title counts
+              // Convert array to an object for easier access by federation code
+              data.titled_players_by_fed.forEach(entry => {
+                  titleCounts[entry.fed] = entry; // Map federation code to its data
+              });
               initializeMap();
           })
           .catch(error => console.error("Error loading title counts:", error));
@@ -128,7 +131,6 @@
           function showInfoBox(countryCode, x, y) {
               const titles = titleCounts[countryCode] || {};
               const content = `
-                  <strong>${countryCode}</strong><br>
                   GM: ${titles.GM || 0}<br>
                   IM: ${titles.IM || 0}<br>
                   FM: ${titles.FM || 0}<br>
