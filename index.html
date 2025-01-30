@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Chess Title Map</title>
+    <title>Chess Title Map with Flags</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
     <style>
         body {
             margin: 0;
@@ -24,7 +22,6 @@
             background-color: lightblue;
             position: relative;
             overflow: hidden;
-            touch-action: none;
         }
         path {
             fill: #0F5738;
@@ -52,24 +49,11 @@
         .info-box.visible {
             display: block;
         }
-        .zoom-controls {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            z-index: 1001;
-        }
-        .zoom-controls button {
-            background-color: white;
-            border: 1px solid black;
-            border-radius: 4px;
-            width: 30px;
-            height: 30px;
-            cursor: pointer;
-            font-family: 'Roboto', sans-serif;
-            font-size: 16px;
+        .flag {
+            width: auto; /* Adjust flag size to match text */
+            height: 16px; /* Same height as text */
+            vertical-align: middle; /* Align flag with text */
+            margin-right: 5px; /* Space between flag and text */
         }
     </style>
 </head>
@@ -84,122 +68,73 @@
     <div class="info-box" id="info-box"></div>
 
     <script>
-        fetch('world_fide.svg')
-            .then(response => response.text())
-            .then(svgContent => {
-                document.getElementById('map-container').innerHTML += svgContent.trim();
-                initializeMap();
-            });
+        let countryCodes = []; // Array to store country codes
+
+        // Fetch country codes from JSON file
+        fetch('Alpha3_ISO_code_List.json')
+          .then(response => response.json())
+          .then(data => {
+              countryCodes = data; // Store country codes
+              initializeMap(); // Initialize map after loading data
+          })
+          .catch(error => console.error("Error loading country codes:", error));
 
         function initializeMap() {
-            const mapContainer = document.getElementById('map-container');
-            const svgElement = mapContainer.querySelector('svg');
-            
-			const infoBox = document.getElementById("info-box");
-			let selectedCountry = null;
+          const mapContainer = document.getElementById('map-container');
+          const infoBox = document.getElementById("info-box");
 
-			// Initialize svg-pan-zoom
-			const panZoom = svgPanZoom(svgElement, {
-				zoomEnabled : true,
-				controlIconsEnabled : false,
-				fit : true,
-				center : true,
-				minZoom :1,
-				maxZoom :72, // Increased maximum zoom level
-				zoomScaleSensitivity : .2,
-			});
+          // Fetch SVG map and render it
+          fetch('world_fide.svg')
+              .then(response => response.text())
+              .then(svgContent => {
+                  mapContainer.innerHTML = svgContent.trim();
+                  setupInteractions();
+              });
 
-			// Disable double-tap zoom
-			panZoom.disableDblClickZoom();
+          function setupInteractions() {
+              const svgElement = mapContainer.querySelector('svg');
+              const paths = svgElement.querySelectorAll("path");
 
-			// Zoom buttons functionality
-			document.getElementById("zoom-in").addEventListener("click", () => panZoom.zoomIn());
-			document.getElementById("zoom-out").addEventListener("click", () => panZoom.zoomOut());
-			document.getElementById("zoom-reset").addEventListener("click", () => {
-				panZoom.reset();
-				panZoom.resize().fit().center();
-			});
+              paths.forEach(path => {
+                  path.addEventListener("mouseenter", (e) => showInfoBox(path.id, e.clientX, e.clientY));
+                  path.addEventListener("mouseleave", hideInfoBox);
+                  path.addEventListener("touchstart", (e) => {
+                      if (e.touches.length === 1) { // Single finger touch
+                          showInfoBox(path.id, e.touches[0].clientX, e.touches[0].clientY);
+                      }
+                  });
+              });
 
-			function showInfoBox(content, x, y) {
-				infoBox.innerHTML = `<p><a href="${content}.html" target="_blank">${content}</a></p>`;
-				infoBox.classList.add('visible');
+              infoBox.addEventListener('mouseenter', () => infoBox.classList.add('visible'));
+              infoBox.addEventListener('mouseleave', hideInfoBox);
+          }
 
-                // Position above and close to pointer/touch point
-                const boxHeight = infoBox.offsetHeight || 50; // Default height if not rendered yet
-                const boxWidth = infoBox.offsetWidth || 100; // Default width if not rendered yet
+          function showInfoBox(countryCode, x, y) {
+              if (!countryCodes.includes(countryCode)) {
+                  console.warn(`Country code ${countryCode} not found in JSON.`);
+                  return;
+              }
 
-                // Position bottom of info box just above pointer
-                infoBox.style.left = `${x - boxWidth / 2}px`;
-                infoBox.style.top = `${y - boxHeight}px`; // Just above the pointer
-			}
+              const flagUrl = `https://ratings.fide.com/svg/${countryCode}.svg`;
 
-			function hideInfoBox() {
-				if (!selectedCountry) { // Only hide if no country is selected
-					infoBox.classList.remove('visible');
-                }
-			}
+              infoBox.innerHTML = `
+                  <img src="${flagUrl}" alt="${countryCode} Flag" class="flag">
+                  <span>${countryCode}</span>
+              `;
+              infoBox.classList.add('visible');
 
-			const paths = svgElement.querySelectorAll("path");
+              // Position above and close to pointer/touch point
+              const boxHeight = infoBox.offsetHeight || 50; 
+              const boxWidth = infoBox.offsetWidth || 100;
 
-			paths.forEach(path => {
-                // Desktop hover behavior
-                path.addEventListener("mouseenter", (e) => {
-                    if (!selectedCountry) { // Only show if no country is selected
-                        showInfoBox(path.id, e.clientX, e.clientY);
-                    }
-                });
-                path.addEventListener("mouseleave", (e) => {
-                    if (!selectedCountry && !infoBox.matches(':hover')) hideInfoBox(); // Hide only if no country is selected and mouse not over info box
-                });
+              infoBox.style.left = `${x - boxWidth / 2}px`;
+              infoBox.style.top = `${y - boxHeight - 10}px`; 
+          }
 
-                // Mobile touch behavior
-                path.addEventListener("touchstart", (e) => {
-                    if (e.touches.length === 1) { // Single finger touch
-                        if (selectedCountry) document.querySelector(`path[id="${selectedCountry}"]`).classList.remove('selected');
-                        selectedCountry = path.id; // Set selected country
-                        path.classList.add('selected'); // Highlight selected country
-                        showInfoBox(path.id, e.touches[0].clientX, e.touches[0].clientY);
-                    }
-                });
-			});
-
-			// Keep info box visible when hovered over (desktop)
-			infoBox.addEventListener('mouseenter', () => {
-				infoBox.classList.add('visible'); // Keep visible when mouse is over it
-			});
-			infoBox.addEventListener('mouseleave', () => {
-				if (!selectedCountry) hideInfoBox(); // Hide when mouse leaves and no country is selected
-			});
-
-			// Handle window resize
-			window.addEventListener('resize', () => {
-				panZoom.resize().fit().center();
-			});
-			
-			// Enable touch gestures
-			const hammer = new Hammer(mapContainer);
-			hammer.get('pinch').set({ enable:true });
-			
-			let startScale = panZoom.getZoom();
-			
-			hammer.on('pinchstart', function(ev) {
-			    startScale = panZoom.getZoom();
-			    ev.preventDefault(); // Prevent default browser behavior
-			});
-			
-			hammer.on('pinch', function(ev) {
-			    const centerPoint = { 
-			        x: ev.center.x - mapContainer.getBoundingClientRect().left,
-			        y: ev.center.y - mapContainer.getBoundingClientRect().top 
-			    };
-			    const newScale = Math.min(72, Math.max(1, startScale * ev.scale)); // Adjusted for max zoom level
-
-			    // Apply smooth zooming
-			    panZoom.zoomAtPoint(newScale, centerPoint);
-			    ev.preventDefault(); // Prevent default browser behavior
-			});
-			
-        }
+          function hideInfoBox() {
+              infoBox.classList.remove('visible');
+          }
+      }
     </script>
 </body>
 </html>
