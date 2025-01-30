@@ -109,11 +109,8 @@
 
     <!-- Map Container -->
     <div id="map-container">
-        <div class="zoom-controls">
-            <button id="zoom-in">+</button>
-            <button id="zoom-out">-</button>
-            <button id="zoom-reset">R</button>
-        </div>
+        <!-- SVG map will be loaded here -->
+        Loading map...
     </div>
 
     <!-- Info Box -->
@@ -143,9 +140,10 @@
           fetch('world_fide.svg')
               .then(response => response.text())
               .then(svgContent => {
-                  mapContainer.innerHTML += svgContent.trim();
+                  mapContainer.innerHTML = svgContent.trim(); // Ensure proper rendering of SVG
                   setupInteractions();
-              });
+              })
+              .catch(error => console.error("Error loading SVG map:", error));
 
           function setupInteractions() {
               const svgElement = mapContainer.querySelector('svg');
@@ -193,7 +191,7 @@
           }
 
           // Initialize zoom and pan functionality
-          const panZoom = svgPanZoom(svgElement, {
+          const panZoom = svgPanZoom(mapContainer.querySelector('svg'), {
                 zoomEnabled : true,
                 controlIconsEnabled : false,
                 fit : true,
