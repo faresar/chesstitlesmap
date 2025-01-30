@@ -127,126 +127,141 @@
     <div class="info-box" id="info-box"></div>
 
     <!-- Scripts -->
-    <script>
-        fetch('world_fide.svg')
-          .then(response => response.text())
-          .then(svgContent => {
-              document.getElementById('map-container').innerHTML += svgContent.trim();
-              initializeMap();
-          });
+   <script>
+    fetch('world_fide.svg')
+        .then(response => response.text())
+        .then(svgContent => {
+            document.getElementById('map-container').innerHTML += svgContent.trim();
+            initializeMap();
+        });
 
-        function initializeMap() {
-          const mapContainer = document.getElementById('map-container');
-          const svgElement = mapContainer.querySelector('svg');
-          const infoBox = document.getElementById("info-box");
-          let selectedCountry = null;
+    let titledPlayersData = {};
 
-          // Initialize svg-pan-zoom
-          const panZoom = svgPanZoom(svgElement, {
-              zoomEnabled : true,
-              controlIconsEnabled : false,
-              fit : true,
-              center : true,
-              minZoom :1,
-              maxZoom :72, // Increased maximum zoom level
-              zoomScaleSensitivity : .2,
-          });
+    // Fetch the titled players data
+    fetch('titled_players_by_fed.json')
+        .then(response => response.json())
+        .then(data => {
+            titledPlayersData = data.titled_players_by_fed.reduce((acc, item) => {
+                acc[item.fed] = item;
+                return acc;
+            }, {});
+        });
 
-          // Disable double-tap zoom
-          panZoom.disableDblClickZoom();
+    function initializeMap() {
+        const mapContainer = document.getElementById('map-container');
+        const svgElement = mapContainer.querySelector('svg');
+        const infoBox = document.getElementById("info-box");
+        let selectedCountry = null;
 
-          // Zoom buttons functionality
-          document.getElementById("zoom-in").addEventListener("click", () => panZoom.zoomIn());
-          document.getElementById("zoom-out").addEventListener("click", () => panZoom.zoomOut());
-          document.getElementById("zoom-reset").addEventListener("click", () => {
-              panZoom.reset();
-              panZoom.resize().fit().center();
-          });
+        // Initialize svg-pan-zoom
+        const panZoom = svgPanZoom(svgElement, {
+            zoomEnabled: true,
+            controlIconsEnabled: false,
+            fit: true,
+            center: true,
+            minZoom: 1,
+            maxZoom: 72,
+            zoomScaleSensitivity: .2,
+        });
 
-          function showInfoBox(content, x, y) {
-              const flagUrl = `https://ratings.fide.com/svg/${content}.svg`;
+        // Disable double-tap zoom
+        panZoom.disableDblClickZoom();
 
-              infoBox.innerHTML = `
-                  <img src="${flagUrl}" alt="${content} Flag" class="flag">
-                  <span>${content}</span>
-              `;
-              infoBox.classList.add('visible');
+        // Zoom buttons functionality
+        document.getElementById("zoom-in").addEventListener("click", () => panZoom.zoomIn());
+        document.getElementById("zoom-out").addEventListener("click", () => panZoom.zoomOut());
+        document.getElementById("zoom-reset").addEventListener("click", () => {
+            panZoom.reset();
+            panZoom.resize().fit().center();
+        });
 
-              // Position above and close to pointer/touch point
-              const boxHeight = infoBox.offsetHeight || 50; // Default height if not rendered yet
-              const boxWidth = infoBox.offsetWidth || 100; // Default width if not rendered yet
+        function showInfoBox(countryCode, x, y) {
+            const countryData = titledPlayersData[countryCode] || {};
+            const flagUrl = `https://ratings.fide.com/svg/${countryCode}.svg`;
 
-              // Position bottom of info box just above pointer
-              infoBox.style.left = `${x - boxWidth / 2}px`;
-              infoBox.style.top = `${y - boxHeight}px`; // Just above the pointer
-          }
+            infoBox.innerHTML = `
+                <img src="${flagUrl}" alt="${countryCode} Flag" class="flag">
+                <span>${countryCode}</span><br>
+                GM: ${countryData.GM || 0} | WGM: ${countryData.WGM || 0}<br>
+                IM: ${countryData.IM || 0} | WIM: ${countryData.WIM || 0}<br>
+                FM: ${countryData.FM || 0} | WFM: ${countryData.WFM || 0}<br>
+                CM: ${countryData.CM || 0} | WCM: ${countryData.WCM || 0}
+            `;
+            infoBox.classList.add('visible');
 
-          function hideInfoBox() {
-              if (!selectedCountry) { // Only hide if no country is selected
-                  infoBox.classList.remove('visible');
-              }
-          }
+            // Position above and close to pointer/touch point
+            const boxHeight = infoBox.offsetHeight || 50;
+            const boxWidth = infoBox.offsetWidth || 100;
 
-          const paths = svgElement.querySelectorAll("path");
+            infoBox.style.left = `${x - boxWidth / 2}px`;
+            infoBox.style.top = `${y - boxHeight}px`;
+        }
 
-          paths.forEach(path => {
-              // Desktop hover behavior
-              path.addEventListener("mouseenter", (e) => {
-                  if (!selectedCountry) { // Only show if no country is selected
-                      showInfoBox(path.id, e.clientX, e.clientY);
-                  }
-              });
-              path.addEventListener("mouseleave", (e) => {
-                  if (!selectedCountry && !infoBox.matches(':hover')) hideInfoBox(); // Hide only if no country is selected and mouse not over info box
-              });
+        function hideInfoBox() {
+            if (!selectedCountry) {
+                infoBox.classList.remove('visible');
+            }
+        }
 
-              // Mobile touch behavior
-              path.addEventListener("touchstart", (e) => {
-                  if (e.touches.length === 1) { // Single finger touch
-                      if (selectedCountry) document.querySelector(`path[id="${selectedCountry}"]`).classList.remove('selected');
-                      selectedCountry = path.id; // Set selected country
-                      path.classList.add('selected'); // Highlight selected country
-                      showInfoBox(path.id, e.touches[0].clientX, e.touches[0].clientY);
-                  }
-              });
-          });
+        const paths = svgElement.querySelectorAll("path");
 
-          // Keep info box visible when hovered over (desktop)
-          infoBox.addEventListener('mouseenter', () => {
-              infoBox.classList.add('visible'); // Keep visible when mouse is over it
-          });
-          infoBox.addEventListener('mouseleave', () => {
-              if (!selectedCountry) hideInfoBox(); // Hide when mouse leaves and no country is selected
-          });
+        paths.forEach(path => {
+            // Desktop hover behavior
+            path.addEventListener("mouseenter", (e) => {
+                if (!selectedCountry) {
+                    showInfoBox(path.id, e.clientX, e.clientY);
+                }
+            });
+            path.addEventListener("mouseleave", (e) => {
+                if (!selectedCountry && !infoBox.matches(':hover')) hideInfoBox();
+            });
 
-          // Handle window resize
-          window.addEventListener('resize', () => {
-              panZoom.resize().fit().center();
-          });
+            // Mobile touch behavior
+            path.addEventListener("touchstart", (e) => {
+                if (e.touches.length === 1) {
+                    if (selectedCountry) document.querySelector(`path[id="${selectedCountry}"]`).classList.remove('selected');
+                    selectedCountry = path.id;
+                    path.classList.add('selected');
+                    showInfoBox(path.id, e.touches[0].clientX, e.touches[0].clientY);
+                }
+            });
+        });
 
-          // Enable touch gestures with Hammer.js
-          const hammer = new Hammer(mapContainer);
-          hammer.get('pinch').set({ enable:true });
+        // Keep info box visible when hovered over (desktop)
+        infoBox.addEventListener('mouseenter', () => {
+            infoBox.classList.add('visible');
+        });
+        infoBox.addEventListener('mouseleave', () => {
+            if (!selectedCountry) hideInfoBox();
+        });
 
-          let startScale = panZoom.getZoom();
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            panZoom.resize().fit().center();
+        });
 
-          hammer.on('pinchstart', function(ev) {
-                startScale = panZoom.getZoom();
-                ev.preventDefault(); // Prevent default browser behavior
-          });
+        // Enable touch gestures with Hammer.js
+        const hammer = new Hammer(mapContainer);
+        hammer.get('pinch').set({ enable: true });
 
-          hammer.on('pinch', function(ev) {
-                const centerPoint = { 
-                    x: ev.center.x - mapContainer.getBoundingClientRect().left,
-                    y: ev.center.y - mapContainer.getBoundingClientRect().top 
-                };
-                const newScale = Math.min(72, Math.max(1, startScale * ev.scale)); // Adjusted for max zoom level
+        let startScale = panZoom.getZoom();
 
-                // Apply smooth zooming
-                panZoom.zoomAtPoint(newScale, centerPoint);
-                ev.preventDefault(); // Prevent default browser behavior
-          });
-      }
-    </script>
+        hammer.on('pinchstart', function (ev) {
+            startScale = panZoom.getZoom();
+            ev.preventDefault();
+        });
+
+        hammer.on('pinch', function (ev) {
+            const centerPoint = {
+                x: ev.center.x - mapContainer.getBoundingClientRect().left,
+                y: ev.center.y - mapContainer.getBoundingClientRect().top
+            };
+            const newScale = Math.min(72, Math.max(1, startScale * ev.scale));
+
+            panZoom.zoomAtPoint(newScale, centerPoint);
+            ev.preventDefault();
+        });
+    }
+</script>
 </body>
 </html>
