@@ -165,7 +165,7 @@
                 center: true,
                 minZoom: 1,
                 maxZoom: 72,
-                zoomScaleSensitivity: .2,
+                zoomScaleSensitivity: 0.2,
             });
 
             // Disable double-tap zoom
@@ -263,6 +263,11 @@
                 const newScale = Math.min(72, Math.max(1, startScale * ev.scale));
 
                 panZoom.zoomAtPoint(newScale, centerPoint);
+                ev.preventDefault();
+            });
+
+            hammer.on('pinchend', function (ev) {
+                startScale = panZoom.getZoom();
                 ev.preventDefault();
             });
         }
