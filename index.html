@@ -254,6 +254,7 @@
 
             // Native touch event listeners for pinch zoom
             let initialDistance = null;
+            let initialScale = 1;
 
             mapContainer.addEventListener("touchstart", (e) => {
                 if (e.touches.length === 2) {
@@ -262,6 +263,8 @@
                         e.touches[0].clientX - e.touches[1].clientX,
                         e.touches[0].clientY - e.touches[1].clientY
                     );
+                    // Store the initial zoom scale
+                    initialScale = panZoom.getZoom();
                 }
             });
 
@@ -275,8 +278,8 @@
                         e.touches[0].clientY - e.touches[1].clientY
                     );
 
-                    // Calculate the scale factor
-                    const scale = currentDistance / initialDistance;
+                    // Calculate the scale factor relative to the initial distance
+                    const scale = (currentDistance / initialDistance) * initialScale;
 
                     // Get the center point between the two fingers
                     const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
