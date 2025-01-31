@@ -80,27 +80,48 @@
             vertical-align: middle; /* Align flag with text */
             margin-right: 5px; /* Space between flag and text */
         }
-        .title {
+        .last-updated {
             text-align: center;
-            font-size: calc(1rem + 2vw); /* Responsive font size */
-            margin-top: 20px; /* Add spacing above title */
+            font-size: 14px; /* Smaller font size */
+            margin-top: 10px; /* Add spacing above the text */
+            color: #333; /* Darker color for visibility */
         }
         .toggle-buttons {
-            text-align: center;
-            margin-top: 20px;
+            text-align: left; /* Align to the left */
+            margin-top: 10px; /* Add spacing above the buttons */
+            margin-left: 10px; /* Align with the left corner of the image */
         }
         .toggle-buttons button {
             margin: 5px;
-            padding: 10px 20px;
-            font-size: 16px;
+            padding: 5px 10px; /* Smaller padding for smaller buttons */
+            font-size: 14px; /* Smaller font size */
             cursor: pointer;
             border: 1px solid #ccc;
             border-radius: 5px;
             background-color: #f9f9f9;
+            position: relative; /* For tooltip positioning */
         }
         .toggle-buttons button.active {
             background-color: #ff9900;
             color: white;
+        }
+        .toggle-buttons button:hover::after {
+            content: attr(data-tooltip); /* Tooltip text */
+            position: absolute;
+            bottom: 100%; /* Position above the button */
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 5px;
+            background-color: lightblue; /* Light blue background */
+            color: #000; /* Black text */
+            border-radius: 5px;
+            font-size: 12px;
+            white-space: nowrap; /* Prevent text wrapping */
+            z-index: 1000; /* Ensure tooltip is above other elements */
+        }
+        .filter-label {
+            font-weight: bold; /* Bold text */
+            margin-bottom: 5px; /* Add spacing below the label */
         }
     </style>
 </head>
@@ -128,8 +149,8 @@
         </div>
     </nav>
 
-    <!-- Title -->
-    <h1 class="title">Chess Titles Map</h1>
+    <!-- Last Updated Text -->
+    <div class="last-updated">Last updated: Jan 30, 2025</div>
 
     <!-- Map Container -->
     <div id="map-container">
@@ -142,9 +163,10 @@
 
     <!-- Toggle Buttons -->
     <div class="toggle-buttons">
-        <button id="toggle-active" class="active">Active</button>
-        <button id="toggle-inactive">Inactive</button>
-        <button id="toggle-both">Both</button>
+        <div class="filter-label">Player activity Filter:</div>
+        <button id="toggle-both" class="active" data-tooltip="Players who have played rated tournament recently including inactive players marked as 'i'">Both</button>
+        <button id="toggle-active" data-tooltip="Players who have played rated tournament recently">Active</button>
+        <button id="toggle-inactive" data-tooltip="Inactive players that have not played rated tournament recently and are marked as 'i'">Inactive</button>
     </div>
 
     <!-- Info Box -->
@@ -153,7 +175,7 @@
     <!-- Scripts -->
     <script>
         let titledPlayersData = {};
-        let currentFilter = "active"; // Default filter
+        let currentFilter = "both"; // Default filter
 
         // Fetch the titled players data
         fetch('titled_players_by_country.json')
@@ -280,6 +302,14 @@
             });
 
             // Toggle buttons functionality
+            document.getElementById("toggle-both").addEventListener("click", () => {
+                currentFilter = "both";
+                updateToggleButtons("toggle-both");
+                if (selectedCountry) {
+                    updateInfoBox(selectedCountry, infoBox.offsetLeft + infoBox.offsetWidth / 2, infoBox.offsetTop + infoBox.offsetHeight);
+                }
+            });
+
             document.getElementById("toggle-active").addEventListener("click", () => {
                 currentFilter = "active";
                 updateToggleButtons("toggle-active");
@@ -291,14 +321,6 @@
             document.getElementById("toggle-inactive").addEventListener("click", () => {
                 currentFilter = "inactive";
                 updateToggleButtons("toggle-inactive");
-                if (selectedCountry) {
-                    updateInfoBox(selectedCountry, infoBox.offsetLeft + infoBox.offsetWidth / 2, infoBox.offsetTop + infoBox.offsetHeight);
-                }
-            });
-
-            document.getElementById("toggle-both").addEventListener("click", () => {
-                currentFilter = "both";
-                updateToggleButtons("toggle-both");
                 if (selectedCountry) {
                     updateInfoBox(selectedCountry, infoBox.offsetLeft + infoBox.offsetWidth / 2, infoBox.offsetTop + infoBox.offsetHeight);
                 }
