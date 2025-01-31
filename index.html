@@ -202,9 +202,11 @@
             }
 
             function hideInfoBox() {
-                if (!selectedCountry) {
-                    infoBox.classList.remove('visible');
+                if (selectedCountry) {
+                    document.querySelector(`path[id="${selectedCountry}"]`).classList.remove('selected');
+                    selectedCountry = null;
                 }
+                infoBox.classList.remove('visible');
             }
 
             const paths = svgElement.querySelectorAll("path");
@@ -237,6 +239,13 @@
             });
             infoBox.addEventListener('mouseleave', () => {
                 if (!selectedCountry) hideInfoBox();
+            });
+
+            // Hide info box when clicking outside (touch devices)
+            document.addEventListener("touchstart", (e) => {
+                if (!infoBox.contains(e.target) && !Array.from(paths).some(path => path.contains(e.target))) {
+                    hideInfoBox();
+                }
             });
 
             // Handle window resize
