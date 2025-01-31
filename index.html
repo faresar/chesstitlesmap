@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
     <style>
         body {
             margin: 0;
@@ -253,52 +252,49 @@
                 panZoom.resize().fit().center();
             });
 
-            // Enable touch gestures with Hammer.js
-            const hammer = new Hammer(mapContainer, {
-                touchAction: 'none', // Disable default touch actions
-            });
-            hammer.get('pinch').set({ enable: true });
+            // Native touch event listeners for pinch zoom
+            let initialDistance = null;
 
-            let startScale = panZoom.getZoom();
-            let lastScale = startScale;
-
-            // Debounce function to limit the frequency of zoom updates
-            function debounce(func, wait) {
-                let timeout;
-                return function (...args) {
-                    clearTimeout(timeout);
-                    timeout = setTimeout(() => func.apply(this, args), wait);
-                };
-            }
-
-            const debouncedZoom = debounce((newScale, centerPoint) => {
-                panZoom.zoomAtPoint(newScale, centerPoint);
-            }, 16); // 16ms delay (approx 60 FPS)
-
-            hammer.on('pinchstart', function (ev) {
-                startScale = panZoom.getZoom();
-                lastScale = startScale;
-                ev.preventDefault();
-            });
-
-            hammer.on('pinch', function (ev) {
-                const centerPoint = {
-                    x: ev.center.x - mapContainer.getBoundingClientRect().left,
-                    y: ev.center.y - mapContainer.getBoundingClientRect().top
-                };
-                const newScale = Math.min(72, Math.max(1, startScale * ev.scale));
-
-                // Only update zoom if the scale has changed significantly
-                if (Math.abs(newScale - lastScale) > 0.01) {
-                    debouncedZoom(newScale, centerPoint);
-                    lastScale = newScale;
+            mapContainer.addEventListener("touchstart", (e) => {
+                if (e.touches.length === 2) {
+                    // Calculate the initial distance between two fingers
+                    initialDistance = Math.hypot(
+                        e.touches[0].clientX - e.touches[1].clientX,
+                        e.touches[0].clientY - e.touches[1].clientY
+                    );
                 }
-                ev.preventDefault();
             });
 
-            hammer.on('pinchend', function (ev) {
-                startScale = panZoom.getZoom();
-                ev.preventDefault();
+            mapContainer.addEventListener("touchmove", (e) => {
+                if (e.touches.length === 2 && initialDistance !== null) {
+                    e.preventDefault(); // Prevent default scrolling behavior
+
+                    // Calculate the current distance between two fingers
+                    const currentDistance = Math.hypot(
+                        e.touches[0].clientX - e.touches[1].clientX,
+                        e.touches[0].clientY - e.touches[1].clientY
+                    );
+
+                    // Calculate the scale factor
+                    const scale = currentDistance / initialDistance;
+
+                    // Get the center point between the two fingers
+                    const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+                    const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+
+                    // Convert the center point to SVG coordinates
+                    const svgPoint = svgElement.createSVGPoint();
+                    svgPoint.x = centerX;
+                    svgPoint.y = centerY;
+                    const transformedPoint = svgPoint.matrixTransform(svgElement.getScreenCTM().inverse());
+
+                    // Apply the zoom
+                    panZoom.zoomAtPoint(scale, transformedPoint);
+                }
+            });
+
+            mapContainer.addEventListener("touchend", () => {
+                initialDistance = null; // Reset the initial distance
             });
         }
     </script>
