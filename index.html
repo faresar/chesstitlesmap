@@ -291,7 +291,7 @@
                     svgPoint.y = centerY;
                     const transformedPoint = svgPoint.matrixTransform(svgElement.getScreenCTM().inverse());
 
-                    // Apply the zoom
+                    // Apply the zoom at the center point
                     panZoom.zoomAtPoint(scale, transformedPoint);
                 }
             });
