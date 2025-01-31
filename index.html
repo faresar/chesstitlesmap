@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
     <style>
         body {
             margin: 0;
@@ -84,6 +85,23 @@
             font-size: calc(1rem + 2vw); /* Responsive font size */
             margin-top: 20px; /* Add spacing above title */
         }
+        .toggle-buttons {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .toggle-buttons button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .toggle-buttons button.active {
+            background-color: #ff9900;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -122,20 +140,28 @@
         </div>
     </div>
 
+    <!-- Toggle Buttons -->
+    <div class="toggle-buttons">
+        <button id="toggle-active" class="active">Active</button>
+        <button id="toggle-inactive">Inactive</button>
+        <button id="toggle-both">Both</button>
+    </div>
+
     <!-- Info Box -->
     <div class="info-box" id="info-box"></div>
 
     <!-- Scripts -->
     <script>
         let titledPlayersData = {};
+        let currentFilter = "active"; // Default filter
 
         // Fetch the titled players data
-        fetch('titled_players_by_fed.json')
+        fetch('titled_players_by_country.json')
             .then(response => response.json())
             .then(data => {
                 console.log('Fetched data:', data); // Debugging: Log fetched data
-                data.titled_players_by_fed.forEach(item => {
-                    titledPlayersData[item.fed] = item;
+                data.titled_players_by_country.forEach(item => {
+                    titledPlayersData[item.Country] = item;
                 });
                 console.log('Processed data:', titledPlayersData); // Debugging: Log processed data
             })
@@ -178,17 +204,27 @@
                 panZoom.resize().fit().center();
             });
 
-            function showInfoBox(countryCode, x, y) {
+            // Function to update the info box based on the selected filter
+            function updateInfoBox(countryCode, x, y) {
                 const countryData = titledPlayersData[countryCode] || {};
                 const flagUrl = `https://ratings.fide.com/svg/${countryCode}.svg`;
+
+                let titleCounts = {};
+                if (currentFilter === "active") {
+                    titleCounts = countryData.Active || {};
+                } else if (currentFilter === "inactive") {
+                    titleCounts = countryData.Inactive || {};
+                } else if (currentFilter === "both") {
+                    titleCounts = countryData.Total || {};
+                }
 
                 infoBox.innerHTML = `
                     <img src="${flagUrl}" alt="${countryCode} Flag" class="flag">
                     <span>${countryCode}</span><br>
-                    <b>GM:</b> ${countryData.GM || 0} | <b>WGM:</b> ${countryData.WGM || 0}<br>
-                    <b>IM:</b> ${countryData.IM || 0} | <b>WIM:</b> ${countryData.WIM || 0}<br>
-                    <b>FM:</b> ${countryData.FM || 0} | <b>WFM:</b> ${countryData.WFM || 0}<br>
-                    <b>CM:</b> ${countryData.CM || 0} | <b>WCM:</b> ${countryData.WCM || 0}
+                    <b>GM:</b> ${titleCounts.GM || 0} | <b>WGM:</b> ${titleCounts.WGM || 0}<br>
+                    <b>IM:</b> ${titleCounts.IM || 0} | <b>WIM:</b> ${titleCounts.WIM || 0}<br>
+                    <b>FM:</b> ${titleCounts.FM || 0} | <b>WFM:</b> ${titleCounts.WFM || 0}<br>
+                    <b>CM:</b> ${titleCounts.CM || 0} | <b>WCM:</b> ${titleCounts.WCM || 0}
                 `;
                 infoBox.classList.add('visible');
 
@@ -201,11 +237,9 @@
             }
 
             function hideInfoBox() {
-                if (selectedCountry) {
-                    document.querySelector(`path[id="${selectedCountry}"]`).classList.remove('selected');
-                    selectedCountry = null;
+                if (!selectedCountry) {
+                    infoBox.classList.remove('visible');
                 }
-                infoBox.classList.remove('visible');
             }
 
             const paths = svgElement.querySelectorAll("path");
@@ -214,7 +248,7 @@
                 // Desktop hover behavior
                 path.addEventListener("mouseenter", (e) => {
                     if (!selectedCountry) {
-                        showInfoBox(path.id, e.clientX, e.clientY);
+                        updateInfoBox(path.id, e.clientX, e.clientY);
                     }
                 });
                 path.addEventListener("mouseleave", (e) => {
@@ -227,7 +261,7 @@
                         if (selectedCountry) document.querySelector(`path[id="${selectedCountry}"]`).classList.remove('selected');
                         selectedCountry = path.id;
                         path.classList.add('selected');
-                        showInfoBox(path.id, e.touches[0].clientX, e.touches[0].clientY);
+                        updateInfoBox(path.id, e.touches[0].clientX, e.touches[0].clientY);
                     }
                 });
             });
@@ -240,65 +274,43 @@
                 if (!selectedCountry) hideInfoBox();
             });
 
-            // Hide info box when clicking outside (touch devices)
-            document.addEventListener("touchstart", (e) => {
-                if (!infoBox.contains(e.target) && !Array.from(paths).some(path => path.contains(e.target))) {
-                    hideInfoBox();
-                }
-            });
-
             // Handle window resize
             window.addEventListener('resize', () => {
                 panZoom.resize().fit().center();
             });
 
-            // Native touch event listeners for pinch zoom
-            let initialDistance = null;
-            let initialScale = 1;
-
-            mapContainer.addEventListener("touchstart", (e) => {
-                if (e.touches.length === 2) {
-                    // Calculate the initial distance between two fingers
-                    initialDistance = Math.hypot(
-                        e.touches[0].clientX - e.touches[1].clientX,
-                        e.touches[0].clientY - e.touches[1].clientY
-                    );
-                    // Store the initial zoom scale
-                    initialScale = panZoom.getZoom();
+            // Toggle buttons functionality
+            document.getElementById("toggle-active").addEventListener("click", () => {
+                currentFilter = "active";
+                updateToggleButtons("toggle-active");
+                if (selectedCountry) {
+                    updateInfoBox(selectedCountry, infoBox.offsetLeft + infoBox.offsetWidth / 2, infoBox.offsetTop + infoBox.offsetHeight);
                 }
             });
 
-            mapContainer.addEventListener("touchmove", (e) => {
-                if (e.touches.length === 2 && initialDistance !== null) {
-                    e.preventDefault(); // Prevent default scrolling behavior
-
-                    // Calculate the current distance between two fingers
-                    const currentDistance = Math.hypot(
-                        e.touches[0].clientX - e.touches[1].clientX,
-                        e.touches[0].clientY - e.touches[1].clientY
-                    );
-
-                    // Calculate the scale factor relative to the initial distance
-                    const scale = (currentDistance / initialDistance) * initialScale;
-
-                    // Get the center point between the two fingers
-                    const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-                    const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-
-                    // Convert the center point to SVG coordinates
-                    const svgPoint = svgElement.createSVGPoint();
-                    svgPoint.x = centerX;
-                    svgPoint.y = centerY;
-                    const transformedPoint = svgPoint.matrixTransform(svgElement.getScreenCTM().inverse());
-
-                    // Apply the zoom at the center point
-                    panZoom.zoomAtPoint(scale, transformedPoint);
+            document.getElementById("toggle-inactive").addEventListener("click", () => {
+                currentFilter = "inactive";
+                updateToggleButtons("toggle-inactive");
+                if (selectedCountry) {
+                    updateInfoBox(selectedCountry, infoBox.offsetLeft + infoBox.offsetWidth / 2, infoBox.offsetTop + infoBox.offsetHeight);
                 }
             });
 
-            mapContainer.addEventListener("touchend", () => {
-                initialDistance = null; // Reset the initial distance
+            document.getElementById("toggle-both").addEventListener("click", () => {
+                currentFilter = "both";
+                updateToggleButtons("toggle-both");
+                if (selectedCountry) {
+                    updateInfoBox(selectedCountry, infoBox.offsetLeft + infoBox.offsetWidth / 2, infoBox.offsetTop + infoBox.offsetHeight);
+                }
             });
+
+            // Function to update toggle button styles
+            function updateToggleButtons(activeButtonId) {
+                document.querySelectorAll(".toggle-buttons button").forEach(button => {
+                    button.classList.remove("active");
+                });
+                document.getElementById(activeButtonId).classList.add("active");
+            }
         }
     </script>
 </body>
