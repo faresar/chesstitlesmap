@@ -39,6 +39,9 @@
         path.selected {
             fill: #ff9900; /* Highlight selected country */
         }
+        path.highlighted {
+            fill: #007bff; /* Highlight countries with selected title */
+        }
         .info-box {
             position: fixed;
             background: rgba(255, 255, 255, 0.95);
@@ -116,6 +119,24 @@
             background-color: #007bff;
             color: white;
         }
+        .highlight-titles {
+            margin-top: 10px; /* Add spacing below the toggles */
+            text-align: center; /* Center the checkboxes */
+            z-index: 1001;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.2);
+        }
+        .highlight-titles label {
+            font-weight: bold;
+            font-size: 12px;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .highlight-titles input[type="checkbox"] {
+            margin-right: 5px;
+        }
         .tooltip {
             position: absolute;
             background: beige;
@@ -181,6 +202,20 @@
         <button id="filter-inactive" title="Inactive players that have not played rated tournament recently and are marked as 'i'">Inactive</button>
     </div>
 
+    <!-- Highlight Titles Checkboxes -->
+    <div class="highlight-titles">
+        <label>Highlight titles on the map:</label>
+        <input type="checkbox" id="highlight-none" name="highlight" value="none" checked> None
+        <input type="checkbox" id="highlight-gm" name="highlight" value="GM"> GM
+        <input type="checkbox" id="highlight-im" name="highlight" value="IM"> IM
+        <input type="checkbox" id="highlight-fm" name="highlight" value="FM"> FM
+        <input type="checkbox" id="highlight-cm" name="highlight" value="CM"> CM
+        <input type="checkbox" id="highlight-wgm" name="highlight" value="WGM"> WGM
+        <input type="checkbox" id="highlight-wim" name="highlight" value="WIM"> WIM
+        <input type="checkbox" id="highlight-wfm" name="highlight" value="WFM"> WFM
+        <input type="checkbox" id="highlight-wcm" name="highlight" value="WCM"> WCM
+    </div>
+
     <!-- Last Updated Text -->
     <div class="last-updated">
         Last updated: <span>Jan 31, 2025</span>
@@ -193,6 +228,7 @@
     <script>
         let titledPlayersData = {};
         let currentFilter = 'both'; // Default filter
+        let currentHighlight = 'none'; // Default highlight
 
         // Fetch the titled players data
         fetch('titled_players_by_country.json')
@@ -247,20 +283,64 @@
             document.getElementById("filter-both").addEventListener("click", () => {
                 currentFilter = 'both';
                 updateFilterButtons();
+                updateHighlight();
             });
             document.getElementById("filter-active").addEventListener("click", () => {
                 currentFilter = 'active';
                 updateFilterButtons();
+                updateHighlight();
             });
             document.getElementById("filter-inactive").addEventListener("click", () => {
                 currentFilter = 'inactive';
                 updateFilterButtons();
+                updateHighlight();
             });
 
             function updateFilterButtons() {
                 document.getElementById("filter-both").classList.toggle("active", currentFilter === 'both');
                 document.getElementById("filter-active").classList.toggle("active", currentFilter === 'active');
                 document.getElementById("filter-inactive").classList.toggle("active", currentFilter === 'inactive');
+            }
+
+            // Highlight checkboxes functionality
+            const highlightCheckboxes = document.querySelectorAll('.highlight-titles input[type="checkbox"]');
+            highlightCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    if (checkbox.checked) {
+                        // Uncheck all other checkboxes
+                        highlightCheckboxes.forEach(cb => {
+                            if (cb !== checkbox) cb.checked = false;
+                        });
+                        currentHighlight = checkbox.value;
+                    } else {
+                        currentHighlight = 'none';
+                    }
+                    updateHighlight();
+                });
+            });
+
+            function updateHighlight() {
+                const paths = svgElement.querySelectorAll("path");
+                paths.forEach(path => {
+                    path.classList.remove('highlighted');
+                    const countryCode = path.id;
+                    const countryData = titledPlayersData[countryCode] || {};
+
+                    if (currentHighlight !== 'none') {
+                        let count = 0;
+                        if (currentFilter === 'both') {
+                            count = countryData.Total?.[currentHighlight] || 0;
+                        } else if (currentFilter === 'active') {
+                            count = countryData.Active?.[currentHighlight] || 0;
+                        } else if (currentFilter === 'inactive') {
+                            count = countryData.Inactive?.[currentHighlight] || 0;
+                        }
+
+                        if (count > 0) {
+                            path.classList.add('highlighted');
+                        }
+                    }
+                });
             }
 
             function showInfoBox(countryCode, x, y) {
