@@ -38,17 +38,17 @@
             fill: #ff9900;
         }
         path.selected {
-            fill: #ff9900;
+            fill: #ff9900; /* Highlight selected country */
         }
         .info-box {
             position: fixed;
             background: rgba(255, 255, 255, 0.95);
             border-radius: 5px;
-            padding: 5px 10px;
-            pointer-events: auto;
+            padding: 5px 10px; /* Reduced padding for proportional sizing */
+            pointer-events: auto; /* Allow interaction with the info box */
             display: none;
             font-family: 'Roboto', sans-serif;
-            font-size: 14px;
+            font-size: 14px; /* Adjusted font size */
             box-shadow: 0 3px 15px rgba(0,0,0,0.2);
             z-index: 1000;
         }
@@ -74,69 +74,54 @@
             font-family: 'Roboto', sans-serif;
             font-size: 16px;
         }
+        .flag {
+            width: auto; /* Adjust flag size to match text */
+            height: 16px; /* Same height as text */
+            vertical-align: middle; /* Align flag with text */
+            margin-right: 5px; /* Space between flag and text */
+        }
         .last-updated {
             text-align: center;
-            font-size: 14px;
-            margin: 10px auto;
-            max-width: 1010px;
-            font-weight: bold;
-        }
-        .controls-container {
-            max-width: 1010px;
-            margin: 0 auto;
-            padding: 0 10px;
+            font-size: 14px; /* Smaller font size */
+            margin-top: 10px; /* Add spacing above the text */
+            color: #333; /* Darker color for visibility */
         }
         .toggle-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 10px;
-        }
-        .filter-label {
-            font-weight: bold;
-            margin-right: 10px;
-            align-self: center;
+            text-align: left; /* Align to the left */
+            margin-top: 10px; /* Add spacing above the buttons */
+            margin-left: 10px; /* Align with the left corner of the image */
         }
         .toggle-buttons button {
-            padding: 6px 12px;
-            font-size: 14px;
+            margin: 5px;
+            padding: 5px 10px; /* Smaller padding for smaller buttons */
+            font-size: 14px; /* Smaller font size */
             cursor: pointer;
             border: 1px solid #ccc;
             border-radius: 5px;
             background-color: #f9f9f9;
-            position: relative;
-            white-space: nowrap;
+            position: relative; /* For tooltip positioning */
         }
         .toggle-buttons button.active {
             background-color: #ff9900;
             color: white;
         }
         .toggle-buttons button:hover::after {
-            content: attr(data-tooltip);
+            content: attr(data-tooltip); /* Tooltip text */
             position: absolute;
-            bottom: 100%;
+            bottom: 100%; /* Position above the button */
             left: 50%;
             transform: translateX(-50%);
             padding: 5px;
-            background-color: lightblue;
-            color: #000;
+            background-color: lightblue; /* Light blue background */
+            color: #000; /* Black text */
             border-radius: 5px;
             font-size: 12px;
-            white-space: nowrap;
-            z-index: 1000;
+            white-space: nowrap; /* Prevent text wrapping */
+            z-index: 1000; /* Ensure tooltip is above other elements */
         }
-
-        @media (max-width: 768px) {
-            .toggle-buttons {
-                gap: 6px;
-            }
-            .toggle-buttons button {
-                padding: 4px 8px;
-                font-size: 13px;
-            }
-            .filter-label {
-                font-size: 14px;
-            }
+        .filter-label {
+            font-weight: bold; /* Bold text */
+            margin-bottom: 5px; /* Add spacing below the label */
         }
     </style>
 </head>
@@ -165,7 +150,7 @@
     </nav>
 
     <!-- Last Updated Text -->
-    <div class="last-updated">Last updated: <strong>Jan 30, 2025</strong></div>
+    <div class="last-updated">Last updated: Jan 30, 2025</div>
 
     <!-- Map Container -->
     <div id="map-container">
@@ -176,32 +161,34 @@
         </div>
     </div>
 
-    <!-- Controls Container -->
-    <div class="controls-container">
-        <div class="toggle-buttons">
-            <div class="filter-label">Player activity Filter:</div>
-            <button id="toggle-both" class="active" data-tooltip="Players who have played rated tournament recently including inactive players marked as 'i'">Both</button>
-            <button id="toggle-active" data-tooltip="Players who have played rated tournament recently">Active</button>
-            <button id="toggle-inactive" data-tooltip="Inactive players that have not played rated tournament recently and are marked as 'i'">Inactive</button>
-        </div>
+    <!-- Toggle Buttons -->
+    <div class="toggle-buttons">
+        <div class="filter-label">Player activity Filter:</div>
+        <button id="toggle-both" class="active" data-tooltip="Players who have played rated tournament recently including inactive players marked as 'i'">Both</button>
+        <button id="toggle-active" data-tooltip="Players who have played rated tournament recently">Active</button>
+        <button id="toggle-inactive" data-tooltip="Inactive players that have not played rated tournament recently and are marked as 'i'">Inactive</button>
     </div>
 
     <!-- Info Box -->
     <div class="info-box" id="info-box"></div>
 
+    <!-- Scripts -->
     <script>
         let titledPlayersData = {};
-        let currentFilter = "both";
-        let initialDistance = null;
-        let initialScale = 1;
+        let currentFilter = "both"; // Default filter
 
-        // Fetch data
+        // Fetch the titled players data
         fetch('titled_players_by_country.json')
             .then(response => response.json())
             .then(data => {
+                console.log('Fetched data:', data); // Debugging: Log fetched data
                 data.titled_players_by_country.forEach(item => {
                     titledPlayersData[item.Country] = item;
                 });
+                console.log('Processed data:', titledPlayersData); // Debugging: Log processed data
+            })
+            .catch(error => {
+                console.error('Error fetching titled players data:', error);
             });
 
         fetch('world_fide.svg')
@@ -228,115 +215,124 @@
                 zoomScaleSensitivity: 0.2,
             });
 
-            // Pinch zoom implementation
-            mapContainer.addEventListener('touchstart', e => {
-                if(e.touches.length === 2) {
-                    initialDistance = Math.hypot(
-                        e.touches[0].clientX - e.touches[1].clientX,
-                        e.touches[0].clientY - e.touches[1].clientY
-                    );
-                    initialScale = panZoom.getZoom();
-                }
+            // Disable double-tap zoom
+            panZoom.disableDblClickZoom();
+
+            // Zoom buttons functionality
+            document.getElementById("zoom-in").addEventListener("click", () => panZoom.zoomIn());
+            document.getElementById("zoom-out").addEventListener("click", () => panZoom.zoomOut());
+            document.getElementById("zoom-reset").addEventListener("click", () => {
+                panZoom.reset();
+                panZoom.resize().fit().center();
             });
 
-            mapContainer.addEventListener('touchmove', e => {
-                if(e.touches.length === 2 && initialDistance !== null) {
-                    e.preventDefault();
-                    const currentDistance = Math.hypot(
-                        e.touches[0].clientX - e.touches[1].clientX,
-                        e.touches[0].clientY - e.touches[1].clientY
-                    );
-                    const newScale = (currentDistance / initialDistance) * initialScale;
-                    const center = {
-                        x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
-                        y: (e.touches[0].clientY + e.touches[1].clientY) / 2
-                    };
-                    panZoom.zoomAtPoint(newScale, center);
-                }
-            });
-
-            mapContainer.addEventListener('touchend', () => {
-                initialDistance = null;
-            });
-
-            // Info box handling
-            document.addEventListener('click', (e) => {
-                if(!infoBox.contains(e.target) && !e.target.closest('path')) {
-                    hideInfoBox();
-                }
-            });
-
-            document.addEventListener('touchstart', (e) => {
-                if(!infoBox.contains(e.target) && !e.target.closest('path')) {
-                    hideInfoBox();
-                }
-            });
-
+            // Function to update the info box based on the selected filter
             function updateInfoBox(countryCode, x, y) {
                 const countryData = titledPlayersData[countryCode] || {};
                 const flagUrl = `https://ratings.fide.com/svg/${countryCode}.svg`;
-                const titleCounts = countryData[currentFilter.charAt(0).toUpperCase() + currentFilter.slice(1)] || {};
+
+                let titleCounts = {};
+                if (currentFilter === "active") {
+                    titleCounts = countryData.Active || {};
+                } else if (currentFilter === "inactive") {
+                    titleCounts = countryData.Inactive || {};
+                } else if (currentFilter === "both") {
+                    titleCounts = countryData.Total || {};
+                }
 
                 infoBox.innerHTML = `
                     <img src="${flagUrl}" alt="${countryCode} Flag" class="flag">
                     <span>${countryCode}</span><br>
-                    ${Object.entries(titleCounts).map(([title, count]) => 
-                        `<b>${title}:</b> ${count}`
-                    ).join(' | ')}
+                    <b>GM:</b> ${titleCounts.GM || 0} | <b>WGM:</b> ${titleCounts.WGM || 0}<br>
+                    <b>IM:</b> ${titleCounts.IM || 0} | <b>WIM:</b> ${titleCounts.WIM || 0}<br>
+                    <b>FM:</b> ${titleCounts.FM || 0} | <b>WFM:</b> ${titleCounts.WFM || 0}<br>
+                    <b>CM:</b> ${titleCounts.CM || 0} | <b>WCM:</b> ${titleCounts.WCM || 0}
                 `;
                 infoBox.classList.add('visible');
-                
-                const rect = mapContainer.getBoundingClientRect();
-                const boxWidth = infoBox.offsetWidth;
-                const boxHeight = infoBox.offsetHeight;
-                const posX = Math.max(10, Math.min(x - boxWidth/2, rect.width - boxWidth - 10));
-                const posY = Math.max(10, y - boxHeight - 10);
-                
-                infoBox.style.left = `${posX}px`;
-                infoBox.style.top = `${posY}px`;
+
+                // Position above and close to pointer/touch point
+                const boxHeight = infoBox.offsetHeight || 50;
+                const boxWidth = infoBox.offsetWidth || 100;
+
+                infoBox.style.left = `${x - boxWidth / 2}px`;
+                infoBox.style.top = `${y - boxHeight}px`;
             }
 
             function hideInfoBox() {
-                infoBox.classList.remove('visible');
-                if(selectedCountry) {
-                    document.querySelector(`path[id="${selectedCountry}"]`).classList.remove('selected');
-                    selectedCountry = null;
+                if (!selectedCountry) {
+                    infoBox.classList.remove('visible');
                 }
             }
 
-            // Event listeners
-            svgElement.querySelectorAll('path').forEach(path => {
-                path.addEventListener('mouseenter', (e) => {
-                    if(!selectedCountry) updateInfoBox(path.id, e.clientX, e.clientY);
+            const paths = svgElement.querySelectorAll("path");
+
+            paths.forEach(path => {
+                // Desktop hover behavior
+                path.addEventListener("mouseenter", (e) => {
+                    if (!selectedCountry) {
+                        updateInfoBox(path.id, e.clientX, e.clientY);
+                    }
                 });
-                
-                path.addEventListener('click', (e) => {
-                    if(selectedCountry) hideInfoBox();
-                    selectedCountry = path.id;
-                    path.classList.add('selected');
-                    updateInfoBox(path.id, e.clientX, e.clientY);
+                path.addEventListener("mouseleave", (e) => {
+                    if (!selectedCountry && !infoBox.matches(':hover')) hideInfoBox();
                 });
+
+                // Mobile touch behavior
+                path.addEventListener("touchstart", (e) => {
+                    if (e.touches.length === 1) {
+                        if (selectedCountry) document.querySelector(`path[id="${selectedCountry}"]`).classList.remove('selected');
+                        selectedCountry = path.id;
+                        path.classList.add('selected');
+                        updateInfoBox(path.id, e.touches[0].clientX, e.touches[0].clientY);
+                    }
+                });
+            });
+
+            // Keep info box visible when hovered over (desktop)
+            infoBox.addEventListener('mouseenter', () => {
+                infoBox.classList.add('visible');
+            });
+            infoBox.addEventListener('mouseleave', () => {
+                if (!selectedCountry) hideInfoBox();
+            });
+
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                panZoom.resize().fit().center();
             });
 
             // Toggle buttons functionality
-            ['both', 'active', 'inactive'].forEach(filter => {
-                document.getElementById(`toggle-${filter}`).addEventListener('click', () => {
-                    currentFilter = filter;
-                    document.querySelectorAll('.toggle-buttons button').forEach(btn => 
-                        btn.classList.remove('active'));
-                    document.getElementById(`toggle-${filter}`).classList.add('active');
-                    if(selectedCountry) updateInfoBox(selectedCountry, 
-                        infoBox.offsetLeft + infoBox.offsetWidth/2, 
-                        infoBox.offsetTop + infoBox.offsetHeight);
-                });
+            document.getElementById("toggle-both").addEventListener("click", () => {
+                currentFilter = "both";
+                updateToggleButtons("toggle-both");
+                if (selectedCountry) {
+                    updateInfoBox(selectedCountry, infoBox.offsetLeft + infoBox.offsetWidth / 2, infoBox.offsetTop + infoBox.offsetHeight);
+                }
             });
 
-            // Zoom controls
-            document.getElementById('zoom-in').addEventListener('click', () => panZoom.zoomIn());
-            document.getElementById('zoom-out').addEventListener('click', () => panZoom.zoomOut());
-            document.getElementById('zoom-reset').addEventListener('click', () => {
-                panZoom.reset().resize().fit().center();
+            document.getElementById("toggle-active").addEventListener("click", () => {
+                currentFilter = "active";
+                updateToggleButtons("toggle-active");
+                if (selectedCountry) {
+                    updateInfoBox(selectedCountry, infoBox.offsetLeft + infoBox.offsetWidth / 2, infoBox.offsetTop + infoBox.offsetHeight);
+                }
             });
+
+            document.getElementById("toggle-inactive").addEventListener("click", () => {
+                currentFilter = "inactive";
+                updateToggleButtons("toggle-inactive");
+                if (selectedCountry) {
+                    updateInfoBox(selectedCountry, infoBox.offsetLeft + infoBox.offsetWidth / 2, infoBox.offsetTop + infoBox.offsetHeight);
+                }
+            });
+
+            // Function to update toggle button styles
+            function updateToggleButtons(activeButtonId) {
+                document.querySelectorAll(".toggle-buttons button").forEach(button => {
+                    button.classList.remove("active");
+                });
+                document.getElementById(activeButtonId).classList.add("active");
+            }
         }
     </script>
 </body>
