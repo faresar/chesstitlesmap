@@ -245,13 +245,30 @@
             });
 
             // Enable touch gestures with Hammer.js
-            const hammer = new Hammer(mapContainer);
+            const hammer = new Hammer(mapContainer, {
+                touchAction: 'none', // Disable default touch actions
+            });
             hammer.get('pinch').set({ enable: true });
 
             let startScale = panZoom.getZoom();
+            let lastScale = startScale;
+
+            // Debounce function to limit the frequency of zoom updates
+            function debounce(func, wait) {
+                let timeout;
+                return function (...args) {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(this, args), wait);
+                };
+            }
+
+            const debouncedZoom = debounce((newScale, centerPoint) => {
+                panZoom.zoomAtPoint(newScale, centerPoint);
+            }, 16); // 16ms delay (approx 60 FPS)
 
             hammer.on('pinchstart', function (ev) {
                 startScale = panZoom.getZoom();
+                lastScale = startScale;
                 ev.preventDefault();
             });
 
@@ -262,7 +279,11 @@
                 };
                 const newScale = Math.min(72, Math.max(1, startScale * ev.scale));
 
-                panZoom.zoomAtPoint(newScale, centerPoint);
+                // Only update zoom if the scale has changed significantly
+                if (Math.abs(newScale - lastScale) > 0.01) {
+                    debouncedZoom(newScale, centerPoint);
+                    lastScale = newScale;
+                }
                 ev.preventDefault();
             });
 
