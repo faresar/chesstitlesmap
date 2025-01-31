@@ -81,18 +81,13 @@
         }
         .title {
             text-align: center;
-            font-size: calc(1rem + 2vw); /* Responsive font size */
-            margin-top: 20px; /* Add spacing above title */
+            font-size: calc(0.8rem + 1vw); /* Responsive font size */
+            margin-top: 10px; /* Add spacing above title */
+            font-weight: bold; /* Make "Last updated:" bold */
         }
-        .last-updated {
-            text-align: center;
-            font-size: calc(0.5rem + 1vw); /* Smaller responsive font size */
-            margin-top: 10px;
-            font-weight: bold;
-        }
-        .filter-container {
+        .activity-filter {
             position: absolute;
-            top: 60px;
+            top: 60px; /* Adjust based on your layout */
             left: 10px;
             z-index: 1001;
             background: rgba(255, 255, 255, 0.9);
@@ -100,35 +95,37 @@
             border-radius: 5px;
             box-shadow: 0 3px 15px rgba(0,0,0,0.2);
         }
-        .filter-container label {
+        .activity-filter label {
             font-weight: bold;
             font-size: 12px;
+            margin-bottom: 5px;
+            display: block;
         }
-        .filter-buttons {
-            display: flex;
-            gap: 5px;
-            margin-top: 5px;
-        }
-        .filter-buttons button {
+        .activity-filter button {
             background-color: white;
-            border: 1px solid black;
+            border: 1px solid #ccc;
             border-radius: 4px;
             padding: 5px 10px;
-            cursor: pointer;
             font-size: 12px;
-            position: relative;
+            cursor: pointer;
+            margin-right: 5px;
+            transition: background-color 0.3s;
         }
-        .filter-buttons button:hover::after {
-            content: attr(data-tooltip);
+        .activity-filter button:hover {
+            background-color: #f0f0f0;
+        }
+        .activity-filter button.active {
+            background-color: #007bff;
+            color: white;
+        }
+        .tooltip {
             position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: lightbeige;
+            background: beige;
             padding: 5px;
             border-radius: 5px;
             font-size: 12px;
-            white-space: nowrap;
+            display: none;
+            z-index: 1002;
             box-shadow: 0 3px 15px rgba(0,0,0,0.2);
         }
     </style>
@@ -158,7 +155,7 @@
     </nav>
 
     <!-- Title -->
-    <div class="last-updated">Last updated: <b>Jan 31, 2025</b></div>
+    <h1 class="title">Last updated: <b>Jan 31, 2025</b></h1>
 
     <!-- Map Container -->
     <div id="map-container">
@@ -167,13 +164,11 @@
             <button id="zoom-out">-</button>
             <button id="zoom-reset">R</button>
         </div>
-        <div class="filter-container">
+        <div class="activity-filter">
             <label>Player activity Filter:</label>
-            <div class="filter-buttons">
-                <button id="filter-both" data-tooltip="Players who have played rated tournament recently including inactive players marked as 'i'">Both</button>
-                <button id="filter-active" data-tooltip="Players who have played rated tournament recently">Active</button>
-                <button id="filter-inactive" data-tooltip="Inactive players that have not played rated tournament recently and are marked as 'i'">Inactive</button>
-            </div>
+            <button id="filter-both" class="active" title="Players who have played rated tournament recently including inactive players marked as 'i'">Both</button>
+            <button id="filter-active" title="Players who have played rated tournament recently">Active</button>
+            <button id="filter-inactive" title="Inactive players that have not played rated tournament recently and are marked as 'i'">Inactive</button>
         </div>
     </div>
 
@@ -190,8 +185,8 @@
             .then(response => response.json())
             .then(data => {
                 console.log('Fetched data:', data); // Debugging: Log fetched data
-                data.titled_players_by_fed.forEach(item => {
-                    titledPlayersData[item.fed] = item;
+                data.titled_players_by_country.forEach(item => {
+                    titledPlayersData[item.Country] = item;
                 });
                 console.log('Processed data:', titledPlayersData); // Debugging: Log processed data
             })
@@ -237,25 +232,65 @@
             // Filter buttons functionality
             document.getElementById("filter-both").addEventListener("click", () => {
                 currentFilter = 'both';
-                updateInfoBox(selectedCountry);
+                updateFilterButtons();
             });
             document.getElementById("filter-active").addEventListener("click", () => {
                 currentFilter = 'active';
-                updateInfoBox(selectedCountry);
+                updateFilterButtons();
             });
             document.getElementById("filter-inactive").addEventListener("click", () => {
                 currentFilter = 'inactive';
-                updateInfoBox(selectedCountry);
+                updateFilterButtons();
             });
+
+            function updateFilterButtons() {
+                document.getElementById("filter-both").classList.toggle("active", currentFilter === 'both');
+                document.getElementById("filter-active").classList.toggle("active", currentFilter === 'active');
+                document.getElementById("filter-inactive").classList.toggle("active", currentFilter === 'inactive');
+            }
 
             function showInfoBox(countryCode, x, y) {
                 const countryData = titledPlayersData[countryCode] || {};
                 const flagUrl = `https://ratings.fide.com/svg/${countryCode}.svg`;
 
+                let gmCount, wgmCount, imCount, wimCount, fmCount, wfmCount, cmCount, wcmCount;
+
+                if (currentFilter === 'both') {
+                    gmCount = countryData.Total?.GM || 0;
+                    wgmCount = countryData.Total?.WGM || 0;
+                    imCount = countryData.Total?.IM || 0;
+                    wimCount = countryData.Total?.WIM || 0;
+                    fmCount = countryData.Total?.FM || 0;
+                    wfmCount = countryData.Total?.WFM || 0;
+                    cmCount = countryData.Total?.CM || 0;
+                    wcmCount = countryData.Total?.WCM || 0;
+                } else if (currentFilter === 'active') {
+                    gmCount = countryData.Active?.GM || 0;
+                    wgmCount = countryData.Active?.WGM || 0;
+                    imCount = countryData.Active?.IM || 0;
+                    wimCount = countryData.Active?.WIM || 0;
+                    fmCount = countryData.Active?.FM || 0;
+                    wfmCount = countryData.Active?.WFM || 0;
+                    cmCount = countryData.Active?.CM || 0;
+                    wcmCount = countryData.Active?.WCM || 0;
+                } else if (currentFilter === 'inactive') {
+                    gmCount = countryData.Inactive?.GM || 0;
+                    wgmCount = countryData.Inactive?.WGM || 0;
+                    imCount = countryData.Inactive?.IM || 0;
+                    wimCount = countryData.Inactive?.WIM || 0;
+                    fmCount = countryData.Inactive?.FM || 0;
+                    wfmCount = countryData.Inactive?.WFM || 0;
+                    cmCount = countryData.Inactive?.CM || 0;
+                    wcmCount = countryData.Inactive?.WCM || 0;
+                }
+
                 infoBox.innerHTML = `
                     <img src="${flagUrl}" alt="${countryCode} Flag" class="flag">
                     <span>${countryCode}</span><br>
-                    ${getFilteredCounts(countryData)}
+                    <b>GM:</b> ${gmCount} | <b>WGM:</b> ${wgmCount}<br>
+                    <b>IM:</b> ${imCount} | <b>WIM:</b> ${wimCount}<br>
+                    <b>FM:</b> ${fmCount} | <b>WFM:</b> ${wfmCount}<br>
+                    <b>CM:</b> ${cmCount} | <b>WCM:</b> ${wcmCount}
                 `;
                 infoBox.classList.add('visible');
 
@@ -273,46 +308,6 @@
                     selectedCountry = null;
                 }
                 infoBox.classList.remove('visible');
-            }
-
-            function getFilteredCounts(countryData) {
-                let counts = '';
-                if (currentFilter === 'both') {
-                    counts = `
-                        <b>GM:</b> ${(countryData.GM || 0) + (countryData.GMi || 0)} | <b>WGM:</b> ${(countryData.WGM || 0) + (countryData.WGMi || 0)}<br>
-                        <b>IM:</b> ${(countryData.IM || 0) + (countryData.IMi || 0)} | <b>WIM:</b> ${(countryData.WIM || 0) + (countryData.WIMi || 0)}<br>
-                        <b>FM:</b> ${(countryData.FM || 0) + (countryData.FMi || 0)} | <b>WFM:</b> ${(countryData.WFM || 0) + (countryData.WFMi || 0)}<br>
-                        <b>CM:</b> ${(countryData.CM || 0) + (countryData.CMi || 0)} | <b>WCM:</b> ${(countryData.WCM || 0) + (countryData.WCMi || 0)}
-                    `;
-                } else if (currentFilter === 'active') {
-                    counts = `
-                        <b>GM:</b> ${countryData.GM || 0} | <b>WGM:</b> ${countryData.WGM || 0}<br>
-                        <b>IM:</b> ${countryData.IM || 0} | <b>WIM:</b> ${countryData.WIM || 0}<br>
-                        <b>FM:</b> ${countryData.FM || 0} | <b>WFM:</b> ${countryData.WFM || 0}<br>
-                        <b>CM:</b> ${countryData.CM || 0} | <b>WCM:</b> ${countryData.WCM || 0}
-                    `;
-                } else if (currentFilter === 'inactive') {
-                    counts = `
-                        <b>GM:</b> ${countryData.GMi || 0} | <b>WGM:</b> ${countryData.WGMi || 0}<br>
-                        <b>IM:</b> ${countryData.IMi || 0} | <b>WIM:</b> ${countryData.WIMi || 0}<br>
-                        <b>FM:</b> ${countryData.FMi || 0} | <b>WFM:</b> ${countryData.WFMi || 0}<br>
-                        <b>CM:</b> ${countryData.CMi || 0} | <b>WCM:</b> ${countryData.WCMi || 0}
-                    `;
-                }
-                return counts;
-            }
-
-            function updateInfoBox(countryCode) {
-                if (countryCode) {
-                    const countryData = titledPlayersData[countryCode] || {};
-                    const flagUrl = `https://ratings.fide.com/svg/${countryCode}.svg`;
-
-                    infoBox.innerHTML = `
-                        <img src="${flagUrl}" alt="${countryCode} Flag" class="flag">
-                        <span>${countryCode}</span><br>
-                        ${getFilteredCounts(countryData)}
-                    `;
-                }
             }
 
             const paths = svgElement.querySelectorAll("path");
