@@ -39,6 +39,9 @@
         path.selected {
             fill: #ff9900; /* Highlight selected country */
         }
+        path.highlighted {
+            fill: #007bff; /* Highlight countries with selected title */
+        }
         .info-box {
             position: fixed;
             background: rgba(255, 255, 255, 0.95);
@@ -81,27 +84,25 @@
         }
         .title {
             text-align: center;
-            font-size: calc(0.8rem + 1vw); /* Responsive font size */
+            font-size: calc(0.6rem + 1vw); /* Responsive font size */
             margin-top: 10px; /* Add spacing above title */
-            font-weight: bold; /* Make "Last updated:" bold */
         }
-        .activity-filter {
-            position: absolute;
-            top: 60px; /* Adjust based on your layout */
-            left: 10px;
-            z-index: 1001;
+        .activity-filter, .title-filter {
+            position: relative;
+            margin: 10px auto;
+            max-width: 1010px;
             background: rgba(255, 255, 255, 0.9);
             padding: 5px;
             border-radius: 5px;
             box-shadow: 0 3px 15px rgba(0,0,0,0.2);
         }
-        .activity-filter label {
+        .activity-filter label, .title-filter label {
             font-weight: bold;
             font-size: 12px;
             margin-bottom: 5px;
             display: block;
         }
-        .activity-filter button {
+        .activity-filter button, .title-filter input {
             background-color: white;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -111,10 +112,10 @@
             margin-right: 5px;
             transition: background-color 0.3s;
         }
-        .activity-filter button:hover {
+        .activity-filter button:hover, .title-filter input:hover {
             background-color: #f0f0f0;
         }
-        .activity-filter button.active {
+        .activity-filter button.active, .title-filter input:checked {
             background-color: #007bff;
             color: white;
         }
@@ -155,7 +156,7 @@
     </nav>
 
     <!-- Title -->
-    <h1 class="title">Last updated: <b>Jan 31, 2025</b></h1>
+    <h1 class="title">Last updated: Jan 31, 2025</h1>
 
     <!-- Map Container -->
     <div id="map-container">
@@ -164,12 +165,28 @@
             <button id="zoom-out">-</button>
             <button id="zoom-reset">R</button>
         </div>
-        <div class="activity-filter">
-            <label>Player activity Filter:</label>
-            <button id="filter-both" class="active" title="Players who have played rated tournament recently including inactive players marked as 'i'">Both</button>
-            <button id="filter-active" title="Players who have played rated tournament recently">Active</button>
-            <button id="filter-inactive" title="Inactive players that have not played rated tournament recently and are marked as 'i'">Inactive</button>
-        </div>
+    </div>
+
+    <!-- Activity Filter -->
+    <div class="activity-filter">
+        <label>Player activity Filter:</label>
+        <button id="filter-both" class="active" title="Players who have played rated tournament recently including inactive players marked as 'i'">Both</button>
+        <button id="filter-active" title="Players who have played rated tournament recently">Active</button>
+        <button id="filter-inactive" title="Inactive players that have not played rated tournament recently and are marked as 'i'">Inactive</button>
+    </div>
+
+    <!-- Title Filter -->
+    <div class="title-filter">
+        <label>Highlight titles on the map:</label>
+        <input type="checkbox" id="none" name="title" value="none" checked> None
+        <input type="checkbox" id="gm" name="title" value="GM"> GM
+        <input type="checkbox" id="im" name="title" value="IM"> IM
+        <input type="checkbox" id="fm" name="title" value="FM"> FM
+        <input type="checkbox" id="cm" name="title" value="CM"> CM
+        <input type="checkbox" id="wgm" name="title" value="WGM"> WGM
+        <input type="checkbox" id="wim" name="title" value="WIM"> WIM
+        <input type="checkbox" id="wfm" name="title" value="WFM"> WFM
+        <input type="checkbox" id="wcm" name="title" value="WCM"> WCM
     </div>
 
     <!-- Info Box -->
@@ -179,6 +196,7 @@
     <script>
         let titledPlayersData = {};
         let currentFilter = 'both'; // Default filter
+        let currentTitleFilter = 'none'; // Default title filter
 
         // Fetch the titled players data
         fetch('titled_players_by_country.json')
@@ -233,20 +251,67 @@
             document.getElementById("filter-both").addEventListener("click", () => {
                 currentFilter = 'both';
                 updateFilterButtons();
+                updateTitleHighlighting();
             });
             document.getElementById("filter-active").addEventListener("click", () => {
                 currentFilter = 'active';
                 updateFilterButtons();
+                updateTitleHighlighting();
             });
             document.getElementById("filter-inactive").addEventListener("click", () => {
                 currentFilter = 'inactive';
                 updateFilterButtons();
+                updateTitleHighlighting();
             });
 
             function updateFilterButtons() {
                 document.getElementById("filter-both").classList.toggle("active", currentFilter === 'both');
                 document.getElementById("filter-active").classList.toggle("active", currentFilter === 'active');
                 document.getElementById("filter-inactive").classList.toggle("active", currentFilter === 'inactive');
+            }
+
+            // Title filter functionality
+            const titleCheckboxes = document.querySelectorAll('.title-filter input');
+            titleCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    if (checkbox.checked && checkbox.value !== 'none') {
+                        // Uncheck all other checkboxes
+                        titleCheckboxes.forEach(cb => {
+                            if (cb !== checkbox) cb.checked = false;
+                        });
+                        currentTitleFilter = checkbox.value;
+                    } else if (checkbox.checked && checkbox.value === 'none') {
+                        // Uncheck all other checkboxes
+                        titleCheckboxes.forEach(cb => {
+                            if (cb !== checkbox) cb.checked = false;
+                        });
+                        currentTitleFilter = 'none';
+                    }
+                    updateTitleHighlighting();
+                });
+            });
+
+            function updateTitleHighlighting() {
+                const paths = svgElement.querySelectorAll("path");
+                paths.forEach(path => {
+                    const countryCode = path.id;
+                    const countryData = titledPlayersData[countryCode] || {};
+
+                    let count = 0;
+                    if (currentFilter === 'both') {
+                        count = countryData.Total?.[currentTitleFilter] || 0;
+                    } else if (currentFilter === 'active') {
+                        count = countryData.Active?.[currentTitleFilter] || 0;
+                    } else if (currentFilter === 'inactive') {
+                        count = countryData.Inactive?.[currentTitleFilter] || 0;
+                    }
+
+                    if (currentTitleFilter !== 'none' && count > 0) {
+                        path.classList.add('highlighted');
+                    } else {
+                        path.classList.remove('highlighted');
+                    }
+                });
             }
 
             function showInfoBox(countryCode, x, y) {
@@ -369,39 +434,3 @@
                     initialScale = panZoom.getZoom();
                 }
             });
-
-            mapContainer.addEventListener("touchmove", (e) => {
-                if (e.touches.length === 2 && initialDistance !== null) {
-                    e.preventDefault(); // Prevent default scrolling behavior
-
-                    // Calculate the current distance between two fingers
-                    const currentDistance = Math.hypot(
-                        e.touches[0].clientX - e.touches[1].clientX,
-                        e.touches[0].clientY - e.touches[1].clientY
-                    );
-
-                    // Calculate the scale factor relative to the initial distance
-                    const scale = (currentDistance / initialDistance) * initialScale;
-
-                    // Get the center point between the two fingers
-                    const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-                    const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-
-                    // Convert the center point to SVG coordinates
-                    const svgPoint = svgElement.createSVGPoint();
-                    svgPoint.x = centerX;
-                    svgPoint.y = centerY;
-                    const transformedPoint = svgPoint.matrixTransform(svgElement.getScreenCTM().inverse());
-
-                    // Apply the zoom at the center point
-                    panZoom.zoomAtPoint(scale, transformedPoint);
-                }
-            });
-
-            mapContainer.addEventListener("touchend", () => {
-                initialDistance = null; // Reset the initial distance
-            });
-        }
-    </script>
-</body>
-</html>
