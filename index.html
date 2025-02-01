@@ -16,47 +16,50 @@
       width: 100%;
       overflow-y: auto;
     }
-    /* Map container now holds the world stats above the SVG image */
+    /* Map container now holds both the SVG and the zoom buttons overlayed inside the svg container */
     #map-container {
       width: 100%;
       max-width: 1010px;
       margin: 0 auto;
-      background-color: lightblue;
       position: relative;
+      /* border and background can be retained if desired */
+      border: 1px solid lightblue;
+      background-color: lightblue;
       overflow: hidden;
       touch-action: none;
     }
-    /* Worldwide Numbers (formerly absolute overlay) is now a normal block
-       element placed at the top of the container with no extra vertical margin */
-    .worldwide-numbers {
-      border: 1px solid black;
-      background: rgba(0, 0, 0, 0.7);
-      border-radius: 5px;
-      padding: 10px;
-      color: white;
-      font-family: 'Roboto', sans-serif;
-      font-size: 0.8rem;
-      text-align: center;
-      margin: 0;
-    }
-    @media (max-width: 600px) {
-      .worldwide-numbers {
-        font-size: 0.7rem;
-      }
-    }
-    /* The SVG image will be appended into a div placed immediately below the stats */
+    /* The svg container -- the svg will be appended here */
     #svg-container {
       width: 100%;
       height: auto;
-      aspect-ratio: 1010 / 666;
-      display: block;
+      aspect-ratio: 1010/666;
+      position: relative;
+    }
+    /* Zoom controls: now inside the svg container as an overlay */
+    .zoom-controls {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      z-index: 1002;
+    }
+    .zoom-controls button {
+      background-color: white;
+      border: 1px solid black;
+      border-radius: 4px;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      font-family: 'Roboto', sans-serif;
+      font-size: 16px;
     }
     path {
       fill: #548b5b;
       transition: fill 0.3s;
       cursor: pointer;
     }
-    /* Hover and selected state */
     path:hover {
       fill: #ff9900;
     }
@@ -75,47 +78,39 @@
       display: none;
       font-family: 'Roboto', sans-serif;
       font-size: 14px;
-      box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 3px 15px rgba(0,0,0,0.2);
       z-index: 1000;
     }
     .info-box.visible {
       display: block;
     }
-    .zoom-controls {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      z-index: 1001;
-    }
-    .zoom-controls button {
-      background-color: white;
-      border: 1px solid black;
-      border-radius: 4px;
-      width: 30px;
-      height: 30px;
-      cursor: pointer;
-      font-family: 'Roboto', sans-serif;
-      font-size: 16px;
-    }
-    .flag {
-      width: auto;
-      height: 16px;
-      vertical-align: middle;
-      margin-right: 5px;
-    }
-    .title {
+    /* World Stats box: displayed as a separate block immediately attached (with no gap) beneath the svg */
+    .world-stats {
       text-align: center;
-      font-size: calc(0.8rem + 1vw);
-      margin-top: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      border: 1px solid black;
+      border-radius: 5px;
+      padding: 10px;
+      color: white;
+      font-family: 'Roboto', sans-serif;
+      font-size: 0.9rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .world-stats b {
+      font-weight: bold;
+    }
+    /* Responsive: on small screens reduce font size */
+    @media (max-width: 600px) {
+      .world-stats {
+        font-size: 0.8rem;
+      }
     }
     .activity-filter {
       margin-top: 20px;
       text-align: center;
       z-index: 1001;
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(255,255,255,0.9);
       padding: 10px;
       border-radius: 5px;
       box-shadow: 0 3px 15px rgba(0,0,0,0.2);
@@ -147,7 +142,7 @@
       margin-top: 10px;
       text-align: center;
       z-index: 1001;
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(255,255,255,0.9);
       padding: 10px;
       border-radius: 5px;
       box-shadow: 0 3px 15px rgba(0,0,0,0.2);
@@ -199,24 +194,31 @@
 
   <!-- Map Container -->
   <div id="map-container">
-    <!-- Zoom controls appear over the SVG image -->
-    <div class="zoom-controls">
-      <button id="zoom-in">+</button>
-      <button id="zoom-out">-</button>
-      <button id="zoom-reset">R</button>
+    <!-- World Stats box: visually attached (placed above the svg container) -->
+    <div class="world-stats" id="world-stats">
+      <div><b>World Stats</b></div>
+      <div>
+         <b>GM:</b> <span id="gm-count">0</span>&emsp;
+         <b>IM:</b> <span id="im-count">0</span>&emsp;
+         <b>FM:</b> <span id="fm-count">0</span>&emsp;
+         <b>CM:</b> <span id="cm-count">0</span>
+      </div>
+      <div>
+         <b>WGM:</b> <span id="wgm-count">0</span>&emsp;
+         <b>WIM:</b> <span id="wim-count">0</span>&emsp;
+         <b>WFM:</b> <span id="wfm-count">0</span>&emsp;
+         <b>WCM:</b> <span id="wcm-count">0</span>
+      </div>
     </div>
-
-    <!-- Worldwide Numbers Box now placed above the SVG image with no extra gap -->
-    <div class="worldwide-numbers" id="worldwide-numbers">
-      Worldwide numbers<br>
-      <b>GM:</b> <span id="gm-count">0</span> | <b>WGM:</b> <span id="wgm-count">0</span><br>
-      <b>IM:</b> <span id="im-count">0</span> | <b>WIM:</b> <span id="wim-count">0</span><br>
-      <b>FM:</b> <span id="fm-count">0</span> | <b>WFM:</b> <span id="wfm-count">0</span><br>
-      <b>CM:</b> <span id="cm-count">0</span> | <b>WCM:</b> <span id="wcm-count">0</span>
+    <!-- SVG Container -->
+    <div id="svg-container">
+      <!-- Zoom controls will be inserted here (so they appear over the SVG) -->
+      <div class="zoom-controls">
+         <button id="zoom-in">+</button>
+         <button id="zoom-out">-</button>
+         <button id="zoom-reset">R</button>
+      </div>
     </div>
-
-    <!-- This container will hold the loaded SVG map -->
-    <div id="svg-container"></div>
   </div>
 
   <!-- Toggles placed below the map -->
@@ -255,7 +257,7 @@
     let currentFilter = 'both'; // Default filter
     let currentHighlight = 'none'; // Default highlight
 
-    // Fetch the titled players data and update counts immediately
+    // Fetch the titled players data
     fetch('titled_players_by_country.json')
       .then(response => response.json())
       .then(data => {
@@ -265,26 +267,28 @@
         });
         console.log('Processed data:', titledPlayersData);
         updateWorldwideNumbers();
+        // Trigger the both filter on load (simulate click)
+        document.getElementById('filter-both').click();
       })
       .catch(error => {
         console.error('Error fetching titled players data:', error);
       });
 
-    // Load the SVG map and append it into the svg-container div
+    // Load the SVG map into the svg-container
     fetch('world_fide.svg')
       .then(response => response.text())
       .then(svgContent => {
-        document.getElementById('svg-container').innerHTML = svgContent.trim();
+        document.getElementById('svg-container').innerHTML += svgContent.trim();
         initializeMap();
       });
 
     function initializeMap() {
-      const mapContainer = document.getElementById('map-container');
-      const svgElement = document.getElementById('svg-container').querySelector('svg');
+      const svgContainer = document.getElementById('svg-container');
+      const svgElement = svgContainer.querySelector('svg');
       const infoBox = document.getElementById("info-box");
       let selectedCountry = null;
 
-      // Initialize svg-pan-zoom
+      // Initialize svg-pan-zoom on the svgElement
       const panZoom = svgPanZoom(svgElement, {
         zoomEnabled: true,
         controlIconsEnabled: false,
@@ -304,7 +308,7 @@
         panZoom.resize().fit().center();
       });
 
-      // Filter buttons
+      // Filter buttons functionality
       document.getElementById("filter-both").addEventListener("click", () => {
         currentFilter = 'both';
         updateFilterButtons();
@@ -330,7 +334,7 @@
         document.getElementById("filter-inactive").classList.toggle("active", currentFilter === 'inactive');
       }
 
-      // Highlight Titles Checkboxes event handling
+      // Highlight Titles Checkboxes functionality
       const highlightCheckboxes = document.querySelectorAll('.highlight-titles input[type="checkbox"]');
       highlightCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', () => {
@@ -370,9 +374,7 @@
       }
 
       function updateWorldwideNumbers() {
-        let gmCount = 0, wgmCount = 0, imCount = 0, wimCount = 0,
-            fmCount = 0, wfmCount = 0, cmCount = 0, wcmCount = 0;
-
+        let gmCount = 0, wgmCount = 0, imCount = 0, wimCount = 0, fmCount = 0, wfmCount = 0, cmCount = 0, wcmCount = 0;
         Object.values(titledPlayersData).forEach(countryData => {
           if (currentFilter === 'both') {
             gmCount += countryData.Total?.GM || 0;
@@ -446,6 +448,7 @@
           cmCount = countryData.Inactive?.CM || 0;
           wcmCount = countryData.Inactive?.WCM || 0;
         }
+
         infoBox.innerHTML = `
           <img src="${flagUrl}" alt="${countryCode} Flag" class="flag">
           <a href="${window.location.origin}/${countryCode}" target="_blank">${countryCode}</a><br>
@@ -458,7 +461,7 @@
 
         const boxHeight = infoBox.offsetHeight || 50;
         const boxWidth = infoBox.offsetWidth || 100;
-        infoBox.style.left = `${x - boxWidth / 2}px`;
+        infoBox.style.left = `${x - boxWidth/2}px`;
         infoBox.style.top = `${y - boxHeight}px`;
       }
 
@@ -477,7 +480,7 @@
             showInfoBox(path.id, e.clientX, e.clientY);
           }
         });
-        path.addEventListener("mouseleave", (e) => {
+        path.addEventListener("mouseleave", () => {
           if (!selectedCountry && !infoBox.matches(':hover')) hideInfoBox();
         });
         path.addEventListener("touchstart", (e) => {
@@ -496,20 +499,18 @@
       infoBox.addEventListener('mouseleave', () => {
         if (!selectedCountry) hideInfoBox();
       });
-
       document.addEventListener("touchstart", (e) => {
         if (!infoBox.contains(e.target) && !Array.from(paths).some(path => path.contains(e.target))) {
           hideInfoBox();
         }
       });
-
       window.addEventListener('resize', () => {
         panZoom.resize().fit().center();
       });
 
       let initialDistance = null;
       let initialScale = 1;
-      mapContainer.addEventListener("touchstart", (e) => {
+      svgContainer.addEventListener("touchstart", (e) => {
         if (e.touches.length === 2) {
           initialDistance = Math.hypot(
             e.touches[0].clientX - e.touches[1].clientX,
@@ -518,7 +519,7 @@
           initialScale = panZoom.getZoom();
         }
       });
-      mapContainer.addEventListener("touchmove", (e) => {
+      svgContainer.addEventListener("touchmove", (e) => {
         if (e.touches.length === 2 && initialDistance !== null) {
           e.preventDefault();
           const currentDistance = Math.hypot(
@@ -535,7 +536,7 @@
           panZoom.zoomAtPoint(scale, transformedPoint);
         }
       });
-      mapContainer.addEventListener("touchend", () => {
+      svgContainer.addEventListener("touchend", () => {
         initialDistance = null;
       });
     }
