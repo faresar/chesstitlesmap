@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>ChessTitlesMap.com</title>
+  <title>Chess Titles Map</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
@@ -16,7 +16,7 @@
       width: 100%;
       overflow-y: auto;
     }
-    /* Map container holds both the SVG and the zoom buttons (overlaid inside the SVG container) */
+    /* Map container */
     #map-container {
       width: 100%;
       max-width: 1010px;
@@ -27,14 +27,14 @@
       overflow: hidden;
       touch-action: none;
     }
-    /* The SVG container (SVG will be appended here) */
+    /* SVG container remains unchanged */
     #svg-container {
       width: 100%;
       height: auto;
       aspect-ratio: 1010/666;
       position: relative;
     }
-    /* Zoom controls: placed over the SVG */
+    /* Zoom controls placed over the SVG */
     .zoom-controls {
       position: absolute;
       top: 10px;
@@ -54,6 +54,14 @@
       font-family: 'Roboto', sans-serif;
       font-size: 16px;
     }
+    /* Responsive zoom buttons on mobile */
+    @media (max-width: 600px) {
+      .zoom-controls button {
+        width: 25px;
+        height: 25px;
+        font-size: 14px;
+      }
+    }
     path {
       fill: #548b5b;
       transition: fill 0.3s;
@@ -70,7 +78,7 @@
     }
     .info-box {
       position: fixed;
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(255,255,255,0.95);
       border-radius: 5px;
       padding: 5px 10px;
       pointer-events: auto;
@@ -83,10 +91,10 @@
     .info-box.visible {
       display: block;
     }
-    /* World Stats box – immediately attached above the SVG with no rounded edges */
+    /* World Stats box – immediately above the SVG */
     .world-stats {
       text-align: center;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0,0,0,0.7);
       border: 1px solid black;
       border-radius: 0;
       padding: 10px;
@@ -102,16 +110,19 @@
     .world-stats u {
       text-decoration: underline;
     }
-    /* Responsive: on small screens reduce font size */
     @media (max-width: 600px) {
       .world-stats {
         font-size: 0.8rem;
       }
     }
+    /* New container for filter layers to match SVG width */
+    .filter-wrapper {
+      max-width: 1010px;
+      margin: 20px auto;
+      width: 100%;
+    }
     .activity-filter {
-      margin-top: 20px;
       text-align: center;
-      z-index: 1001;
       background: rgba(255,255,255,0.9);
       padding: 10px;
       border-radius: 5px;
@@ -141,13 +152,12 @@
       color: white;
     }
     .highlight-titles {
-      margin-top: 10px;
       text-align: center;
-      z-index: 1001;
       background: rgba(255,255,255,0.9);
       padding: 10px;
       border-radius: 5px;
       box-shadow: 0 3px 15px rgba(0,0,0,0.2);
+      margin-top: 10px;
     }
     .highlight-titles label {
       font-weight: bold;
@@ -167,12 +177,23 @@
     .last-updated span {
       font-weight: normal;
     }
-    /* Make flag image size same as country code */
+    /* Flag image same size as country code */
     .flag {
       height: 1em;
       width: auto;
       vertical-align: middle;
       margin-right: 5px;
+    }
+    /* AdSense placeholder style (for suggestions) */
+    .ads-placeholder {
+      width: 100%;
+      max-width: 1010px;
+      margin: 20px auto;
+      text-align: center;
+      border: 1px dashed #aaa;
+      padding: 10px;
+      font-size: 14px;
+      color: #666;
     }
   </style>
 </head>
@@ -180,7 +201,7 @@
   <!-- Navigation Bar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">ChessTitlesMap.com</a>
+      <a class="navbar-brand" href="#">Chess Titles Map</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
               aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
          <span class="navbar-toggler-icon"></span>
@@ -203,7 +224,7 @@
 
   <!-- Map Container -->
   <div id="map-container">
-    <!-- World Stats box – immediately attached above the SVG with no rounded edges -->
+    <!-- World Stats box – above the map -->
     <div class="world-stats" id="world-stats">
       <div><u><b>Worlds Stats</b></u></div>
       <div>
@@ -230,26 +251,32 @@
     </div>
   </div>
 
-  <!-- Toggles placed below the map -->
-  <div class="activity-filter">
-    <label>Player activity Filter:</label>
-    <button id="filter-both" class="active" title="Players who have played rated tournament recently including inactive players marked as 'i'">Both</button>
-    <button id="filter-active" title="Players who have played rated tournament recently">Active</button>
-    <button id="filter-inactive" title="Inactive players that have not played rated tournament recently and are marked as 'i'">Inactive</button>
+  <!-- AdSense placeholder suggestion: Horizontal placement immediately below the map -->
+  <div class="ads-placeholder">
+    AdSense Placeholder – Recommended here to maximize visibility without disrupting layout.
   </div>
 
-  <!-- Highlight Titles Checkboxes -->
-  <div class="highlight-titles">
-    <label>Highlight titles on the map:</label>
-    <input type="checkbox" id="highlight-none" name="highlight" value="none" checked> None
-    <input type="checkbox" id="highlight-gm" name="highlight" value="GM"> GM
-    <input type="checkbox" id="highlight-im" name="highlight" value="IM"> IM
-    <input type="checkbox" id="highlight-fm" name="highlight" value="FM"> FM
-    <input type="checkbox" id="highlight-cm" name="highlight" value="CM"> CM
-    <input type="checkbox" id="highlight-wgm" name="highlight" value="WGM"> WGM
-    <input type="checkbox" id="highlight-wim" name="highlight" value="WIM"> WIM
-    <input type="checkbox" id="highlight-wfm" name="highlight" value="WFM"> WFM
-    <input type="checkbox" id="highlight-wcm" name="highlight" value="WCM"> WCM
+  <!-- Filter Layers: wrapped in a container matching the SVG width -->
+  <div class="filter-wrapper">
+    <div class="activity-filter">
+      <label>Player activity Filter:</label>
+      <button id="filter-both" class="active" title="Players who have played rated tournament recently including inactive players marked as 'i'">Both</button>
+      <button id="filter-active" title="Players who have played rated tournament recently">Active</button>
+      <button id="filter-inactive" title="Inactive players that have not played rated tournament recently and are marked as 'i'">Inactive</button>
+    </div>
+
+    <div class="highlight-titles">
+      <label>Highlight titles on the map:</label>
+      <input type="checkbox" id="highlight-none" name="highlight" value="none" checked> None
+      <input type="checkbox" id="highlight-gm" name="highlight" value="GM"> GM
+      <input type="checkbox" id="highlight-im" name="highlight" value="IM"> IM
+      <input type="checkbox" id="highlight-fm" name="highlight" value="FM"> FM
+      <input type="checkbox" id="highlight-cm" name="highlight" value="CM"> CM
+      <input type="checkbox" id="highlight-wgm" name="highlight" value="WGM"> WGM
+      <input type="checkbox" id="highlight-wim" name="highlight" value="WIM"> WIM
+      <input type="checkbox" id="highlight-wfm" name="highlight" value="WFM"> WFM
+      <input type="checkbox" id="highlight-wcm" name="highlight" value="WCM"> WCM
+    </div>
   </div>
 
   <!-- Last Updated Text -->
@@ -267,10 +294,9 @@
     let currentFilter = 'both';
     let currentHighlight = 'none';
 
-    // Global function to update world stats based on the currently loaded data and currentFilter
+    // Global function to update world stats
     function updateWorldwideNumbers() {
-      let gmCount = 0, wgmCount = 0, imCount = 0, wimCount = 0,
-          fmCount = 0, wfmCount = 0, cmCount = 0, wcmCount = 0;
+      let gmCount = 0, wgmCount = 0, imCount = 0, wimCount = 0, fmCount = 0, wfmCount = 0, cmCount = 0, wcmCount = 0;
       Object.values(titledPlayersData).forEach(countryData => {
         if (currentFilter === 'both') {
           gmCount += countryData.Total?.GM || 0;
@@ -311,7 +337,7 @@
       document.getElementById('wcm-count').textContent = wcmCount;
     }
 
-    // Fetch the titled players data
+    // Fetch data and update counts immediately
     fetch('titled_players_by_country.json')
       .then(response => response.json())
       .then(data => {
@@ -320,8 +346,8 @@
           titledPlayersData[item.Country] = item;
         });
         console.log('Processed data:', titledPlayersData);
+        // The default filter is "both" so update counts right away.
         updateWorldwideNumbers();
-        // (No automatic filter toggles – let the default filter ("both") persist.)
       })
       .catch(error => {
         console.error('Error fetching titled players data:', error);
@@ -341,7 +367,6 @@
       const infoBox = document.getElementById("info-box");
       let selectedCountry = null;
 
-      // Initialize svg-pan-zoom on the SVG element
       const panZoom = svgPanZoom(svgElement, {
         zoomEnabled: true,
         controlIconsEnabled: false,
@@ -360,7 +385,7 @@
         panZoom.resize().fit().center();
       });
 
-      // Filter buttons functionality – update the global currentFilter and then update counts
+      // Filter buttons functionality
       document.getElementById("filter-both").addEventListener("click", () => {
         currentFilter = 'both';
         updateFilterButtons();
