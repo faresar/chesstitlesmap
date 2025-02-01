@@ -99,6 +99,9 @@
     .world-stats b {
       font-weight: bold;
     }
+    .world-stats u {
+      text-decoration: underline;
+    }
     /* Responsive: on small screens reduce font size */
     @media (max-width: 600px) {
       .world-stats {
@@ -179,7 +182,7 @@
     <div class="container-fluid">
       <a class="navbar-brand" href="#">Chess Titles Map</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
-        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
          <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
@@ -259,9 +262,54 @@
 
   <!-- Scripts -->
   <script>
+    "use strict";
     let titledPlayersData = {};
     let currentFilter = 'both';
     let currentHighlight = 'none';
+
+    // Global function to update world stats based on the currently loaded data and currentFilter
+    function updateWorldwideNumbers() {
+      let gmCount = 0, wgmCount = 0, imCount = 0, wimCount = 0,
+          fmCount = 0, wfmCount = 0, cmCount = 0, wcmCount = 0;
+      Object.values(titledPlayersData).forEach(countryData => {
+        if (currentFilter === 'both') {
+          gmCount += countryData.Total?.GM || 0;
+          wgmCount += countryData.Total?.WGM || 0;
+          imCount += countryData.Total?.IM || 0;
+          wimCount += countryData.Total?.WIM || 0;
+          fmCount += countryData.Total?.FM || 0;
+          wfmCount += countryData.Total?.WFM || 0;
+          cmCount += countryData.Total?.CM || 0;
+          wcmCount += countryData.Total?.WCM || 0;
+        } else if (currentFilter === 'active') {
+          gmCount += countryData.Active?.GM || 0;
+          wgmCount += countryData.Active?.WGM || 0;
+          imCount += countryData.Active?.IM || 0;
+          wimCount += countryData.Active?.WIM || 0;
+          fmCount += countryData.Active?.FM || 0;
+          wfmCount += countryData.Active?.WFM || 0;
+          cmCount += countryData.Active?.CM || 0;
+          wcmCount += countryData.Active?.WCM || 0;
+        } else if (currentFilter === 'inactive') {
+          gmCount += countryData.Inactive?.GM || 0;
+          wgmCount += countryData.Inactive?.WGM || 0;
+          imCount += countryData.Inactive?.IM || 0;
+          wimCount += countryData.Inactive?.WIM || 0;
+          fmCount += countryData.Inactive?.FM || 0;
+          wfmCount += countryData.Inactive?.WFM || 0;
+          cmCount += countryData.Inactive?.CM || 0;
+          wcmCount += countryData.Inactive?.WCM || 0;
+        }
+      });
+      document.getElementById('gm-count').textContent = gmCount;
+      document.getElementById('wgm-count').textContent = wgmCount;
+      document.getElementById('im-count').textContent = imCount;
+      document.getElementById('wim-count').textContent = wimCount;
+      document.getElementById('fm-count').textContent = fmCount;
+      document.getElementById('wfm-count').textContent = wfmCount;
+      document.getElementById('cm-count').textContent = cmCount;
+      document.getElementById('wcm-count').textContent = wcmCount;
+    }
 
     // Fetch the titled players data
     fetch('titled_players_by_country.json')
@@ -273,11 +321,7 @@
         });
         console.log('Processed data:', titledPlayersData);
         updateWorldwideNumbers();
-        // Use a 500ms delay after data load before automatically triggering filters to update counts
-        setTimeout(function() {
-          document.getElementById('filter-active').click();
-          document.getElementById('filter-both').click();
-        }, 500);
+        // (No automatic filter toggles – let the default filter ("both") persist.)
       })
       .catch(error => {
         console.error('Error fetching titled players data:', error);
@@ -316,7 +360,7 @@
         panZoom.resize().fit().center();
       });
 
-      // Filter buttons functionality
+      // Filter buttons functionality – update the global currentFilter and then update counts
       document.getElementById("filter-both").addEventListener("click", () => {
         currentFilter = 'both';
         updateFilterButtons();
@@ -378,48 +422,6 @@
             }
           }
         });
-      }
-
-      function updateWorldwideNumbers() {
-        let gmCount = 0, wgmCount = 0, imCount = 0, wimCount = 0, fmCount = 0, wfmCount = 0, cmCount = 0, wcmCount = 0;
-        Object.values(titledPlayersData).forEach(countryData => {
-          if (currentFilter === 'both') {
-            gmCount += countryData.Total?.GM || 0;
-            wgmCount += countryData.Total?.WGM || 0;
-            imCount += countryData.Total?.IM || 0;
-            wimCount += countryData.Total?.WIM || 0;
-            fmCount += countryData.Total?.FM || 0;
-            wfmCount += countryData.Total?.WFM || 0;
-            cmCount += countryData.Total?.CM || 0;
-            wcmCount += countryData.Total?.WCM || 0;
-          } else if (currentFilter === 'active') {
-            gmCount += countryData.Active?.GM || 0;
-            wgmCount += countryData.Active?.WGM || 0;
-            imCount += countryData.Active?.IM || 0;
-            wimCount += countryData.Active?.WIM || 0;
-            fmCount += countryData.Active?.FM || 0;
-            wfmCount += countryData.Active?.WFM || 0;
-            cmCount += countryData.Active?.CM || 0;
-            wcmCount += countryData.Active?.WCM || 0;
-          } else if (currentFilter === 'inactive') {
-            gmCount += countryData.Inactive?.GM || 0;
-            wgmCount += countryData.Inactive?.WGM || 0;
-            imCount += countryData.Inactive?.IM || 0;
-            wimCount += countryData.Inactive?.WIM || 0;
-            fmCount += countryData.Inactive?.FM || 0;
-            wfmCount += countryData.Inactive?.WFM || 0;
-            cmCount += countryData.Inactive?.CM || 0;
-            wcmCount += countryData.Inactive?.WCM || 0;
-          }
-        });
-        document.getElementById('gm-count').textContent = gmCount;
-        document.getElementById('wgm-count').textContent = wgmCount;
-        document.getElementById('im-count').textContent = imCount;
-        document.getElementById('wim-count').textContent = wimCount;
-        document.getElementById('fm-count').textContent = fmCount;
-        document.getElementById('wfm-count').textContent = wfmCount;
-        document.getElementById('cm-count').textContent = cmCount;
-        document.getElementById('wcm-count').textContent = wcmCount;
       }
 
       function showInfoBox(countryCode, x, y) {
