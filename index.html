@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>ChessTitlesMap.com</title>
+  <title>Chess Titles Map</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
@@ -27,7 +27,7 @@
       overflow: hidden;
       touch-action: none;
     }
-    /* SVG container */
+    /* SVG container remains unchanged */
     #svg-container {
       width: 100%;
       height: auto;
@@ -54,7 +54,7 @@
       font-family: 'Roboto', sans-serif;
       font-size: 16px;
     }
-    /* Responsive: smaller zoom buttons on mobile */
+    /* Responsive zoom buttons on mobile */
     @media (max-width: 600px) {
       .zoom-controls button {
         width: 25px;
@@ -78,7 +78,7 @@
     }
     .info-box {
       position: fixed;
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(255,255,255,0.95);
       border-radius: 5px;
       padding: 5px 10px;
       pointer-events: auto;
@@ -91,7 +91,7 @@
     .info-box.visible {
       display: block;
     }
-    /* World Stats box – above the SVG */
+    /* World Stats box – immediately above the SVG */
     .world-stats {
       text-align: center;
       background: rgba(0,0,0,0.7);
@@ -115,7 +115,7 @@
         font-size: 0.8rem;
       }
     }
-    /* Filter layer wrapper: width set to match the SVG and centered */
+    /* New container for filter layers to match SVG width */
     .filter-wrapper {
       max-width: 1010px;
       margin: 20px auto;
@@ -151,7 +151,6 @@
       background-color: #007bff;
       color: white;
     }
-    /* Redesigned Highlight Titles layer using Bootstrap switch markup */
     .highlight-titles {
       text-align: center;
       background: rgba(255,255,255,0.9);
@@ -160,14 +159,14 @@
       box-shadow: 0 3px 15px rgba(0,0,0,0.2);
       margin-top: 10px;
     }
-    /* Each switch will be inline */
-    .highlight-titles .form-check {
-      display: inline-block;
-      margin-right: 10px;
-      margin-bottom: 5px;
-    }
-    .highlight-titles .form-check-label {
+    .highlight-titles label {
+      font-weight: bold;
       font-size: 12px;
+      margin-bottom: 5px;
+      display: block;
+    }
+    .highlight-titles input[type="checkbox"] {
+      margin-right: 5px;
     }
     .last-updated {
       font-size: 14px;
@@ -185,16 +184,26 @@
       vertical-align: middle;
       margin-right: 5px;
     }
+    /* AdSense placeholder style (for suggestions) */
+    .ads-placeholder {
+      width: 100%;
+      max-width: 1010px;
+      margin: 20px auto;
+      text-align: center;
+      border: 1px dashed #aaa;
+      padding: 10px;
+      font-size: 14px;
+      color: #666;
+    }
   </style>
 </head>
 <body>
   <!-- Navigation Bar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">ChessTitlesMap.com</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-              data-bs-target="#navbarNav" aria-controls="navbarNav"
-              aria-expanded="false" aria-label="Toggle navigation">
+      <a class="navbar-brand" href="#">Chess Titles Map</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
          <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
@@ -242,7 +251,12 @@
     </div>
   </div>
 
-  <!-- Filter Layers (wrapped to match SVG width) -->
+  <!-- AdSense placeholder suggestion: Horizontal placement immediately below the map -->
+  <div class="ads-placeholder">
+    AdSense Placeholder – Recommended here to maximize visibility without disrupting layout.
+  </div>
+
+  <!-- Filter Layers: wrapped in a container matching the SVG width -->
   <div class="filter-wrapper">
     <div class="activity-filter">
       <label>Player activity Filter:</label>
@@ -253,43 +267,15 @@
 
     <div class="highlight-titles">
       <label>Highlight titles on the map:</label>
-      <!-- Each switch is built with Bootstrap's form-check form-switch form-check-inline -->
-      <div class="form-check form-switch form-check-inline">
-        <input class="form-check-input" type="checkbox" id="highlight-none" name="highlight" value="none" checked>
-        <label class="form-check-label" for="highlight-none">None</label>
-      </div>
-      <div class="form-check form-switch form-check-inline">
-        <input class="form-check-input" type="checkbox" id="highlight-gm" name="highlight" value="GM">
-        <label class="form-check-label" for="highlight-gm">GM</label>
-      </div>
-      <div class="form-check form-switch form-check-inline">
-        <input class="form-check-input" type="checkbox" id="highlight-im" name="highlight" value="IM">
-        <label class="form-check-label" for="highlight-im">IM</label>
-      </div>
-      <div class="form-check form-switch form-check-inline">
-        <input class="form-check-input" type="checkbox" id="highlight-fm" name="highlight" value="FM">
-        <label class="form-check-label" for="highlight-fm">FM</label>
-      </div>
-      <div class="form-check form-switch form-check-inline">
-        <input class="form-check-input" type="checkbox" id="highlight-cm" name="highlight" value="CM">
-        <label class="form-check-label" for="highlight-cm">CM</label>
-      </div>
-      <div class="form-check form-switch form-check-inline">
-        <input class="form-check-input" type="checkbox" id="highlight-wgm" name="highlight" value="WGM">
-        <label class="form-check-label" for="highlight-wgm">WGM</label>
-      </div>
-      <div class="form-check form-switch form-check-inline">
-        <input class="form-check-input" type="checkbox" id="highlight-wim" name="highlight" value="WIM">
-        <label class="form-check-label" for="highlight-wim">WIM</label>
-      </div>
-      <div class="form-check form-switch form-check-inline">
-        <input class="form-check-input" type="checkbox" id="highlight-wfm" name="highlight" value="WFM">
-        <label class="form-check-label" for="highlight-wfm">WFM</label>
-      </div>
-      <div class="form-check form-switch form-check-inline">
-        <input class="form-check-input" type="checkbox" id="highlight-wcm" name="highlight" value="WCM">
-        <label class="form-check-label" for="highlight-wcm">WCM</label>
-      </div>
+      <input type="checkbox" id="highlight-none" name="highlight" value="none" checked> None
+      <input type="checkbox" id="highlight-gm" name="highlight" value="GM"> GM
+      <input type="checkbox" id="highlight-im" name="highlight" value="IM"> IM
+      <input type="checkbox" id="highlight-fm" name="highlight" value="FM"> FM
+      <input type="checkbox" id="highlight-cm" name="highlight" value="CM"> CM
+      <input type="checkbox" id="highlight-wgm" name="highlight" value="WGM"> WGM
+      <input type="checkbox" id="highlight-wim" name="highlight" value="WIM"> WIM
+      <input type="checkbox" id="highlight-wfm" name="highlight" value="WFM"> WFM
+      <input type="checkbox" id="highlight-wcm" name="highlight" value="WCM"> WCM
     </div>
   </div>
 
@@ -310,8 +296,7 @@
 
     // Global function to update world stats
     function updateWorldwideNumbers() {
-      let gmCount = 0, wgmCount = 0, imCount = 0, wimCount = 0,
-          fmCount = 0, wfmCount = 0, cmCount = 0, wcmCount = 0;
+      let gmCount = 0, wgmCount = 0, imCount = 0, wimCount = 0, fmCount = 0, wfmCount = 0, cmCount = 0, wcmCount = 0;
       Object.values(titledPlayersData).forEach(countryData => {
         if (currentFilter === 'both') {
           gmCount += countryData.Total?.GM || 0;
@@ -352,7 +337,7 @@
       document.getElementById('wcm-count').textContent = wcmCount;
     }
 
-    // Fetch the titled players data
+    // Fetch data and update counts immediately
     fetch('titled_players_by_country.json')
       .then(response => response.json())
       .then(data => {
@@ -361,7 +346,7 @@
           titledPlayersData[item.Country] = item;
         });
         console.log('Processed data:', titledPlayersData);
-        // Use default filter ("both") to update world stats immediately.
+        // The default filter is "both" so update counts right away.
         updateWorldwideNumbers();
       })
       .catch(error => {
@@ -427,7 +412,7 @@
       }
 
       // Highlight Titles checkboxes functionality
-      const highlightCheckboxes = document.querySelectorAll('.highlight-titles .form-check-input');
+      const highlightCheckboxes = document.querySelectorAll('.highlight-titles input[type="checkbox"]');
       highlightCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', () => {
           if (checkbox.checked) {
