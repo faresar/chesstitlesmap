@@ -1,573 +1,556 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Chess Titles Map</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://unpkg.com/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Roboto', sans-serif;
-            width: 100%;
-            overflow-y: auto;
-        }
-        #map-container {
-            width: 100%;
-            max-width: 1010px;
-            height: auto;
-            aspect-ratio: 1010/666;
-            margin: 0 auto;
-            border: 1px solid lightblue;
-            background-color: lightblue;
-            position: relative;
-            overflow: hidden;
-            touch-action: none;
-        }
-        path {
-            fill: #548b5b;
-            transition: fill 0.3s;
-            cursor: pointer;
-        }
-        path:hover {
-            fill: #ff9900;
-        }
-        path.selected {
-            fill: #ff9900; /* Highlight selected country */
-        }
-        path.highlighted {
-            fill: #b05a45; /* Highlight countries with selected title */
-        }
-        .info-box {
-            position: fixed;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 5px;
-            padding: 5px 10px; /* Reduced padding for proportional sizing */
-            pointer-events: auto; /* Allow interaction with the info box */
-            display: none;
-            font-family: 'Roboto', sans-serif;
-            font-size: 14px; /* Adjusted font size */
-            box-shadow: 0 3px 15px rgba(0,0,0,0.2);
-            z-index: 1000;
-        }
-        .info-box.visible {
-            display: block;
-        }
-        .zoom-controls {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            z-index: 1001;
-        }
-        .zoom-controls button {
-            background-color: white;
-            border: 1px solid black;
-            border-radius: 4px;
-            width: 30px;
-            height: 30px;
-            cursor: pointer;
-            font-family: 'Roboto', sans-serif;
-            font-size: 16px;
-        }
-        .flag {
-            width: auto; /* Adjust flag size to match text */
-            height: 16px; /* Same height as text */
-            vertical-align: middle; /* Align flag with text */
-            margin-right: 5px; /* Space between flag and text */
-        }
-        .title {
-            text-align: center;
-            font-size: calc(0.8rem + 1vw); /* Responsive font size */
-            margin-top: 10px; /* Add spacing above title */
-        }
-        .activity-filter {
-            margin-top: 20px; /* Add spacing below the map */
-            text-align: center; /* Center the toggles */
-            z-index: 1001;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.2);
-        }
-        .activity-filter label {
-            font-weight: bold;
-            font-size: 12px;
-            margin-bottom: 5px;
-            display: block;
-        }
-        .activity-filter button {
-            background-color: white;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            padding: 5px 10px;
-            font-size: 12px;
-            cursor: pointer;
-            margin-right: 5px;
-            transition: background-color 0.3s;
-        }
-        .activity-filter button:hover {
-            background-color: #f0f0f0;
-        }
-        .activity-filter button.active {
-            background-color: #007bff;
-            color: white;
-        }
-        .highlight-titles {
-            margin-top: 10px; /* Add spacing below the toggles */
-            text-align: center; /* Center the checkboxes */
-            z-index: 1001;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.2);
-        }
-        .highlight-titles label {
-            font-weight: bold;
-            font-size: 12px;
-            margin-bottom: 5px;
-            display: block;
-        }
-        .highlight-titles input[type="checkbox"] {
-            margin-right: 5px;
-        }
-        .worldwide-numbers {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            background: rgba(0, 0, 0, 0.7); /* Transparent black background */
-            border: 1px solid black;
-            border-radius: 5px;
-            padding: 10px;
-            color: white;
-            font-family: 'Roboto', sans-serif;
-            font-size: 12px;
-            z-index: 1001;
-            max-width: 200px; /* Responsive width */
-            width: 100%;
-        }
-        .worldwide-numbers b {
-            font-weight: bold;
-        }
-        .tooltip {
-            position: absolute;
-            background: beige;
-            padding: 5px;
-            border-radius: 5px;
-            font-size: 12px;
-            display: none;
-            z-index: 1002;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.2);
-        }
-        .last-updated {
-            font-size: 14px; /* Smaller font size */
-            color: #666; /* Lighter color */
-            text-align: center; /* Center the text */
-            margin-top: 10px; /* Add spacing above the text */
-        }
-        .last-updated span {
-            font-weight: normal; /* Ensure the date is not bold */
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Chess Titles Map</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Roboto', sans-serif;
+      width: 100%;
+      overflow-y: auto;
+    }
+    #map-container {
+      width: 100%;
+      max-width: 1010px;
+      height: auto;
+      aspect-ratio: 1010/666;
+      margin: 0 auto;
+      border: 1px solid lightblue;
+      background-color: lightblue;
+      position: relative;
+      overflow: hidden;
+      touch-action: none;
+    }
+    path {
+      fill: #548b5b;
+      transition: fill 0.3s;
+      cursor: pointer;
+    }
+    /* Hover and selected state now override highlighted using !important */
+    path:hover {
+      fill: #ff9900 !important;
+    }
+    path.selected {
+      fill: #ff9900 !important; /* Highlight selected country */
+    }
+    path.highlighted {
+      fill: #b05a45; /* Highlight countries with selected title */
+    }
+    .info-box {
+      position: fixed;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 5px;
+      padding: 5px 10px;
+      pointer-events: auto;
+      display: none;
+      font-family: 'Roboto', sans-serif;
+      font-size: 14px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.2);
+      z-index: 1000;
+    }
+    .info-box.visible {
+      display: block;
+    }
+    .zoom-controls {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      z-index: 1001;
+    }
+    .zoom-controls button {
+      background-color: white;
+      border: 1px solid black;
+      border-radius: 4px;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      font-family: 'Roboto', sans-serif;
+      font-size: 16px;
+    }
+    .flag {
+      width: auto;
+      height: 16px;
+      vertical-align: middle;
+      margin-right: 5px;
+    }
+    .title {
+      text-align: center;
+      font-size: calc(0.8rem + 1vw);
+      margin-top: 10px;
+    }
+    .activity-filter {
+      margin-top: 20px;
+      text-align: center;
+      z-index: 1001;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.2);
+    }
+    .activity-filter label {
+      font-weight: bold;
+      font-size: 12px;
+      margin-bottom: 5px;
+      display: block;
+    }
+    .activity-filter button {
+      background-color: white;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 5px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      margin-right: 5px;
+      transition: background-color 0.3s;
+    }
+    .activity-filter button:hover {
+      background-color: #f0f0f0;
+    }
+    .activity-filter button.active {
+      background-color: #007bff;
+      color: white;
+    }
+    .highlight-titles {
+      margin-top: 10px;
+      text-align: center;
+      z-index: 1001;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.2);
+    }
+    .highlight-titles label {
+      font-weight: bold;
+      font-size: 12px;
+      margin-bottom: 5px;
+      display: block;
+    }
+    .highlight-titles input[type="checkbox"] {
+      margin-right: 5px;
+    }
+    /* New world stats overlay layer on top of the SVG */
+    #world-stats-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: lightblue;
+      border: 1px solid black;
+      /* Using semi-transparent black for text background overlay */
+      background: rgba(173, 216, 230, 0.9);
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Roboto', sans-serif;
+      font-size: 14px;
+      text-align: center;
+      z-index: 1001;
+    }
+    .world-stats-line {
+      margin: 2px 0;
+    }
+    .world-stats-line b {
+      font-weight: bold;
+    }
+    .last-updated {
+      font-size: 14px;
+      color: #666;
+      text-align: center;
+      margin-top: 10px;
+    }
+    .last-updated span {
+      font-weight: normal;
+    }
+  </style>
 </head>
 <body>
-    <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="#">Chess Titles Map</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarNav">
-              <ul class="navbar-nav ms-auto">
-                  <li class="nav-item">
-                      <a class="nav-link active" href="#how-to-get-title">How to Get Title</a>
-                  </li>
-                  <li class="nav-item">
-                      <a class="nav-link" href="#fide-rating">FIDE Rating</a>
-                  </li>
-                  <li class="nav-item">
-                      <a class="nav-link" href="#feedback">Feedback</a>
-                  </li>
-              </ul>
-          </div>
-        </div>
-    </nav>
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Chess Titles Map</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+         <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+         <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+               <a class="nav-link active" href="#how-to-get-title">How to Get Title</a>
+            </li>
+            <li class="nav-item">
+               <a class="nav-link" href="#fide-rating">FIDE Rating</a>
+            </li>
+            <li class="nav-item">
+               <a class="nav-link" href="#feedback">Feedback</a>
+            </li>
+         </ul>
+      </div>
+    </div>
+  </nav>
 
-    <!-- Map Container -->
-    <div id="map-container">
-        <div class="zoom-controls">
-            <button id="zoom-in">+</button>
-            <button id="zoom-out">-</button>
-            <button id="zoom-reset">R</button>
-        </div>
-
-        <!-- Worldwide Numbers Box -->
-        <div class="worldwide-numbers" id="worldwide-numbers">
-            Worldwide numbers<br>
-            <b>GM:</b> <span id="gm-count">0</span> | <b>WGM:</b> <span id="wgm-count">0</span><br>
-            <b>IM:</b> <span id="im-count">0</span> | <b>WIM:</b> <span id="wim-count">0</span><br>
-            <b>FM:</b> <span id="fm-count">0</span> | <b>WFM:</b> <span id="wfm-count">0</span><br>
-            <b>CM:</b> <span id="cm-count">0</span> | <b>WCM:</b> <span id="wcm-count">0</span>
-        </div>
+  <!-- Map Container -->
+  <div id="map-container">
+    <div class="zoom-controls">
+      <button id="zoom-in">+</button>
+      <button id="zoom-out">-</button>
+      <button id="zoom-reset">R</button>
     </div>
 
-    <!-- Toggles placed below the map -->
-    <div class="activity-filter">
-        <label>Player activity Filter:</label>
-        <button id="filter-both" class="active" title="Players who have played rated tournament recently including inactive players marked as 'i'">Both</button>
-        <button id="filter-active" title="Players who have played rated tournament recently">Active</button>
-        <button id="filter-inactive" title="Inactive players that have not played rated tournament recently and are marked as 'i'">Inactive</button>
+    <!-- New World Stats Overlay Layer -->
+    <div id="world-stats-overlay">
+      <!-- The text inside this element will be updated by JavaScript -->
+      <div class="world-stats-line"><b>World Stats</b></div>
+      <div class="world-stats-line" id="world-stats-line1"> 
+        <b>GM:</b> 0  <b>IM:</b> 0  <b>FM:</b> 0  <b>CM:</b> 0 
+      </div>
+      <div class="world-stats-line" id="world-stats-line2">
+        <b>WGM:</b> 0  <b>WIM:</b> 0  <b>WFM:</b> 0  <b>WCM:</b> 0
+      </div>
     </div>
+    <!-- The SVG map will be append-ed here -->
+  </div>
 
-    <!-- Highlight Titles Checkboxes -->
-    <div class="highlight-titles">
-        <label>Highlight titles on the map:</label>
-        <input type="checkbox" id="highlight-none" name="highlight" value="none" checked> None
-        <input type="checkbox" id="highlight-gm" name="highlight" value="GM"> GM
-        <input type="checkbox" id="highlight-im" name="highlight" value="IM"> IM
-        <input type="checkbox" id="highlight-fm" name="highlight" value="FM"> FM
-        <input type="checkbox" id="highlight-cm" name="highlight" value="CM"> CM
-        <input type="checkbox" id="highlight-wgm" name="highlight" value="WGM"> WGM
-        <input type="checkbox" id="highlight-wim" name="highlight" value="WIM"> WIM
-        <input type="checkbox" id="highlight-wfm" name="highlight" value="WFM"> WFM
-        <input type="checkbox" id="highlight-wcm" name="highlight" value="WCM"> WCM
-    </div>
+  <!-- Toggles placed below the map -->
+  <div class="activity-filter">
+    <label>Player activity Filter:</label>
+    <button id="filter-both" class="active" title="Players who have played rated tournament recently including inactive players marked as 'i'">Both</button>
+    <button id="filter-active" title="Players who have played rated tournament recently">Active</button>
+    <button id="filter-inactive" title="Inactive players that have not played rated tournament recently and are marked as 'i'">Inactive</button>
+  </div>
 
-    <!-- Last Updated Text -->
-    <div class="last-updated">
-        Last updated: <span>Jan 31, 2025</span>
-    </div>
+  <!-- Highlight Titles Checkboxes -->
+  <div class="highlight-titles">
+    <label>Highlight titles on the map:</label>
+    <input type="checkbox" id="highlight-none" name="highlight" value="none" checked> None
+    <input type="checkbox" id="highlight-gm" name="highlight" value="GM"> GM
+    <input type="checkbox" id="highlight-im" name="highlight" value="IM"> IM
+    <input type="checkbox" id="highlight-fm" name="highlight" value="FM"> FM
+    <input type="checkbox" id="highlight-cm" name="highlight" value="CM"> CM
+    <input type="checkbox" id="highlight-wgm" name="highlight" value="WGM"> WGM
+    <input type="checkbox" id="highlight-wim" name="highlight" value="WIM"> WIM
+    <input type="checkbox" id="highlight-wfm" name="highlight" value="WFM"> WFM
+    <input type="checkbox" id="highlight-wcm" name="highlight" value="WCM"> WCM
+  </div>
 
-    <!-- Info Box -->
-    <div class="info-box" id="info-box"></div>
+  <!-- Last Updated Text -->
+  <div class="last-updated">
+    Last updated: <span>Jan 31, 2025</span>
+  </div>
 
-    <!-- Scripts -->
-    <script>
-        let titledPlayersData = {};
-        let currentFilter = 'both'; // Default filter
-        let currentHighlight = 'none'; // Default highlight
+  <!-- Info Box -->
+  <div class="info-box" id="info-box"></div>
 
-        // Fetch the titled players data
-        fetch('titled_players_by_country.json')
-            .then(response => response.json())
-            .then(data => {
-                console.log('Fetched data:', data); // Debugging: Log fetched data
-                data.titled_players_by_country.forEach(item => {
-                    titledPlayersData[item.Country] = item;
-                });
-                console.log('Processed data:', titledPlayersData); // Debugging: Log processed data
-                updateWorldwideNumbers(); // Update worldwide numbers after data is loaded
-            })
-            .catch(error => {
-                console.error('Error fetching titled players data:', error);
+  <!-- Scripts -->
+  <script>
+    let titledPlayersData = {};
+    let currentFilter = 'both'; // Default filter
+    let currentHighlight = 'none'; // Default highlight
+
+    // Fetch the titled players data
+    fetch('titled_players_by_country.json')
+      .then(response => response.json())
+      .then(data => {
+        console.log('Fetched data:', data);
+        data.titled_players_by_country.forEach(item => {
+          titledPlayersData[item.Country] = item;
+        });
+        console.log('Processed data:', titledPlayersData);
+        updateWorldStats(); // Update world stats after data is loaded
+      })
+      .catch(error => {
+        console.error('Error fetching titled players data:', error);
+      });
+
+    // Load the SVG map and then initialize
+    fetch('world_fide.svg')
+      .then(response => response.text())
+      .then(svgContent => {
+        document.getElementById('map-container').innerHTML += svgContent.trim();
+        initializeMap();
+      });
+
+    function initializeMap() {
+      const mapContainer = document.getElementById('map-container');
+      // Get the SVG element that was appended (it should be inside mapContainer)
+      const svgElement = mapContainer.querySelector('svg');
+      const infoBox = document.getElementById("info-box");
+      let selectedCountry = null;
+
+      // Initialize svg-pan-zoom
+      const panZoom = svgPanZoom(svgElement, {
+        zoomEnabled: true,
+        controlIconsEnabled: false,
+        fit: true,
+        center: true,
+        minZoom: 1,
+        maxZoom: 72,
+        zoomScaleSensitivity: 0.2,
+      });
+
+      // Disable double-tap zoom
+      panZoom.disableDblClickZoom();
+
+      // Zoom buttons functionality
+      document.getElementById("zoom-in").addEventListener("click", () => panZoom.zoomIn());
+      document.getElementById("zoom-out").addEventListener("click", () => panZoom.zoomOut());
+      document.getElementById("zoom-reset").addEventListener("click", () => {
+        panZoom.reset();
+        panZoom.resize().fit().center();
+      });
+
+      // Filter buttons functionality
+      document.getElementById("filter-both").addEventListener("click", () => {
+        currentFilter = 'both';
+        updateFilterButtons();
+        updateHighlight();
+        updateWorldStats();
+      });
+      document.getElementById("filter-active").addEventListener("click", () => {
+        currentFilter = 'active';
+        updateFilterButtons();
+        updateHighlight();
+        updateWorldStats();
+      });
+      document.getElementById("filter-inactive").addEventListener("click", () => {
+        currentFilter = 'inactive';
+        updateFilterButtons();
+        updateHighlight();
+        updateWorldStats();
+      });
+
+      function updateFilterButtons() {
+        document.getElementById("filter-both").classList.toggle("active", currentFilter === 'both');
+        document.getElementById("filter-active").classList.toggle("active", currentFilter === 'active');
+        document.getElementById("filter-inactive").classList.toggle("active", currentFilter === 'inactive');
+      }
+
+      // Highlight checkboxes functionality
+      const highlightCheckboxes = document.querySelectorAll('.highlight-titles input[type="checkbox"]');
+      highlightCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+          if (checkbox.checked) {
+            // Uncheck all others
+            highlightCheckboxes.forEach(cb => {
+              if (cb !== checkbox) cb.checked = false;
             });
+            currentHighlight = checkbox.value;
+          } else {
+            currentHighlight = 'none';
+          }
+          updateHighlight();
+        });
+      });
 
-        fetch('world_fide.svg')
-            .then(response => response.text())
-            .then(svgContent => {
-                document.getElementById('map-container').innerHTML += svgContent.trim();
-                initializeMap();
-            });
+      function updateHighlight() {
+        const paths = svgElement.querySelectorAll("path");
+        paths.forEach(path => {
+          path.classList.remove('highlighted');
+          const countryCode = path.id;
+          const countryData = titledPlayersData[countryCode] || {};
 
-        function initializeMap() {
-            const mapContainer = document.getElementById('map-container');
-            const svgElement = mapContainer.querySelector('svg');
-            const infoBox = document.getElementById("info-box");
-            let selectedCountry = null;
-
-            // Initialize svg-pan-zoom
-            const panZoom = svgPanZoom(svgElement, {
-                zoomEnabled: true,
-                controlIconsEnabled: false,
-                fit: true,
-                center: true,
-                minZoom: 1,
-                maxZoom: 72,
-                zoomScaleSensitivity: 0.2,
-            });
-
-            // Disable double-tap zoom
-            panZoom.disableDblClickZoom();
-
-            // Zoom buttons functionality
-            document.getElementById("zoom-in").addEventListener("click", () => panZoom.zoomIn());
-            document.getElementById("zoom-out").addEventListener("click", () => panZoom.zoomOut());
-            document.getElementById("zoom-reset").addEventListener("click", () => {
-                panZoom.reset();
-                panZoom.resize().fit().center();
-            });
-
-            // Filter buttons functionality
-            document.getElementById("filter-both").addEventListener("click", () => {
-                currentFilter = 'both';
-                updateFilterButtons();
-                updateHighlight();
-                updateWorldwideNumbers();
-            });
-            document.getElementById("filter-active").addEventListener("click", () => {
-                currentFilter = 'active';
-                updateFilterButtons();
-                updateHighlight();
-                updateWorldwideNumbers();
-            });
-            document.getElementById("filter-inactive").addEventListener("click", () => {
-                currentFilter = 'inactive';
-                updateFilterButtons();
-                updateHighlight();
-                updateWorldwideNumbers();
-            });
-
-            function updateFilterButtons() {
-                document.getElementById("filter-both").classList.toggle("active", currentFilter === 'both');
-                document.getElementById("filter-active").classList.toggle("active", currentFilter === 'active');
-                document.getElementById("filter-inactive").classList.toggle("active", currentFilter === 'inactive');
+          if (currentHighlight !== 'none') {
+            let count = 0;
+            if (currentFilter === 'both') {
+              count = countryData.Total?.[currentHighlight] || 0;
+            } else if (currentFilter === 'active') {
+              count = countryData.Active?.[currentHighlight] || 0;
+            } else if (currentFilter === 'inactive') {
+              count = countryData.Inactive?.[currentHighlight] || 0;
             }
-
-            // Highlight checkboxes functionality
-            const highlightCheckboxes = document.querySelectorAll('.highlight-titles input[type="checkbox"]');
-            highlightCheckboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', () => {
-                    if (checkbox.checked) {
-                        // Uncheck all other checkboxes
-                        highlightCheckboxes.forEach(cb => {
-                            if (cb !== checkbox) cb.checked = false;
-                        });
-                        currentHighlight = checkbox.value;
-                    } else {
-                        currentHighlight = 'none';
-                    }
-                    updateHighlight();
-                });
-            });
-
-            function updateHighlight() {
-                const paths = svgElement.querySelectorAll("path");
-                paths.forEach(path => {
-                    path.classList.remove('highlighted');
-                    const countryCode = path.id;
-                    const countryData = titledPlayersData[countryCode] || {};
-
-                    if (currentHighlight !== 'none') {
-                        let count = 0;
-                        if (currentFilter === 'both') {
-                            count = countryData.Total?.[currentHighlight] || 0;
-                        } else if (currentFilter === 'active') {
-                            count = countryData.Active?.[currentHighlight] || 0;
-                        } else if (currentFilter === 'inactive') {
-                            count = countryData.Inactive?.[currentHighlight] || 0;
-                        }
-
-                        if (count > 0) {
-                            path.classList.add('highlighted');
-                        }
-                    }
-                });
+            if (count > 0) {
+              path.classList.add('highlighted');
             }
+          }
+        });
+      }
 
-            function updateWorldwideNumbers() {
-                let gmCount = 0, wgmCount = 0, imCount = 0, wimCount = 0, fmCount = 0, wfmCount = 0, cmCount = 0, wcmCount = 0;
+      // Updated function to update world stats (previously called worldwide numbers)
+      function updateWorldStats() {
+        let gmCount = 0, imCount = 0, fmCount = 0, cmCount = 0;
+        let wgmCount = 0, wimCount = 0, wfmCount = 0, wcmCount = 0;
 
-                Object.values(titledPlayersData).forEach(countryData => {
-                    if (currentFilter === 'both') {
-                        gmCount += countryData.Total?.GM || 0;
-                        wgmCount += countryData.Total?.WGM || 0;
-                        imCount += countryData.Total?.IM || 0;
-                        wimCount += countryData.Total?.WIM || 0;
-                        fmCount += countryData.Total?.FM || 0;
-                        wfmCount += countryData.Total?.WFM || 0;
-                        cmCount += countryData.Total?.CM || 0;
-                        wcmCount += countryData.Total?.WCM || 0;
-                    } else if (currentFilter === 'active') {
-                        gmCount += countryData.Active?.GM || 0;
-                        wgmCount += countryData.Active?.WGM || 0;
-                        imCount += countryData.Active?.IM || 0;
-                        wimCount += countryData.Active?.WIM || 0;
-                        fmCount += countryData.Active?.FM || 0;
-                        wfmCount += countryData.Active?.WFM || 0;
-                        cmCount += countryData.Active?.CM || 0;
-                        wcmCount += countryData.Active?.WCM || 0;
-                    } else if (currentFilter === 'inactive') {
-                        gmCount += countryData.Inactive?.GM || 0;
-                        wgmCount += countryData.Inactive?.WGM || 0;
-                        imCount += countryData.Inactive?.IM || 0;
-                        wimCount += countryData.Inactive?.WIM || 0;
-                        fmCount += countryData.Inactive?.FM || 0;
-                        wfmCount += countryData.Inactive?.WFM || 0;
-                        cmCount += countryData.Inactive?.CM || 0;
-                        wcmCount += countryData.Inactive?.WCM || 0;
-                    }
-                });
+        Object.values(titledPlayersData).forEach(countryData => {
+          if (currentFilter === 'both') {
+            gmCount += countryData.Total?.GM || 0;
+            imCount += countryData.Total?.IM || 0;
+            fmCount += countryData.Total?.FM || 0;
+            cmCount += countryData.Total?.CM || 0;
+            wgmCount += countryData.Total?.WGM || 0;
+            wimCount += countryData.Total?.WIM || 0;
+            wfmCount += countryData.Total?.WFM || 0;
+            wcmCount += countryData.Total?.WCM || 0;
+          } else if (currentFilter === 'active') {
+            gmCount += countryData.Active?.GM || 0;
+            imCount += countryData.Active?.IM || 0;
+            fmCount += countryData.Active?.FM || 0;
+            cmCount += countryData.Active?.CM || 0;
+            wgmCount += countryData.Active?.WGM || 0;
+            wimCount += countryData.Active?.WIM || 0;
+            wfmCount += countryData.Active?.WFM || 0;
+            wcmCount += countryData.Active?.WCM || 0;
+          } else if (currentFilter === 'inactive') {
+            gmCount += countryData.Inactive?.GM || 0;
+            imCount += countryData.Inactive?.IM || 0;
+            fmCount += countryData.Inactive?.FM || 0;
+            cmCount += countryData.Inactive?.CM || 0;
+            wgmCount += countryData.Inactive?.WGM || 0;
+            wimCount += countryData.Inactive?.WIM || 0;
+            wfmCount += countryData.Inactive?.WFM || 0;
+            wcmCount += countryData.Inactive?.WCM || 0;
+          }
+        });
 
-                document.getElementById('gm-count').textContent = gmCount;
-                document.getElementById('wgm-count').textContent = wgmCount;
-                document.getElementById('im-count').textContent = imCount;
-                document.getElementById('wim-count').textContent = wimCount;
-                document.getElementById('fm-count').textContent = fmCount;
-                document.getElementById('wfm-count').textContent = wfmCount;
-                document.getElementById('cm-count').textContent = cmCount;
-                document.getElementById('wcm-count').textContent = wcmCount;
-            }
+        // Update the world stats overlay text with centered format:
+        // First line: Bold labels GM, IM, FM, CM and their counts (plain)
+        // Second line: Bold labels WGM, WIM, WFM, WCM and their counts (plain)
+        const line1 = `<b>GM:</b> ${gmCount}&emsp;<b>IM:</b> ${imCount}&emsp;<b>FM:</b> ${fmCount}&emsp;<b>CM:</b> ${cmCount}`;
+        const line2 = `<b>WGM:</b> ${wgmCount}&emsp;<b>WIM:</b> ${wimCount}&emsp;<b>WFM:</b> ${wfmCount}&emsp;<b>WCM:</b> ${wcmCount}`;
+        document.getElementById("world-stats-line1").innerHTML = line1;
+        document.getElementById("world-stats-line2").innerHTML = line2;
+      }
 
-            function showInfoBox(countryCode, x, y) {
-                const countryData = titledPlayersData[countryCode] || {};
-                const flagUrl = `https://ratings.fide.com/svg/${countryCode}.svg`;
+      // Info box: now country code is hyperlinked to (base url)/(country code)
+      function showInfoBox(countryCode, x, y) {
+        const countryData = titledPlayersData[countryCode] || {};
+        const flagUrl = `https://ratings.fide.com/svg/${countryCode}.svg`;
 
-                let gmCount, wgmCount, imCount, wimCount, fmCount, wfmCount, cmCount, wcmCount;
-
-                if (currentFilter === 'both') {
-                    gmCount = countryData.Total?.GM || 0;
-                    wgmCount = countryData.Total?.WGM || 0;
-                    imCount = countryData.Total?.IM || 0;
-                    wimCount = countryData.Total?.WIM || 0;
-                    fmCount = countryData.Total?.FM || 0;
-                    wfmCount = countryData.Total?.WFM || 0;
-                    cmCount = countryData.Total?.CM || 0;
-                    wcmCount = countryData.Total?.WCM || 0;
-                } else if (currentFilter === 'active') {
-                    gmCount = countryData.Active?.GM || 0;
-                    wgmCount = countryData.Active?.WGM || 0;
-                    imCount = countryData.Active?.IM || 0;
-                    wimCount = countryData.Active?.WIM || 0;
-                    fmCount = countryData.Active?.FM || 0;
-                    wfmCount = countryData.Active?.WFM || 0;
-                    cmCount = countryData.Active?.CM || 0;
-                    wcmCount = countryData.Active?.WCM || 0;
-                } else if (currentFilter === 'inactive') {
-                    gmCount = countryData.Inactive?.GM || 0;
-                    wgmCount = countryData.Inactive?.WGM || 0;
-                    imCount = countryData.Inactive?.IM || 0;
-                    wimCount = countryData.Inactive?.WIM || 0;
-                    fmCount = countryData.Inactive?.FM || 0;
-                    wfmCount = countryData.Inactive?.WFM || 0;
-                    cmCount = countryData.Inactive?.CM || 0;
-                    wcmCount = countryData.Inactive?.WCM || 0;
-                }
-
-                infoBox.innerHTML = `
-                    <img src="${flagUrl}" alt="${countryCode} Flag" class="flag">
-                    <span>${countryCode}</span><br>
-                    <b>GM:</b> ${gmCount} | <b>WGM:</b> ${wgmCount}<br>
-                    <b>IM:</b> ${imCount} | <b>WIM:</b> ${wimCount}<br>
-                    <b>FM:</b> ${fmCount} | <b>WFM:</b> ${wfmCount}<br>
-                    <b>CM:</b> ${cmCount} | <b>WCM:</b> ${wcmCount}
-                `;
-                infoBox.classList.add('visible');
-
-                // Position above and close to pointer/touch point
-                const boxHeight = infoBox.offsetHeight || 50;
-                const boxWidth = infoBox.offsetWidth || 100;
-
-                infoBox.style.left = `${x - boxWidth / 2}px`;
-                infoBox.style.top = `${y - boxHeight}px`;
-            }
-
-            function hideInfoBox() {
-                if (selectedCountry) {
-                    document.querySelector(`path[id="${selectedCountry}"]`).classList.remove('selected');
-                    selectedCountry = null;
-                }
-                infoBox.classList.remove('visible');
-            }
-
-            const paths = svgElement.querySelectorAll("path");
-
-            paths.forEach(path => {
-                // Desktop hover behavior
-                path.addEventListener("mouseenter", (e) => {
-                    if (!selectedCountry) {
-                        showInfoBox(path.id, e.clientX, e.clientY);
-                    }
-                });
-                path.addEventListener("mouseleave", (e) => {
-                    if (!selectedCountry && !infoBox.matches(':hover')) hideInfoBox();
-                });
-
-                // Mobile touch behavior
-                path.addEventListener("touchstart", (e) => {
-                    if (e.touches.length === 1) {
-                        if (selectedCountry) document.querySelector(`path[id="${selectedCountry}"]`).classList.remove('selected');
-                        selectedCountry = path.id;
-                        path.classList.add('selected');
-                        showInfoBox(path.id, e.touches[0].clientX, e.touches[0].clientY);
-                    }
-                });
-            });
-
-            // Keep info box visible when hovered over (desktop)
-            infoBox.addEventListener('mouseenter', () => {
-                infoBox.classList.add('visible');
-            });
-            infoBox.addEventListener('mouseleave', () => {
-                if (!selectedCountry) hideInfoBox();
-            });
-
-            // Hide info box when clicking outside (touch devices)
-            document.addEventListener("touchstart", (e) => {
-                if (!infoBox.contains(e.target) && !Array.from(paths).some(path => path.contains(e.target))) {
-                    hideInfoBox();
-                }
-            });
-
-            // Handle window resize
-            window.addEventListener('resize', () => {
-                panZoom.resize().fit().center();
-            });
-
-            // Native touch event listeners for pinch zoom
-            let initialDistance = null;
-            let initialScale = 1;
-
-            mapContainer.addEventListener("touchstart", (e) => {
-                if (e.touches.length === 2) {
-                    // Calculate the initial distance between two fingers
-                    initialDistance = Math.hypot(
-                        e.touches[0].clientX - e.touches[1].clientX,
-                        e.touches[0].clientY - e.touches[1].clientY
-                    );
-                    // Store the initial zoom scale
-                    initialScale = panZoom.getZoom();
-                }
-            });
-
-            mapContainer.addEventListener("touchmove", (e) => {
-                if (e.touches.length === 2 && initialDistance !== null) {
-                    e.preventDefault(); // Prevent default scrolling behavior
-
-                    // Calculate the current distance between two fingers
-                    const currentDistance = Math.hypot(
-                        e.touches[0].clientX - e.touches[1].clientX,
-                        e.touches[0].clientY - e.touches[1].clientY
-                    );
-
-                    // Calculate the scale factor relative to the initial distance
-                    const scale = (currentDistance / initialDistance) * initialScale;
-
-                    // Get the center point between the two fingers
-                    const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-                    const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-
-                    // Convert the center point to SVG coordinates
-                    const svgPoint = svgElement.createSVGPoint();
-                    svgPoint.x = centerX;
-                    svgPoint.y = centerY;
-                    const transformedPoint = svgPoint.matrixTransform(svgElement.getScreenCTM().inverse());
-
-                    // Apply the zoom at the center point
-                    panZoom.zoomAtPoint(scale, transformedPoint);
-                }
-            });
-
-            mapContainer.addEventListener("touchend", () => {
-                initialDistance = null; // Reset the initial distance
-            });
+        let gmCount, imCount, fmCount, cmCount;
+        let wgmCount, wimCount, wfmCount, wcmCount;
+        if (currentFilter === 'both') {
+          gmCount = countryData.Total?.GM || 0;
+          imCount = countryData.Total?.IM || 0;
+          fmCount = countryData.Total?.FM || 0;
+          cmCount = countryData.Total?.CM || 0;
+          wgmCount = countryData.Total?.WGM || 0;
+          wimCount = countryData.Total?.WIM || 0;
+          wfmCount = countryData.Total?.WFM || 0;
+          wcmCount = countryData.Total?.WCM || 0;
+        } else if (currentFilter === 'active') {
+          gmCount = countryData.Active?.GM || 0;
+          imCount = countryData.Active?.IM || 0;
+          fmCount = countryData.Active?.FM || 0;
+          cmCount = countryData.Active?.CM || 0;
+          wgmCount = countryData.Active?.WGM || 0;
+          wimCount = countryData.Active?.WIM || 0;
+          wfmCount = countryData.Active?.WFM || 0;
+          wcmCount = countryData.Active?.WCM || 0;
+        } else if (currentFilter === 'inactive') {
+          gmCount = countryData.Inactive?.GM || 0;
+          imCount = countryData.Inactive?.IM || 0;
+          fmCount = countryData.Inactive?.FM || 0;
+          cmCount = countryData.Inactive?.CM || 0;
+          wgmCount = countryData.Inactive?.WGM || 0;
+          wimCount = countryData.Inactive?.WIM || 0;
+          wfmCount = countryData.Inactive?.WFM || 0;
+          wcmCount = countryData.Inactive?.WCM || 0;
         }
-    </script>
+
+        infoBox.innerHTML = `
+          <img src="${flagUrl}" alt="${countryCode} Flag" class="flag">
+          <a href="${window.location.origin}/${countryCode}" target="_blank">${countryCode}</a><br>
+          <b>GM:</b> ${gmCount} | <b>WGM:</b> ${wgmCount}<br>
+          <b>IM:</b> ${imCount} | <b>WIM:</b> ${wimCount}<br>
+          <b>FM:</b> ${fmCount} | <b>WFM:</b> ${wfmCount}<br>
+          <b>CM:</b> ${cmCount} | <b>WCM:</b> ${wcmCount}
+        `;
+        infoBox.classList.add('visible');
+
+        const boxHeight = infoBox.offsetHeight || 50;
+        const boxWidth = infoBox.offsetWidth || 100;
+        infoBox.style.left = `${x - boxWidth / 2}px`;
+        infoBox.style.top = `${y - boxHeight}px`;
+      }
+
+      function hideInfoBox() {
+        if (selectedCountry) {
+          document.querySelector(`path[id="${selectedCountry}"]`).classList.remove('selected');
+          selectedCountry = null;
+        }
+        infoBox.classList.remove('visible');
+      }
+
+      const paths = svgElement.querySelectorAll("path");
+      paths.forEach(path => {
+        // Desktop hover behavior
+        path.addEventListener("mouseenter", (e) => {
+          if (!selectedCountry) {
+            showInfoBox(path.id, e.clientX, e.clientY);
+          }
+        });
+        path.addEventListener("mouseleave", (e) => {
+          if (!selectedCountry && !infoBox.matches(':hover')) hideInfoBox();
+        });
+        // Mobile touch behavior
+        path.addEventListener("touchstart", (e) => {
+          if (e.touches.length === 1) {
+            if (selectedCountry) document.querySelector(`path[id="${selectedCountry}"]`).classList.remove('selected');
+            selectedCountry = path.id;
+            path.classList.add('selected');
+            showInfoBox(path.id, e.touches[0].clientX, e.touches[0].clientY);
+          }
+        });
+      });
+
+      // Keep info box visible when hovered (desktop)
+      infoBox.addEventListener('mouseenter', () => { infoBox.classList.add('visible'); });
+      infoBox.addEventListener('mouseleave', () => { if (!selectedCountry) hideInfoBox(); });
+
+      // Hide info box when clicking outside (mobile)
+      document.addEventListener("touchstart", (e) => {
+        if (!infoBox.contains(e.target) && !Array.from(paths).some(path => path.contains(e.target))) {
+          hideInfoBox();
+        }
+      });
+
+      window.addEventListener('resize', () => {
+        panZoom.resize().fit().center();
+      });
+
+      // Native touch event listeners for pinch zoom
+      let initialDistance = null;
+      let initialScale = 1;
+      mapContainer.addEventListener("touchstart", (e) => {
+        if (e.touches.length === 2) {
+          initialDistance = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+          );
+          initialScale = panZoom.getZoom();
+        }
+      });
+      mapContainer.addEventListener("touchmove", (e) => {
+        if (e.touches.length === 2 && initialDistance !== null) {
+          e.preventDefault();
+          const currentDistance = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+          );
+          const scale = (currentDistance / initialDistance) * initialScale;
+          const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+          const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+          const svgPoint = svgElement.createSVGPoint();
+          svgPoint.x = centerX;
+          svgPoint.y = centerY;
+          const transformedPoint = svgPoint.matrixTransform(svgElement.getScreenCTM().inverse());
+          panZoom.zoomAtPoint(scale, transformedPoint);
+        }
+      });
+      mapContainer.addEventListener("touchend", () => {
+        initialDistance = null;
+      });
+    }
+  </script>
 </body>
 </html>
