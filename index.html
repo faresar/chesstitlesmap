@@ -16,26 +16,25 @@
       width: 100%;
       overflow-y: auto;
     }
-    /* Map container now holds both the SVG and the zoom buttons overlayed inside the svg container */
+    /* Map container holds both the SVG and the zoom buttons (overlaid inside the SVG container) */
     #map-container {
       width: 100%;
       max-width: 1010px;
       margin: 0 auto;
       position: relative;
-      /* border and background can be retained if desired */
       border: 1px solid lightblue;
       background-color: lightblue;
       overflow: hidden;
       touch-action: none;
     }
-    /* The svg container -- the svg will be appended here */
+    /* The SVG container (SVG will be appended here) */
     #svg-container {
       width: 100%;
       height: auto;
       aspect-ratio: 1010/666;
       position: relative;
     }
-    /* Zoom controls: now inside the svg container as an overlay */
+    /* Zoom controls: placed over the SVG */
     .zoom-controls {
       position: absolute;
       top: 10px;
@@ -64,10 +63,10 @@
       fill: #ff9900;
     }
     path.selected {
-      fill: #ff9900; /* Highlight selected country */
+      fill: #ff9900;
     }
     path.highlighted {
-      fill: #b05a45; /* Highlight countries with selected title */
+      fill: #b05a45;
     }
     .info-box {
       position: fixed;
@@ -84,12 +83,12 @@
     .info-box.visible {
       display: block;
     }
-    /* World Stats box: displayed as a separate block immediately attached (with no gap) beneath the svg */
+    /* World Stats box – separate but immediately attached above the SVG */
     .world-stats {
       text-align: center;
       background: rgba(0, 0, 0, 0.7);
       border: 1px solid black;
-      border-radius: 5px;
+      border-radius: 0;
       padding: 10px;
       color: white;
       font-family: 'Roboto', sans-serif;
@@ -165,6 +164,13 @@
     .last-updated span {
       font-weight: normal;
     }
+    /* Make flag image size same as country code */
+    .flag {
+      height: 1em;
+      width: auto;
+      vertical-align: middle;
+      margin-right: 5px;
+    }
   </style>
 </head>
 <body>
@@ -194,9 +200,9 @@
 
   <!-- Map Container -->
   <div id="map-container">
-    <!-- World Stats box: visually attached (placed above the svg container) -->
+    <!-- World Stats box – immediately attached above the SVG with no rounded edges -->
     <div class="world-stats" id="world-stats">
-      <div><b>World Stats</b></div>
+      <div><u><b>Worlds Stats</b></u></div>
       <div>
          <b>GM:</b> <span id="gm-count">0</span>&emsp;
          <b>IM:</b> <span id="im-count">0</span>&emsp;
@@ -212,7 +218,7 @@
     </div>
     <!-- SVG Container -->
     <div id="svg-container">
-      <!-- Zoom controls will be inserted here (so they appear over the SVG) -->
+      <!-- Zoom controls inside SVG container -->
       <div class="zoom-controls">
          <button id="zoom-in">+</button>
          <button id="zoom-out">-</button>
@@ -254,8 +260,8 @@
   <!-- Scripts -->
   <script>
     let titledPlayersData = {};
-    let currentFilter = 'both'; // Default filter
-    let currentHighlight = 'none'; // Default highlight
+    let currentFilter = 'both';
+    let currentHighlight = 'none';
 
     // Fetch the titled players data
     fetch('titled_players_by_country.json')
@@ -267,7 +273,8 @@
         });
         console.log('Processed data:', titledPlayersData);
         updateWorldwideNumbers();
-        // Trigger the both filter on load (simulate click)
+        // To force non-zero numbers, automatically trigger Active then Both.
+        document.getElementById('filter-active').click();
         document.getElementById('filter-both').click();
       })
       .catch(error => {
@@ -288,7 +295,7 @@
       const infoBox = document.getElementById("info-box");
       let selectedCountry = null;
 
-      // Initialize svg-pan-zoom on the svgElement
+      // Initialize svg-pan-zoom on the SVG element
       const panZoom = svgPanZoom(svgElement, {
         zoomEnabled: true,
         controlIconsEnabled: false,
@@ -298,7 +305,6 @@
         maxZoom: 72,
         zoomScaleSensitivity: 0.2,
       });
-
       panZoom.disableDblClickZoom();
 
       document.getElementById("zoom-in").addEventListener("click", () => panZoom.zoomIn());
@@ -334,7 +340,7 @@
         document.getElementById("filter-inactive").classList.toggle("active", currentFilter === 'inactive');
       }
 
-      // Highlight Titles Checkboxes functionality
+      // Highlight Titles checkboxes
       const highlightCheckboxes = document.querySelectorAll('.highlight-titles input[type="checkbox"]');
       highlightCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', () => {
@@ -356,7 +362,6 @@
           path.classList.remove('highlighted');
           const countryCode = path.id;
           const countryData = titledPlayersData[countryCode] || {};
-
           if (currentHighlight !== 'none') {
             let count = 0;
             if (currentFilter === 'both') {
@@ -418,7 +423,6 @@
       function showInfoBox(countryCode, x, y) {
         const countryData = titledPlayersData[countryCode] || {};
         const flagUrl = `https://ratings.fide.com/svg/${countryCode}.svg`;
-
         let gmCount, wgmCount, imCount, wimCount, fmCount, wfmCount, cmCount, wcmCount;
         if (currentFilter === 'both') {
           gmCount = countryData.Total?.GM || 0;
@@ -448,7 +452,6 @@
           cmCount = countryData.Inactive?.CM || 0;
           wcmCount = countryData.Inactive?.WCM || 0;
         }
-
         infoBox.innerHTML = `
           <img src="${flagUrl}" alt="${countryCode} Flag" class="flag">
           <a href="${window.location.origin}/${countryCode}" target="_blank">${countryCode}</a><br>
@@ -458,7 +461,6 @@
           <b>CM:</b> ${cmCount} | <b>WCM:</b> ${wcmCount}
         `;
         infoBox.classList.add('visible');
-
         const boxHeight = infoBox.offsetHeight || 50;
         const boxWidth = infoBox.offsetWidth || 100;
         infoBox.style.left = `${x - boxWidth/2}px`;
@@ -492,7 +494,6 @@
           }
         });
       });
-
       infoBox.addEventListener('mouseenter', () => {
         infoBox.classList.add('visible');
       });
@@ -507,7 +508,6 @@
       window.addEventListener('resize', () => {
         panZoom.resize().fit().center();
       });
-
       let initialDistance = null;
       let initialScale = 1;
       svgContainer.addEventListener("touchstart", (e) => {
