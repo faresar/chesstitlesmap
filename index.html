@@ -20,25 +20,6 @@
       width: 100%;
       overflow-y: auto;
     }
-    /* Navigation Bar */
-    .navbar-brand {
-      color: #007bff !important;
-      font-weight: bold;
-      text-decoration: none;
-    }
-    .navbar-brand:hover {
-      text-decoration: none;
-    }
-    /* Last updated */
-    .last-updated {
-      font-size: 14px;
-      color: #666;
-      text-align: center;
-      margin: 10px 0;
-    }
-    .last-updated span {
-      font-weight: normal;
-    }
     /* Map container */
     #map-container {
       width: 100%;
@@ -54,10 +35,10 @@
     #svg-container {
       width: 100%;
       height: auto;
-      aspect-ratio: 1010 / 666;
+      aspect-ratio: 1010/666;
       position: relative;
     }
-    /* Zoom controls – now slightly bigger than the previous “small” size */
+    /* Zoom controls – now a bit bigger */
     .zoom-controls {
       position: absolute;
       top: 10px;
@@ -71,11 +52,11 @@
       background-color: white;
       border: 1px solid black;
       border-radius: 4px;
-      width: 20px;      /* increased from 15px */
-      height: 20px;     /* increased from 15px */
+      width: 35px;      /* increased size */
+      height: 35px;     
       cursor: pointer;
       font-family: 'Roboto', sans-serif;
-      font-size: 10px;  /* increased from 8px */
+      font-size: 20px;  /* increased font size */
       display: flex;
       align-items: center;
       justify-content: center;
@@ -83,9 +64,9 @@
     }
     @media (max-width: 600px) {
       .zoom-controls button {
-        width: 18px;
-        height: 18px;
-        font-size: 9px;
+        width: 30px;
+        height: 30px;
+        font-size: 16px;
       }
     }
     path {
@@ -102,7 +83,6 @@
     path.highlighted {
       fill: #b05a45;
     }
-    /* Info box */
     .info-box {
       position: fixed;
       background: rgba(255,255,255,0.95);
@@ -118,7 +98,7 @@
     .info-box.visible {
       display: block;
     }
-    /* World Stats box – above the map */
+    /* World Stats Box */
     .world-stats {
       text-align: center;
       background: rgba(0,0,0,0.7);
@@ -155,10 +135,9 @@
       border-radius: 5px;
       box-shadow: 0 3px 15px rgba(0,0,0,0.2);
     }
-    /* Slightly bigger headings for filter panels */
     .activity-filter label {
       font-weight: bold;
-      font-size: 14px; /* increased from 12px */
+      font-size: 12px;
       margin-bottom: 5px;
       display: block;
     }
@@ -189,66 +168,23 @@
     }
     .highlight-titles label {
       font-weight: bold;
-      font-size: 14px; /* increased from 12px */
+      font-size: 12px;
       margin-bottom: 5px;
       display: block;
     }
-    .highlight-titles-buttons {
-      display: inline-flex;
-      flex-wrap: wrap;
-      gap: 5px;
-      justify-content: center;
+    .highlight-titles input[type="checkbox"] {
+      margin-right: 5px;
     }
-    .highlight-titles-buttons label {
-      display: inline-block;
-      padding: 5px 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      cursor: pointer;
-      background-color: white;
-      transition: background-color 0.3s;
-      font-size: 12px;
-    }
-    .highlight-titles-buttons label input {
-      display: none;
-    }
-    .highlight-titles-buttons label.active {
-      background-color: #007bff;
-      color: white;
-      border-color: #007bff;
-    }
-    /* Top Countries section */
-    .top-countries-container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-evenly;
-      max-width: 1010px;
-      margin: 20px auto;
-      gap: 20px;
-    }
-    .top-countries {
-      flex: 1 1 45%;
-      background: rgba(255,255,255,0.9);
-      padding: 10px;
-      border-radius: 5px;
-      box-shadow: 0 3px 15px rgba(0,0,0,0.2);
-    }
-    .top-countries h3 {
+    .last-updated {
+      font-size: 14px;
+      color: #666;
       text-align: center;
-      font-weight: bold;
-      margin-bottom: 10px;
+      margin-top: 10px;
     }
-    .top-countries table {
-      width: 100%;
-      border-collapse: collapse;
+    .last-updated span {
+      font-weight: normal;
     }
-    .top-countries th, .top-countries td {
-      border: 1px solid #ccc;
-      padding: 5px;
-      text-align: center;
-    }
-    /* Flag image styling – now using the FIDE logo from Wikimedia Commons;
-       size set to 1em with a white background */
+    /* Flag images: size matching country code */
     .flag {
       height: 1em;
       width: auto;
@@ -256,7 +192,7 @@
       margin-right: 5px;
       background-color: white;
     }
-    /* AdSense placeholder */
+    /* AdSense placeholder style */
     .ads-placeholder {
       width: 100%;
       max-width: 1010px;
@@ -273,7 +209,6 @@
   <!-- Navigation Bar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-      <!-- Clickable brand linking to the main page -->
       <a class="navbar-brand" href="index.html">ChessTitlesMap.com</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
               aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -295,29 +230,25 @@
     </div>
   </nav>
 
-  <!-- Last Updated -->
-  <div class="last-updated">
-    Last updated: <span>Jan 31, 2025</span>
+  <!-- World Stats Box (above the map) -->
+  <div class="world-stats" id="world-stats">
+    <div><u><b>World Stats</b></u></div>
+    <div>
+      <b>GM:</b> <span id="gm-count">0</span>&emsp;
+      <b>IM:</b> <span id="im-count">0</span>&emsp;
+      <b>FM:</b> <span id="fm-count">0</span>&emsp;
+      <b>CM:</b> <span id="cm-count">0</span>
+    </div>
+    <div>
+      <b>WGM:</b> <span id="wgm-count">0</span>&emsp;
+      <b>WIM:</b> <span id="wim-count">0</span>&emsp;
+      <b>WFM:</b> <span id="wfm-count">0</span>&emsp;
+      <b>WCM:</b> <span id="wcm-count">0</span>
+    </div>
   </div>
 
   <!-- Map Container -->
   <div id="map-container">
-    <!-- World Stats Box -->
-    <div class="world-stats" id="world-stats">
-      <div><u><b>World Stats</b></u></div>
-      <div>
-         <b>GM:</b> <span id="gm-count">0</span>&emsp;
-         <b>IM:</b> <span id="im-count">0</span>&emsp;
-         <b>FM:</b> <span id="fm-count">0</span>&emsp;
-         <b>CM:</b> <span id="cm-count">0</span>
-      </div>
-      <div>
-         <b>WGM:</b> <span id="wgm-count">0</span>&emsp;
-         <b>WIM:</b> <span id="wim-count">0</span>&emsp;
-         <b>WFM:</b> <span id="wfm-count">0</span>&emsp;
-         <b>WCM:</b> <span id="wcm-count">0</span>
-      </div>
-    </div>
     <!-- SVG Container -->
     <div id="svg-container">
       <!-- Zoom Controls -->
@@ -336,88 +267,34 @@
 
   <!-- Filter Layers -->
   <div class="filter-wrapper">
-    <!-- Activity Filter -->
     <div class="activity-filter">
       <label>Player activity Filter:</label>
       <button id="filter-both" class="active" title="Players who have played rated tournament recently including inactive players">Both</button>
       <button id="filter-active" title="Players who have played rated tournament recently">Active</button>
       <button id="filter-inactive" title="Inactive players that have not played rated tournament recently">Inactive</button>
     </div>
-    <!-- Highlight Titles (custom toggle-style checkboxes) -->
+
     <div class="highlight-titles">
       <label>Highlight titles on the map:</label>
-      <div class="highlight-titles-buttons">
-        <label for="highlight-none" id="label-highlight-none">None/Reset
-          <input type="checkbox" id="highlight-none" name="highlight" value="none" checked>
-        </label>
-        <label for="highlight-gm" id="label-highlight-gm">GM
-          <input type="checkbox" id="highlight-gm" name="highlight" value="GM">
-        </label>
-        <label for="highlight-im" id="label-highlight-im">IM
-          <input type="checkbox" id="highlight-im" name="highlight" value="IM">
-        </label>
-        <label for="highlight-fm" id="label-highlight-fm">FM
-          <input type="checkbox" id="highlight-fm" name="highlight" value="FM">
-        </label>
-        <label for="highlight-cm" id="label-highlight-cm">CM
-          <input type="checkbox" id="highlight-cm" name="highlight" value="CM">
-        </label>
-        <label for="highlight-wgm" id="label-highlight-wgm">WGM
-          <input type="checkbox" id="highlight-wgm" name="highlight" value="WGM">
-        </label>
-        <label for="highlight-wim" id="label-highlight-wim">WIM
-          <input type="checkbox" id="highlight-wim" name="highlight" value="WIM">
-        </label>
-        <label for="highlight-wfm" id="label-highlight-wfm">WFM
-          <input type="checkbox" id="highlight-wfm" name="highlight" value="WFM">
-        </label>
-        <label for="highlight-wcm" id="label-highlight-wcm">WCM
-          <input type="checkbox" id="highlight-wcm" name="highlight" value="WCM">
-        </label>
-      </div>
-    </div>
-    <!-- Top Countries Table Section -->
-    <div class="top-countries-container">
-      <!-- Top Countries – Men -->
-      <div class="top-countries" id="top-countries-men">
-        <h3>Top Countries - Men</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Rank</th>
-              <th>Country</th>
-              <th>GM</th>
-              <th>IM</th>
-              <th>FM</th>
-              <th>CM</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- JavaScript will insert rows here -->
-          </tbody>
-        </table>
-      </div>
-      <!-- Top Countries – Women -->
-      <div class="top-countries" id="top-countries-women">
-        <h3>Top Countries - Women</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Rank</th>
-              <th>Country</th>
-              <th>WGM</th>
-              <th>WIM</th>
-              <th>WFM</th>
-              <th>WCM</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- JavaScript will insert rows here -->
-          </tbody>
-        </table>
-      </div>
+      <input type="checkbox" id="highlight-none" name="highlight" value="none" checked> None/Reset
+      <input type="checkbox" id="highlight-gm" name="highlight" value="GM"> GM
+      <input type="checkbox" id="highlight-im" name="highlight" value="IM"> IM
+      <input type="checkbox" id="highlight-fm" name="highlight" value="FM"> FM
+      <input type="checkbox" id="highlight-cm" name="highlight" value="CM"> CM
+      <input type="checkbox" id="highlight-wgm" name="highlight" value="WGM"> WGM
+      <input type="checkbox" id="highlight-wim" name="highlight" value="WIM"> WIM
+      <input type="checkbox" id="highlight-wfm" name="highlight" value="WFM"> WFM
+      <input type="checkbox" id="highlight-wcm" name="highlight" value="WCM"> WCM
     </div>
   </div>
+
+  <!-- Last Updated Text -->
+  <div class="last-updated">
+    Last updated: <span>Jan 31, 2025</span>
+  </div>
+
+  <!-- Info Box -->
+  <div class="info-box" id="info-box"></div>
 
   <!-- Scripts -->
   <script>
@@ -426,22 +303,13 @@
     let currentFilter = 'both';
     let currentHighlight = 'none';
 
-    // Set None/Reset toggle selected by default (active class)
-    window.addEventListener("DOMContentLoaded", () => {
-      document.getElementById("label-highlight-none").classList.add('active');
-    });
-
-    // Global function to update world stats
+    // Global function to update world stats from JSON data.
     function updateWorldwideNumbers() {
       let gmCount = 0, wgmCount = 0, imCount = 0, wimCount = 0,
           fmCount = 0, wfmCount = 0, cmCount = 0, wcmCount = 0;
       Object.values(titledPlayersData).forEach(countryData => {
-        let source = countryData.Total;
-        if (currentFilter === 'active') {
-          source = countryData.Active;
-        } else if (currentFilter === 'inactive') {
-          source = countryData.Inactive;
-        }
+        let source = (currentFilter === 'both') ? countryData.Total :
+                     (currentFilter === 'active') ? countryData.Active : countryData.Inactive;
         gmCount += source?.GM || 0;
         wgmCount += source?.WGM || 0;
         imCount += source?.IM || 0;
@@ -461,7 +329,16 @@
       document.getElementById('wcm-count').textContent = wcmCount;
     }
 
-    // Update Top Countries tables based on currentFilter
+    // Helper: returns flag URL based on country code.
+    function getFlagUrl(countryCode) {
+      // Use alternate image if team code is "FID"
+      if(countryCode === "FID") {
+        return "https://upload.wikimedia.org/wikipedia/commons/6/62/Fidelogo.svg";
+      }
+      return "https://ratings.fide.com/svg/" + countryCode + ".svg";
+    }
+
+    // Update Top Countries tables
     function updateTopCountries() {
       let menData = [];
       let womenData = [];
@@ -502,9 +379,10 @@
       menTbody.innerHTML = '';
       menData.forEach((item, index) => {
         if (item.GM || item.IM || item.FM || item.CM) {
+          const flag = `<img src="${getFlagUrl(item.code)}" class="flag" alt="${item.code} Flag">`;
           const tr = document.createElement('tr');
           tr.innerHTML = `<td>${index+1}</td>
-                          <td><img src="https://upload.wikimedia.org/wikipedia/commons/6/62/Fidelogo.svg" class="flag" alt="${item.code} Flag"> ${item.code}</td>
+                          <td>${flag} ${item.code}</td>
                           <td>${item.GM}</td>
                           <td>${item.IM}</td>
                           <td>${item.FM}</td>
@@ -516,9 +394,10 @@
       womenTbody.innerHTML = '';
       womenData.forEach((item, index) => {
         if (item.WGM || item.WIM || item.WFM || item.WCM) {
+          const flag = `<img src="${getFlagUrl(item.code)}" class="flag" alt="${item.code} Flag">`;
           const tr = document.createElement('tr');
           tr.innerHTML = `<td>${index+1}</td>
-                          <td><img src="https://upload.wikimedia.org/wikipedia/commons/6/62/Fidelogo.svg" class="flag" alt="${item.code} Flag"> ${item.code}</td>
+                          <td>${flag} ${item.code}</td>
                           <td>${item.WGM}</td>
                           <td>${item.WIM}</td>
                           <td>${item.WFM}</td>
@@ -528,7 +407,7 @@
       });
     }
 
-    // Fetch JSON data and update world stats and top countries
+    // Fetch JSON data and update stats/table immediately
     fetch('titled_players_by_country.json')
       .then(response => response.json())
       .then(data => {
@@ -538,9 +417,9 @@
         updateWorldwideNumbers();
         updateTopCountries();
       })
-      .catch(error => console.error('Error fetching data:', error));
+      .catch(error => console.error('Error fetching titled players data:', error));
 
-    // Load SVG map and initialize pan/zoom and interactions
+    // Load the SVG map into the svg-container
     fetch('world_fide.svg')
       .then(response => response.text())
       .then(svgContent => {
@@ -572,7 +451,7 @@
         panZoom.resize().fit().center();
       });
 
-      // Activity filter button events
+      // Filter buttons functionality
       document.getElementById("filter-both").addEventListener("click", () => {
         currentFilter = 'both';
         updateFilterButtons();
@@ -600,24 +479,21 @@
         document.getElementById("filter-inactive").classList.toggle("active", currentFilter === 'inactive');
       }
 
-      // Highlight Titles toggle events
-      const highlightCheckboxes = document.querySelectorAll('.highlight-titles-buttons input[type="checkbox"]');
+      // Highlight Titles checkboxes functionality
+      const highlightCheckboxes = document.querySelectorAll('.highlight-titles input[type="checkbox"]');
       highlightCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', () => {
-          document.querySelectorAll('.highlight-titles-buttons label').forEach(label => label.classList.remove('active'));
+          // If one is checked, uncheck others so only one toggle is active
           if (checkbox.checked) {
-            checkbox.parentElement.classList.add('active');
-            currentHighlight = checkbox.value;
             highlightCheckboxes.forEach(cb => {
               if (cb !== checkbox) {
                 cb.checked = false;
-                cb.parentElement.classList.remove('active');
               }
             });
+            currentHighlight = checkbox.value;
           } else {
             currentHighlight = 'none';
             document.getElementById("highlight-none").checked = true;
-            document.getElementById("label-highlight-none").classList.add('active');
           }
           updateHighlight();
         });
@@ -632,26 +508,22 @@
           if (currentHighlight !== 'none') {
             let count = 0;
             let source = (currentFilter === 'both') ? countryData.Total :
-                         (currentFilter === 'active' ? countryData.Active : countryData.Inactive);
+                         (currentFilter === 'active') ? countryData.Active : countryData.Inactive;
             count = source?.[currentHighlight] || 0;
-            if (count > 0) path.classList.add('highlighted');
+            if (count > 0) {
+              path.classList.add('highlighted');
+            }
           }
         });
       }
 
-      // Info box events
-      if (!infoBox) {
-        const div = document.createElement("div");
-        div.id = "info-box";
-        div.className = "info-box";
-        document.body.appendChild(div);
-      }
+      // Info box functionality
       function showInfoBox(countryCode, x, y) {
         const countryData = titledPlayersData[countryCode] || {};
-        const flagUrl = "https://upload.wikimedia.org/wikipedia/commons/6/62/Fidelogo.svg";
+        const flagUrl = getFlagUrl(countryCode);
         let gmCount, wgmCount, imCount, wimCount, fmCount, wfmCount, cmCount, wcmCount;
         let source = (currentFilter === 'both') ? countryData.Total :
-                     (currentFilter === 'active' ? countryData.Active : countryData.Inactive);
+                     (currentFilter === 'active') ? countryData.Active : countryData.Inactive;
         gmCount = source?.GM || 0;
         wgmCount = source?.WGM || 0;
         imCount = source?.IM || 0;
@@ -674,6 +546,7 @@
         infoBox.style.left = `${x - boxWidth/2}px`;
         infoBox.style.top = `${y - boxHeight}px`;
       }
+
       function hideInfoBox() {
         if (selectedCountry) {
           document.querySelector(`path[id="${selectedCountry}"]`).classList.remove('selected');
@@ -681,32 +554,44 @@
         }
         infoBox.classList.remove('visible');
       }
+
       const paths = svgElement.querySelectorAll("path");
       paths.forEach(path => {
         path.addEventListener("mouseenter", (e) => {
-          if (!selectedCountry) showInfoBox(path.id, e.clientX, e.clientY);
+          if (!selectedCountry) {
+            showInfoBox(path.id, e.clientX, e.clientY);
+          }
         });
         path.addEventListener("mouseleave", () => {
           if (!selectedCountry && !infoBox.matches(':hover')) hideInfoBox();
         });
         path.addEventListener("touchstart", (e) => {
           if (e.touches.length === 1) {
-            if (selectedCountry) document.querySelector(`path[id="${selectedCountry}"]`).classList.remove('selected');
+            if (selectedCountry) {
+              document.querySelector(`path[id="${selectedCountry}"]`).classList.remove('selected');
+            }
             selectedCountry = path.id;
             path.classList.add('selected');
             showInfoBox(path.id, e.touches[0].clientX, e.touches[0].clientY);
           }
         });
       });
-      infoBox.addEventListener('mouseenter', () => infoBox.classList.add('visible'));
-      infoBox.addEventListener('mouseleave', () => { if (!selectedCountry) hideInfoBox(); });
+      infoBox.addEventListener('mouseenter', () => {
+        infoBox.classList.add('visible');
+      });
+      infoBox.addEventListener('mouseleave', () => {
+        if (!selectedCountry) hideInfoBox();
+      });
       document.addEventListener("touchstart", (e) => {
-        if (!infoBox.contains(e.target) && !Array.from(paths).some(path => path.contains(e.target))) hideInfoBox();
+        if (!infoBox.contains(e.target) && !Array.from(paths).some(path => path.contains(e.target))) {
+          hideInfoBox();
+        }
       });
       window.addEventListener('resize', () => {
         panZoom.resize().fit().center();
       });
-      let initialDistance = null, initialScale = 1;
+      let initialDistance = null;
+      let initialScale = 1;
       svgContainer.addEventListener("touchstart", (e) => {
         if (e.touches.length === 2) {
           initialDistance = Math.hypot(
@@ -733,10 +618,10 @@
           panZoom.zoomAtPoint(scale, transformedPoint);
         }
       });
-      svgContainer.addEventListener("touchend", () => { initialDistance = null; });
+      svgContainer.addEventListener("touchend", () => {
+        initialDistance = null;
+      });
     }
   </script>
-  <!-- Info Box -->
-  <div class="info-box" id="info-box"></div>
 </body>
 </html>
