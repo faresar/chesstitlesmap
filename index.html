@@ -4,14 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>ChessTitlesMap.com</title>
-  <!-- Bootstrap CSS -->
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Explore chess titles by country, including Grand Master per country and other titles. Discover country-specific statistics and rankings on ChessTitlesMap.com.">
+  <meta name="keywords" content="Chess titles by country, Grand Master per country, Country Grand Master, Chess titles, Chess rankings, Chess stats">
+  
+  <!-- Open Graph Tags for social sharing -->
+  <meta property="og:title" content="Chess Titles by Country - Grand Master per Country | ChessTitlesMap.com">
+  <meta property="og:description" content="Explore chess titles by country and discover national rankings including Grand Masters, International Masters and more on ChessTitlesMap.com.">
+  <meta property="og:type" content="website">
+  
+  <!-- Other External CSS and JS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
-  <!-- Bootstrap Bundle JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-  <!-- svg-pan-zoom -->
   <script src="https://unpkg.com/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  
   <style>
     body {
       margin: 0;
@@ -20,7 +28,6 @@
       width: 100%;
       overflow-y: auto;
     }
-    /* Navigation Bar */
     .navbar-brand {
       color: #007bff !important;
       font-weight: bold;
@@ -29,7 +36,6 @@
     .navbar-brand:hover {
       text-decoration: none;
     }
-    /* Last updated – moved to top center */
     .last-updated {
       font-size: 14px;
       color: #666;
@@ -39,7 +45,6 @@
     .last-updated span {
       font-weight: normal;
     }
-    /* Map container styles */
     #map-container {
       width: 100%;
       max-width: 1010px;
@@ -50,14 +55,12 @@
       overflow: hidden;
       touch-action: none;
     }
-    /* SVG container */
     #svg-container {
       width: 100%;
       height: auto;
       aspect-ratio: 1010/666;
       position: relative;
     }
-    /* Zoom controls – buttons made 10% bigger than original dimensions */
     .zoom-controls {
       position: absolute;
       top: 10px;
@@ -71,13 +74,11 @@
       background-color: white;
       border: 1px solid black;
       border-radius: 4px;
-      /* Increased dimensions: original 15px became approx 18px then multiplied earlier by 1.18;
-         now 10% larger than desktop: 18px * 1.1 ≈ 20px */
       width: 20px;
       height: 20px;
       cursor: pointer;
       font-family: 'Roboto', sans-serif;
-      font-size: 10px;   /* Previously 9px, now 10px */
+      font-size: 10px;
       color: black;
       display: flex;
       align-items: center;
@@ -86,10 +87,9 @@
     }
     @media (max-width: 600px) {
       .zoom-controls button {
-        /* Originally 12px -> 14px; now 10% bigger than original mobile sizes: approx 14px * 1.1 ≈ 15px */
         width: 15px;
         height: 15px;
-        font-size: 9px;   /* previously 8px, now about 9px */
+        font-size: 9px;
       }
     }
     path {
@@ -106,7 +106,6 @@
     path.highlighted {
       fill: #b05a45;
     }
-    /* World Stats – renamed to World Stats */
     .world-stats {
       text-align: center;
       background: rgba(0,0,0,0.7);
@@ -130,7 +129,6 @@
         font-size: 0.8rem;
       }
     }
-    /* Container for filter layers */
     .filter-wrapper {
       max-width: 1010px;
       margin: 20px auto;
@@ -143,7 +141,6 @@
       border-radius: 5px;
       box-shadow: 0 3px 15px rgba(0,0,0,0.2);
     }
-    /* Make activity filter label larger */
     .activity-filter label {
       font-weight: bold;
       font-size: 14px;
@@ -175,7 +172,6 @@
       box-shadow: 0 3px 15px rgba(0,0,0,0.2);
       margin-top: 10px;
     }
-    /* Make highlight-titles label larger */
     .highlight-titles label {
       font-weight: bold;
       font-size: 14px;
@@ -206,7 +202,6 @@
       color: white;
       border-color: #007bff;
     }
-    /* Top Countries section (new responsive layer) */
     .top-countries-container {
       display: flex;
       flex-wrap: wrap;
@@ -236,14 +231,12 @@
       padding: 5px;
       text-align: center;
     }
-    /* Flag images */
     .flag {
       height: 1em;
       width: auto;
       vertical-align: middle;
       margin-right: 5px;
     }
-    /* AdSense placeholder */
     .ads-placeholder {
       width: 100%;
       max-width: 1010px;
@@ -254,7 +247,6 @@
       font-size: 14px;
       color: #666;
     }
-    /* Info box */
     .info-box {
       position: fixed;
       background: rgba(255,255,255,0.95);
@@ -269,6 +261,31 @@
     }
     .info-box.visible {
       display: block;
+    }
+    /* Countries List Section - visible content that helps search engines connect country codes to names */
+    .countries-list {
+      max-width: 1010px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .countries-list h2 {
+      font-size: 18px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .countries-list ul {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .countries-list li {
+      margin: 5px 10px;
     }
   </style>
 </head>
@@ -296,15 +313,14 @@
       </div>
     </div>
   </nav>
-
+  
   <!-- Last Updated -->
   <div class="last-updated">
     Last updated: <span>Jan 31, 2025</span>
   </div>
-
+  
   <!-- Map Container -->
   <div id="map-container">
-    <!-- World Stats box -->
     <div class="world-stats" id="world-stats">
       <div><u><b>World Stats</b></u></div>
       <div>
@@ -320,9 +336,7 @@
          <b>WCM:</b> <span id="wcm-count">0</span>
       </div>
     </div>
-    <!-- SVG Container -->
     <div id="svg-container">
-      <!-- Zoom controls -->
       <div class="zoom-controls">
          <button id="zoom-in">+</button>
          <button id="zoom-out">-</button>
@@ -330,25 +344,21 @@
       </div>
     </div>
   </div>
-
+  
   <!-- AdSense Placeholder -->
-  <div class="ads-placeholder">
-    Placeholder
-  </div>
-
+  <div class="ads-placeholder">Placeholder</div>
+  
   <!-- Filter Layers Container -->
   <div class="filter-wrapper">
-    <!-- Activity Filter -->
     <div class="activity-filter">
-      <label>Player activity Filter:</label>
+      <label>Player Activity Filter:</label>
       <button id="filter-both" class="active" title="Players who have played rated tournament recently including inactive players">Both</button>
       <button id="filter-active" title="Players who have played rated tournament recently">Active</button>
       <button id="filter-inactive" title="Inactive players that have not played rated tournament recently">Inactive</button>
     </div>
-
-    <!-- Highlight Titles toggles using custom style -->
+    
     <div class="highlight-titles">
-      <label>Highlight titles on the map:</label>
+      <label>Highlight Titles on the Map:</label>
       <div class="highlight-titles-buttons">
         <label for="highlight-none" id="label-highlight-none">None/Reset
           <input type="checkbox" id="highlight-none" name="highlight" value="none" checked>
@@ -379,10 +389,8 @@
         </label>
       </div>
     </div>
-
-    <!-- New responsive Top Countries Layer -->
+    
     <div class="top-countries-container">
-      <!-- Top Countries - Men -->
       <div class="top-countries" id="top-countries-men">
         <h3>Top Countries - Men</h3>
         <table>
@@ -401,7 +409,6 @@
           </tbody>
         </table>
       </div>
-      <!-- Top Countries - Women -->
       <div class="top-countries" id="top-countries-women">
         <h3>Top Countries - Women</h3>
         <table>
@@ -422,29 +429,41 @@
       </div>
     </div>
   </div>
-
+  
+  <!-- Countries List Section for SEO -->
+  <section class="countries-list">
+    <h2>Countries Covered</h2>
+    <ul>
+      <li>USA (USA)</li>
+      <li>Germany (DE)</li>
+      <li>France (FR)</li>
+      <li>Russia (RU)</li>
+      <li>Spain (ES)</li>
+      <li>Italy (IT)</li>
+      <li>India (IN)</li>
+      <li>Brazil (BR)</li>
+      <li>Canada (CA)</li>
+      <!-- Add more countries as needed -->
+    </ul>
+  </section>
+  
   <!-- Scripts -->
   <script>
     "use strict";
     let titledPlayersData = {};
-    // Default filter is "both"; currentHighlight defaults to "none"
     let currentFilter = 'both';
     let currentHighlight = 'none';
 
-    // Set default active class on None/Reset toggle label
     window.addEventListener("DOMContentLoaded", () => {
       document.getElementById("label-highlight-none").classList.add('active');
     });
-    // Global function to update world stats based on currentFilter (both, active, inactive)
+
     function updateWorldwideNumbers() {
       let gmCount = 0, wgmCount = 0, imCount = 0, wimCount = 0, fmCount = 0, wfmCount = 0, cmCount = 0, wcmCount = 0;
       Object.values(titledPlayersData).forEach(countryData => {
-        let source = countryData.Total;
-        if (currentFilter === 'active') {
-          source = countryData.Active;
-        } else if (currentFilter === 'inactive') {
-          source = countryData.Inactive;
-        }
+        let source = currentFilter === 'active' ? countryData.Active 
+                     : currentFilter === 'inactive' ? countryData.Inactive 
+                     : countryData.Total;
         gmCount += source?.GM || 0;
         wgmCount += source?.WGM || 0;
         imCount += source?.IM || 0;
@@ -469,46 +488,18 @@
       let womenData = [];
       Object.keys(titledPlayersData).forEach(countryCode => {
         const data = titledPlayersData[countryCode];
-        // Choose data source based on currentFilter
-        const source = (currentFilter === 'both') ? data.Total : (currentFilter === 'active' ? data.Active : data.Inactive);
-        menData.push({
-          code: countryCode,
-          GM: source?.GM || 0,
-          IM: source?.IM || 0,
-          FM: source?.FM || 0,
-          CM: source?.CM || 0
-        });
-        womenData.push({
-          code: countryCode,
-          WGM: source?.WGM || 0,
-          WIM: source?.WIM || 0,
-          WFM: source?.WFM || 0,
-          WCM: source?.WCM || 0
-        });
+        const source = currentFilter === 'active' ? data.Active 
+                     : currentFilter === 'inactive' ? data.Inactive 
+                     : data.Total;
+        menData.push({ code: countryCode, GM: source?.GM || 0, IM: source?.IM || 0, FM: source?.FM || 0, CM: source?.CM || 0 });
+        womenData.push({ code: countryCode, WGM: source?.WGM || 0, WIM: source?.WIM || 0, WFM: source?.WFM || 0, WCM: source?.WCM || 0 });
       });
-      // Sort men data: descending by GM, then IM, then FM, then CM
-      menData.sort((a, b) => {
-        if(b.GM !== a.GM) return b.GM - a.GM;
-        if(b.IM !== a.IM) return b.IM - a.IM;
-        if(b.FM !== a.FM) return b.FM - a.FM;
-        return b.CM - a.CM;
-      });
-      // Sort women data: descending by WGM, then WIM, then WFM, then WCM
-      womenData.sort((a, b) => {
-        if(b.WGM !== a.WGM) return b.WGM - a.WGM;
-        if(b.WIM !== a.WIM) return b.WIM - a.WIM;
-        if(b.WFM !== a.WFM) return b.WFM - a.WFM;
-        return b.WCM - a.WCM;
-      });
-      // Update men table – include a row if at least one of GM, IM, FM or CM is nonzero
+      menData.sort((a, b) => b.GM - a.GM || b.IM - a.IM || b.FM - a.FM || b.CM - a.CM);
       const menTbody = document.querySelector('#top-countries-men tbody');
       menTbody.innerHTML = '';
       menData.forEach((item, index) => {
         if (item.GM || item.IM || item.FM || item.CM) {
-          // Check for country code FID to set an alternate flag image
-          const flagUrl = (item.code === "FID") 
-                          ? "Fidelogo.png" 
-                          : `https://ratings.fide.com/svg/${item.code}.svg`;
+          const flagUrl = (item.code === "FID") ? "Fidelogo.png" : `https://ratings.fide.com/svg/${item.code}.svg`;
           const tr = document.createElement('tr');
           tr.innerHTML = `<td>${index+1}</td>
                           <td><img src="${flagUrl}" class="flag" alt="${item.code} Flag"> ${item.code}</td>
@@ -519,14 +510,11 @@
           menTbody.appendChild(tr);
         }
       });
-      // Update women table – include a row if any title count is nonzero
       const womenTbody = document.querySelector('#top-countries-women tbody');
       womenTbody.innerHTML = '';
       womenData.forEach((item, index) => {
         if (item.WGM || item.WIM || item.WFM || item.WCM) {
-          const flagUrl = (item.code === "FID") 
-                          ? "Fidelogo.png" 
-                          : `https://ratings.fide.com/svg/${item.code}.svg`;
+          const flagUrl = (item.code === "FID") ? "Fidelogo.png" : `https://ratings.fide.com/svg/${item.code}.svg`;
           const tr = document.createElement('tr');
           tr.innerHTML = `<td>${index+1}</td>
                           <td><img src="${flagUrl}" class="flag" alt="${item.code} Flag"> ${item.code}</td>
@@ -538,8 +526,7 @@
         }
       });
     }
-
-    // Fetch JSON data and update counts and tables initially.
+    
     fetch('titled_players_by_country.json')
       .then(response => response.json())
       .then(data => {
@@ -549,24 +536,20 @@
         updateWorldwideNumbers();
         updateTopCountries();
       })
-      .catch(error => {
-        console.error('Error fetching titled players data:', error);
-      });
+      .catch(error => { console.error('Error fetching titled players data:', error); });
     
-    // Load SVG map
     fetch('world_fide.svg')
       .then(response => response.text())
       .then(svgContent => {
         document.getElementById('svg-container').innerHTML += svgContent.trim();
         initializeMap();
       });
-
+    
     function initializeMap() {
       const svgContainer = document.getElementById('svg-container');
       const svgElement = svgContainer.querySelector('svg');
       const infoBox = document.getElementById("info-box");
       let selectedCountry = null;
-
       const panZoom = svgPanZoom(svgElement, {
         zoomEnabled: true,
         controlIconsEnabled: false,
@@ -577,15 +560,12 @@
         zoomScaleSensitivity: 0.2,
       });
       panZoom.disableDblClickZoom();
-
       document.getElementById("zoom-in").addEventListener("click", () => panZoom.zoomIn());
       document.getElementById("zoom-out").addEventListener("click", () => panZoom.zoomOut());
       document.getElementById("zoom-reset").addEventListener("click", () => {
         panZoom.reset();
         panZoom.resize().fit().center();
       });
-
-      // Filter buttons functionality – update filter and then update both highlights and top countries rankings
       document.getElementById("filter-both").addEventListener("click", () => {
         currentFilter = 'both';
         updateFilterButtons();
@@ -607,22 +587,18 @@
         updateWorldwideNumbers();
         updateTopCountries();
       });
-
       function updateFilterButtons() {
         document.getElementById("filter-both").classList.toggle("active", currentFilter === 'both');
         document.getElementById("filter-active").classList.toggle("active", currentFilter === 'active');
         document.getElementById("filter-inactive").classList.toggle("active", currentFilter === 'inactive');
       }
-      // Highlight Titles toggles functionality using custom buttons
       const highlightCheckboxes = document.querySelectorAll('.highlight-titles-buttons input[type="checkbox"]');
       highlightCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', () => {
-          // Remove active class from all labels
           document.querySelectorAll('.highlight-titles-buttons label').forEach(label => label.classList.remove('active'));
           if (checkbox.checked) {
             checkbox.parentElement.classList.add('active');
             currentHighlight = checkbox.value;
-            // Uncheck other checkboxes
             highlightCheckboxes.forEach(cb => {
               if (cb !== checkbox) {
                 cb.checked = false;
@@ -631,14 +607,12 @@
             });
           } else {
             currentHighlight = 'none';
-            // Ensure at least one toggle remains active – default to None/Reset
             document.getElementById("highlight-none").checked = true;
             document.getElementById("label-highlight-none").classList.add('active');
           }
           updateHighlight();
         });
       });
-
       function updateHighlight() {
         const paths = svgElement.querySelectorAll("path");
         paths.forEach(path => {
@@ -646,53 +620,27 @@
           const countryCode = path.id;
           const countryData = titledPlayersData[countryCode] || {};
           if (currentHighlight !== 'none') {
-            let count = 0;
-            let source;
-            if(currentFilter === 'both'){
-              source = countryData.Total;
-            } else if(currentFilter === 'active'){
-              source = countryData.Active;
-            } else {
-              source = countryData.Inactive;
-            }
-            count = source?.[currentHighlight] || 0;
-            if (count > 0) {
-              path.classList.add('highlighted');
-            }
+            let source = currentFilter === 'active' ? countryData.Active 
+                       : currentFilter === 'inactive' ? countryData.Inactive 
+                       : countryData.Total;
+            const count = source?.[currentHighlight] || 0;
+            if (count > 0) path.classList.add('highlighted');
           }
         });
       }
-
-      // Info box functionality
       if (!document.getElementById("info-box")) {
         const div = document.createElement("div");
         div.id = "info-box";
         div.className = "info-box";
         document.body.appendChild(div);
       }
-
       function showInfoBox(countryCode, x, y) {
-        // For country code FID, use alternate flag source "Fidelogo.png"
-        const flagUrl = (countryCode === "FID")
-                        ? "Fidelogo.png"
-                        : `https://ratings.fide.com/svg/${countryCode}.svg`;
+        const flagUrl = (countryCode === "FID") ? "Fidelogo.png" : `https://ratings.fide.com/svg/${countryCode}.svg`;
         const countryData = titledPlayersData[countryCode] || {};
-        let gmCount, wgmCount, imCount, wimCount, fmCount, wfmCount, cmCount, wcmCount;
-        let source;
-        if (currentFilter === 'both')
-          source = countryData.Total;
-        else if (currentFilter === 'active')
-          source = countryData.Active;
-        else
-          source = countryData.Inactive;
-        gmCount = source?.GM || 0;
-        wgmCount = source?.WGM || 0;
-        imCount = source?.IM || 0;
-        wimCount = source?.WIM || 0;
-        fmCount = source?.FM || 0;
-        wfmCount = source?.WFM || 0;
-        cmCount = source?.CM || 0;
-        wcmCount = source?.WCM || 0;
+        let source = currentFilter === 'active' ? countryData.Active 
+                   : currentFilter === 'inactive' ? countryData.Inactive 
+                   : countryData.Total;
+        const gmCount = source?.GM || 0, wgmCount = source?.WGM || 0, imCount = source?.IM || 0, wimCount = source?.WIM || 0, fmCount = source?.FM || 0, wfmCount = source?.WFM || 0, cmCount = source?.CM || 0, wcmCount = source?.WCM || 0;
         infoBox.innerHTML = `
           <img src="${flagUrl}" alt="${countryCode} Flag" class="flag">
           <a href="https://ratings.fide.com/rankings.phtml?country=${countryCode}" target="_blank">${countryCode}</a><br>
@@ -707,7 +655,6 @@
         infoBox.style.left = `${x - boxWidth/2}px`;
         infoBox.style.top = `${y - boxHeight}px`;
       }
-
       function hideInfoBox() {
         if (selectedCountry) {
           document.querySelector(`path[id="${selectedCountry}"]`).classList.remove('selected');
@@ -715,13 +662,10 @@
         }
         infoBox.classList.remove('visible');
       }
-
       const paths = svgElement.querySelectorAll("path");
       paths.forEach(path => {
         path.addEventListener("mouseenter", (e) => {
-          if (!selectedCountry) {
-            showInfoBox(path.id, e.clientX, e.clientY);
-          }
+          if (!selectedCountry) showInfoBox(path.id, e.clientX, e.clientY);
         });
         path.addEventListener("mouseleave", () => {
           if (!selectedCountry && !infoBox.matches(':hover')) hideInfoBox();
@@ -736,38 +680,23 @@
           }
         });
       });
-      infoBox.addEventListener('mouseenter', () => {
-        infoBox.classList.add('visible');
-      });
-      infoBox.addEventListener('mouseleave', () => {
-        if (!selectedCountry) hideInfoBox();
-      });
+      infoBox.addEventListener('mouseenter', () => { infoBox.classList.add('visible'); });
+      infoBox.addEventListener('mouseleave', () => { if (!selectedCountry) hideInfoBox(); });
       document.addEventListener("touchstart", (e) => {
-        if (!infoBox.contains(e.target) && !Array.from(paths).some(path => path.contains(e.target))) {
-          hideInfoBox();
-        }
+        if (!infoBox.contains(e.target) && !Array.from(paths).some(path => path.contains(e.target))) hideInfoBox();
       });
-      window.addEventListener('resize', () => {
-        panZoom.resize().fit().center();
-      });
-      let initialDistance = null;
-      let initialScale = 1;
+      window.addEventListener('resize', () => { panZoom.resize().fit().center(); });
+      let initialDistance = null, initialScale = 1;
       svgContainer.addEventListener("touchstart", (e) => {
         if (e.touches.length === 2) {
-          initialDistance = Math.hypot(
-            e.touches[0].clientX - e.touches[1].clientX,
-            e.touches[0].clientY - e.touches[1].clientY
-          );
+          initialDistance = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
           initialScale = panZoom.getZoom();
         }
       });
       svgContainer.addEventListener("touchmove", (e) => {
         if (e.touches.length === 2 && initialDistance !== null) {
           e.preventDefault();
-          const currentDistance = Math.hypot(
-            e.touches[0].clientX - e.touches[1].clientX,
-            e.touches[0].clientY - e.touches[1].clientY
-          );
+          const currentDistance = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
           const scale = (currentDistance / initialDistance) * initialScale;
           const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
           const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
@@ -778,12 +707,9 @@
           panZoom.zoomAtPoint(scale, transformedPoint);
         }
       });
-      svgContainer.addEventListener("touchend", () => {
-        initialDistance = null;
-      });
+      svgContainer.addEventListener("touchend", () => { initialDistance = null; });
     }
   </script>
-  <!-- Info Box -->
   <div class="info-box" id="info-box"></div>
 </body>
 </html>
