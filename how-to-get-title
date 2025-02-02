@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0, user-scalable=no">
+  <title>How to get chess title | ChessTitlesMap.com</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Learn how to get chess titles such as Grandmaster, International Master, FIDE Master, Candidate Master, and the corresponding women’s titles.">
+  <meta name="keywords" content="How to get chess title, Chess titles, Grandmaster, International Master, FIDE Master, Candidate Master, WGM, WIM, WFM, WCM">
+  
+  <!-- External CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+  
+  <!-- Internal CSS (additional to your global styling) -->
+  <style>
+    /* Global styles – same as your main site */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Roboto', sans-serif;
+      width: 100%;
+      overflow-y: auto;
+    }
+    .navbar-brand {
+      color: #007bff !important;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    .navbar-brand:hover {
+      text-decoration: none;
+    }
+    .last-updated {
+      font-size: 14px;
+      color: #666;
+      text-align: center;
+      margin: 10px 0;
+    }
+    .last-updated span {
+      font-weight: normal;
+    }
+    .ads-placeholder, .vertical-ad {
+      border: 1px dashed #aaa;
+      background: #f0f0f0;
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+      margin: 20px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    /* Vertical ad placeholder should be responsive */
+    .vertical-ad {
+      width: 160px;
+      height: 600px;
+    }
+    
+    /* Page Title */
+    .page-title {
+      text-align: center;
+      margin: 20px 0;
+      font-size: 1.8rem;
+      font-weight: bold;
+    }
+    
+    /* Triangle hierarchy container */
+    .triangle-container {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      margin: 40px auto;
+      max-width: 800px;
+    }
+    /* The triangle diagram */
+    .triangle {
+      width: 300px;
+      /* Maintain aspect ratio (roughly 300px wide x 300px tall) */
+      height: 300px;
+      position: relative;
+      margin-bottom: 20px;
+    }
+    .triangle .segment {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+    /* Men's triangle segments using clip-path.
+       The full triangle is defined by (50% 0, 0% 100%, 100% 100%). 
+       Horizontal slices at 25%, 50%, 75%, 100% are used.
+    */
+    .triangle .gm {
+      background: #FF5733;
+      clip-path: polygon(50% 0%, 37.5% 25%, 62.5% 25%);
+    }
+    .triangle .im {
+      background: #33C1FF;
+      clip-path: polygon(37.5% 25%, 25% 50%, 75% 50%, 62.5% 25%);
+    }
+    .triangle .fm {
+      background: #75FF33;
+      clip-path: polygon(25% 50%, 12.5% 75%, 87.5% 75%, 75% 50%);
+    }
+    .triangle .cm {
+      background: #FF33F6;
+      clip-path: polygon(12.5% 75%, 0% 100%, 100% 100%, 87.5% 75%);
+    }
+    /* For the women’s triangle we use the same clip values and colors for consistency.
+       (You may change colors if desired.)
+    */
+    .triangle .wgm {
+      background: #FF5733;
+      clip-path: polygon(50% 0%, 37.5% 25%, 62.5% 25%);
+    }
+    .triangle .wim {
+      background: #33C1FF;
+      clip-path: polygon(37.5% 25%, 25% 50%, 75% 50%, 62.5% 25%);
+    }
+    .triangle .wfm {
+      background: #75FF33;
+      clip-path: polygon(25% 50%, 12.5% 75%, 87.5% 75%, 75% 50%);
+    }
+    .triangle .wcm {
+      background: #FF33F6;
+      clip-path: polygon(12.5% 75%, 0% 100%, 100% 100%, 87.5% 75%);
+    }
+    
+    /* Explanation text placed beside the triangle diagram */
+    .triangle-text {
+      flex: 1;
+      margin-left: 20px;
+    }
+    .text-segment {
+      margin-bottom: 20px;
+      background: #EFEFEF;
+      padding: 10px;
+      border-radius: 4px;
+    }
+    .text-segment h4 {
+      margin: 0 0 5px;
+    }
+    
+    /* For smaller screens, stack the triangle and text vertically */
+    @media (max-width: 768px) {
+      .triangle-container {
+        flex-direction: column;
+        align-items: center;
+      }
+      .triangle-text {
+        margin-left: 0;
+        width: 90%;
+      }
+    }
+    
+    /* Navigation: use same Bootstrap markup as before */
+  </style>
+  
+  <!-- External JS Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+  <!-- Navigation Menu (same as in your other pages) -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="index.html">ChessTitlesMap.com</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+         <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+               <a class="nav-link" href="how-to-get-title.html" target="_blank">How to Get Title</a>
+            </li>
+            <li class="nav-item">
+               <a class="nav-link" href="https://ratings.fide.com/" target="_blank">FIDE Ratings</a>
+            </li>
+            <li class="nav-item">
+               <a class="nav-link" href="feedback.html" target="_blank">Feedback</a>
+            </li>
+         </ul>
+      </div>
+    </div>
+  </nav>
+  
+  <!-- Page Title -->
+  <div class="page-title">How to get chess title</div>
+  
+  <!-- Vertical AdSense Placeholder (responsive) -->
+  <div class="d-flex justify-content-center">
+    <div class="vertical-ad">
+      Vertical Ad Placeholder
+    </div>
+  </div>
+  
+  <!-- Men’s Titles Triangle Hierarchy -->
+  <section>
+    <h3 class="text-center mt-4">Men’s Chess Titles</h3>
+    <div class="triangle-container">
+      <div class="triangle" id="men-triangle">
+        <div class="segment gm"></div>
+        <div class="segment im"></div>
+        <div class="segment fm"></div>
+        <div class="segment cm"></div>
+      </div>
+      <div class="triangle-text">
+        <div class="text-segment">
+          <h4>GM (Grandmaster)</h4>
+          <p>
+            • Achieve a FIDE rating of 2500 or higher.<br>
+            • Earn three GM norms in tournaments over at least 27 games.<br>
+            • Alternative paths: Reach the final 16 in the FIDE World Cup, win the World Junior Championship (U20), win the World Senior Championship (50+ or 65+), or win a Continental championship.
+          </p>
+        </div>
+        <div class="text-segment">
+          <h4>IM (International Master)</h4>
+          <p>
+            • Achieve a FIDE rating of 2400 or higher.<br>
+            • Earn three IM norms over 27 or more games.<br>
+            • Alternative paths: Qualify for the FIDE World Cup, finish second/third in the World Junior Championship (U20) or World Senior Championship (50+ or 65+), win the World Youth Championship (U18/U16), finish in top places at Continental championships, or win a sub-Continental championship.
+          </p>
+        </div>
+        <div class="text-segment">
+          <h4>FM (FIDE Master)</h4>
+          <p>
+            • Achieve a FIDE rating of 2300 or higher.<br>
+            • No norms are required.
+          </p>
+        </div>
+        <div class="text-segment">
+          <h4>CM (Candidate Master)</h4>
+          <p>
+            • Achieve a FIDE rating of 2200 or higher.<br>
+            • No norms are required.<br>
+            • Alternatives for players rated 2000–2199: Finish in the top three at the World Youth Championship (U8/U10), place in Continental U12/U14/U16 championships, or score 50%+ over at least 7 games at an Olympiad.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Women’s Titles Triangle Hierarchy -->
+  <section>
+    <h3 class="text-center mt-5">Women’s Chess Titles</h3>
+    <div class="triangle-container">
+      <div class="triangle" id="women-triangle">
+        <div class="segment wgm"></div>
+        <div class="segment wim"></div>
+        <div class="segment wfm"></div>
+        <div class="segment wcm"></div>
+      </div>
+      <div class="triangle-text">
+        <div class="text-segment">
+          <h4>WGM (Woman Grandmaster)</h4>
+          <p>
+            • Achieve a FIDE rating of 2300 or higher.<br>
+            • Earn three WGM norms in international competition.
+          </p>
+        </div>
+        <div class="text-segment">
+          <h4>WIM (Woman International Master)</h4>
+          <p>
+            • Achieve a FIDE rating of 2200 or higher.<br>
+            • Earn three WIM norms in international competition.
+          </p>
+        </div>
+        <div class="text-segment">
+          <h4>WFM (Woman FIDE Master)</h4>
+          <p>
+            • Achieve a FIDE rating of 2100 or higher.<br>
+            • No norms are required.
+          </p>
+        </div>
+        <div class="text-segment">
+          <h4>WCM (Woman Candidate Master)</h4>
+          <p>
+            • Achieve a FIDE rating of 2000 or higher.<br>
+            • No norms are required.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+</body>
+</html>
