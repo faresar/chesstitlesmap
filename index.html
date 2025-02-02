@@ -57,7 +57,7 @@
       aspect-ratio: 1010/666;
       position: relative;
     }
-    /* Zoom controls – now 50% smaller */
+    /* Zoom controls – buttons made 18% bigger */
     .zoom-controls {
       position: absolute;
       top: 10px;
@@ -71,11 +71,12 @@
       background-color: white;
       border: 1px solid black;
       border-radius: 4px;
-      width: 15px;      /* 50% of original 30px */
-      height: 15px;     /* 50% of original 30px */
+      /* Original dimensions multiplied by 1.18 */
+      width: 18px;      /* 15px * 1.18 ≈ 18px */
+      height: 18px;     /* 15px * 1.18 ≈ 18px */
       cursor: pointer;
       font-family: 'Roboto', sans-serif;
-      font-size: 8px;   /* 50% of original size */
+      font-size: 9px;   /* 8px * 1.18 ≈ 9px */
       display: flex;
       align-items: center;
       justify-content: center;
@@ -83,9 +84,9 @@
     }
     @media (max-width: 600px) {
       .zoom-controls button {
-        width: 12px;
-        height: 12px;
-        font-size: 7px;
+        width: 14px;      /* 12px * 1.18 ≈ 14px */
+        height: 14px;     /* 12px * 1.18 ≈ 14px */
+        font-size: 8px;   /* 7px * 1.18 ≈ 8px */
       }
     }
     path {
@@ -142,7 +143,7 @@
     /* Make activity filter label larger */
     .activity-filter label {
       font-weight: bold;
-      font-size: 14px; /* Increased from 12px */
+      font-size: 14px;
       margin-bottom: 5px;
       display: block;
     }
@@ -174,7 +175,7 @@
     /* Make highlight-titles label larger */
     .highlight-titles label {
       font-weight: bold;
-      font-size: 14px; /* Increased from 12px */
+      font-size: 14px;
       margin-bottom: 5px;
       display: block;
     }
@@ -274,8 +275,7 @@
     <div class="container-fluid">
       <a class="navbar-brand" href="index.html">ChessTitlesMap.com</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
-              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-         <span class="navbar-toggler-icon"></span>
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">... <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
          <ul class="navbar-nav ms-auto">
@@ -460,8 +460,7 @@
       document.getElementById('cm-count').textContent = cmCount;
       document.getElementById('wcm-count').textContent = wcmCount;
     }
-
-    // Update Top Countries tables based on filter. For each country, choose source = Total/Active/Inactive.
+    
     function updateTopCountries() {
       let menData = [];
       let womenData = [];
@@ -498,14 +497,18 @@
         if(b.WFM !== a.WFM) return b.WFM - a.WFM;
         return b.WCM - a.WCM;
       });
-      // Update men table – now include a row if at least one of GM, IM, FM or CM is nonzero
+      // Update men table – include a row if at least one of GM, IM, FM or CM is nonzero
       const menTbody = document.querySelector('#top-countries-men tbody');
       menTbody.innerHTML = '';
       menData.forEach((item, index) => {
         if (item.GM || item.IM || item.FM || item.CM) {
+          // Check for country code FID to set an alternate flag image
+          const flagUrl = (item.code === "FID") 
+                          ? "https://en.wikipedia.org/wiki/FIDE#/media/File:Fidelogo.svg" 
+                          : `https://ratings.fide.com/svg/${item.code}.svg`;
           const tr = document.createElement('tr');
           tr.innerHTML = `<td>${index+1}</td>
-                          <td><img src="https://ratings.fide.com/svg/${item.code}.svg" class="flag" alt="${item.code} Flag"> ${item.code}</td>
+                          <td><img src="${flagUrl}" class="flag" alt="${item.code} Flag"> ${item.code}</td>
                           <td>${item.GM}</td>
                           <td>${item.IM}</td>
                           <td>${item.FM}</td>
@@ -513,14 +516,17 @@
           menTbody.appendChild(tr);
         }
       });
-      // Update women table – include row if any title count is nonzero
+      // Update women table – include a row if any title count is nonzero
       const womenTbody = document.querySelector('#top-countries-women tbody');
       womenTbody.innerHTML = '';
       womenData.forEach((item, index) => {
         if (item.WGM || item.WIM || item.WFM || item.WCM) {
+          const flagUrl = (item.code === "FID") 
+                          ? "https://en.wikipedia.org/wiki/FIDE#/media/File:Fidelogo.svg" 
+                          : `https://ratings.fide.com/svg/${item.code}.svg`;
           const tr = document.createElement('tr');
           tr.innerHTML = `<td>${index+1}</td>
-                          <td><img src="https://ratings.fide.com/svg/${item.code}.svg" class="flag" alt="${item.code} Flag"> ${item.code}</td>
+                          <td><img src="${flagUrl}" class="flag" alt="${item.code} Flag"> ${item.code}</td>
                           <td>${item.WGM}</td>
                           <td>${item.WIM}</td>
                           <td>${item.WFM}</td>
@@ -662,10 +668,13 @@
         div.className = "info-box";
         document.body.appendChild(div);
       }
-      
+
       function showInfoBox(countryCode, x, y) {
+        // If countryCode is FID use alternate flag source
+        const flagUrl = (countryCode === "FID")
+                        ? "https://en.wikipedia.org/wiki/FIDE#/media/File:Fidelogo.svg"
+                        : `https://ratings.fide.com/svg/${countryCode}.svg`;
         const countryData = titledPlayersData[countryCode] || {};
-        const flagUrl = `https://ratings.fide.com/svg/${countryCode}.svg`;
         let gmCount, wgmCount, imCount, wimCount, fmCount, wfmCount, cmCount, wcmCount;
         let source;
         if (currentFilter === 'both')
