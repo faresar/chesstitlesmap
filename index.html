@@ -1,133 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Meta setup for character set and responsive behavior -->
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chess Titles Map</title>
-  <!-- Link to external CSS -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>ChessTitlesMap.com</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Explore chess titles by country, including Grand Master per country and other titles. Discover country-specific statistics and rankings on ChessTitlesMap.com.">
+  <meta name="keywords" content="Chess titles by country, Grand Master per country, Country Grand Master, Chess titles, Chess rankings, Chess stats">
+  
+  <!-- Open Graph Tags for social sharing -->
+  <meta property="og:title" content="Chess Titles by Country - Grand Master per Country | ChessTitlesMap.com">
+  <meta property="og:description" content="Explore chess titles by country and discover national rankings including Grand Masters, International Masters and more on ChessTitlesMap.com.">
+  <meta property="og:type" content="website">
+  
+  <!-- External CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  
+  <!-- External JS Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
 </head>
 <body>
   <!-- Navigation Bar -->
-  <nav>
-    <!-- Brand Name -->
-    <a class="navbar-brand" href="#">ChessTitlesMap.com</a>
-    <!-- Navigation links (Feedback removed as requested) -->
-    <ul class="nav-links">
-      <li><a href="#">How to Get Title</a></li>
-      <li><a href="#">FIDE Ratings</a></li>
-    </ul>
-    <!-- Last updated info -->
-    <div class="last-updated">
-      Last updated: <span>Jan 31, 2025</span>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="index.html">ChessTitlesMap.com</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+         <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+               <a class="nav-link" href="how-to-get-title.html" target="_blank">How to Get Title</a>
+            </li>
+            <li class="nav-item">
+               <a class="nav-link" href="https://ratings.fide.com/" target="_blank">FIDE Ratings</a>
+            </li>
+            <li class="nav-item">
+               <a class="nav-link" href="feedback.html" target="_blank">Feedback</a>
+            </li>
+         </ul>
+      </div>
     </div>
   </nav>
-
-  <!-- Map Container with SVG and zoom controls -->
+  
+  <!-- Last Updated -->
+  <div class="last-updated">
+    Last updated: <span>Jan 31, 2025</span>
+  </div>
+  
+  <!-- Map Container -->
   <div id="map-container">
-    <div id="svg-container">
-      <!-- Zoom Control Buttons (now slightly larger with blue text) -->
-      <div class="zoom-controls">
-        <button id="zoom-in">+</button>
-        <button id="zoom-out">-</button>
-        <button id="reset-zoom">R</button>
+    <div class="world-stats" id="world-stats">
+      <div><u><b>World Stats</b></u></div>
+      <div>
+         <b>GM:</b> <span id="gm-count">0</span>&emsp;
+         <b>IM:</b> <span id="im-count">0</span>&emsp;
+         <b>FM:</b> <span id="fm-count">0</span>&emsp;
+         <b>CM:</b> <span id="cm-count">0</span>
       </div>
-      <!-- Placeholder for the SVG map -->
-      <svg width="1010" height="666">
-        <!-- Map paths would go here -->
-      </svg>
+      <div>
+         <b>WGM:</b> <span id="wgm-count">0</span>&emsp;
+         <b>WIM:</b> <span id="wim-count">0</span>&emsp;
+         <b>WFM:</b> <span id="wfm-count">0</span>&emsp;
+         <b>WCM:</b> <span id="wcm-count">0</span>
+      </div>
+    </div>
+    <div id="svg-container">
+      <div class="zoom-controls">
+         <button id="zoom-in">+</button>
+         <button id="zoom-out">-</button>
+         <button id="zoom-reset">R</button>
+      </div>
     </div>
   </div>
-
-  <!-- Filter and Highlight Options -->
+  
+  <!-- AdSense Placeholder -->
+  <div class="ads-placeholder">Placeholder</div>
+  
+  <!-- Filter Layers Container -->
   <div class="filter-wrapper">
-    <!-- Activity Filter -->
     <div class="activity-filter">
       <label>Player Activity Filter:</label>
-      <button id="filter-both" class="active">Both</button>
-      <button id="filter-active">Active</button>
-      <button id="filter-inactive">Inactive</button>
+      <button id="filter-both" class="active" title="Players who have played rated tournament recently including inactive players">Both</button>
+      <button id="filter-active" title="Players who have played rated tournament recently">Active</button>
+      <button id="filter-inactive" title="Inactive players that have not played rated tournament recently">Inactive</button>
     </div>
-    <!-- Highlight Titles Options -->
+    
     <div class="highlight-titles">
       <label>Highlight Titles on the Map:</label>
       <div class="highlight-titles-buttons">
-        <label id="label-highlight-none" class="active">
-          <input type="radio" name="highlight" value="none"> None/Reset
+        <label for="highlight-none" id="label-highlight-none">None/Reset
+          <input type="checkbox" id="highlight-none" name="highlight" value="none" checked>
         </label>
-        <label id="label-highlight-GM">
-          <input type="radio" name="highlight" value="GM"> GM
+        <label for="highlight-gm" id="label-highlight-gm">GM
+          <input type="checkbox" id="highlight-gm" name="highlight" value="GM">
         </label>
-        <label id="label-highlight-IM">
-          <input type="radio" name="highlight" value="IM"> IM
+        <label for="highlight-im" id="label-highlight-im">IM
+          <input type="checkbox" id="highlight-im" name="highlight" value="IM">
         </label>
-        <label id="label-highlight-FM">
-          <input type="radio" name="highlight" value="FM"> FM
+        <label for="highlight-fm" id="label-highlight-fm">FM
+          <input type="checkbox" id="highlight-fm" name="highlight" value="FM">
         </label>
-        <label id="label-highlight-CM">
-          <input type="radio" name="highlight" value="CM"> CM
+        <label for="highlight-cm" id="label-highlight-cm">CM
+          <input type="checkbox" id="highlight-cm" name="highlight" value="CM">
         </label>
-        <label id="label-highlight-WGM">
-          <input type="radio" name="highlight" value="WGM"> WGM
+        <label for="highlight-wgm" id="label-highlight-wgm">WGM
+          <input type="checkbox" id="highlight-wgm" name="highlight" value="WGM">
         </label>
-        <label id="label-highlight-WIM">
-          <input type="radio" name="highlight" value="WIM"> WIM
+        <label for="highlight-wim" id="label-highlight-wim">WIM
+          <input type="checkbox" id="highlight-wim" name="highlight" value="WIM">
         </label>
-        <label id="label-highlight-WFM">
-          <input type="radio" name="highlight" value="WFM"> WFM
+        <label for="highlight-wfm" id="label-highlight-wfm">WFM
+          <input type="checkbox" id="highlight-wfm" name="highlight" value="WFM">
         </label>
-        <label id="label-highlight-WCM">
-          <input type="radio" name="highlight" value="WCM"> WCM
+        <label for="highlight-wcm" id="label-highlight-wcm">WCM
+          <input type="checkbox" id="highlight-wcm" name="highlight" value="WCM">
         </label>
       </div>
     </div>
-  </div>
-
-  <!-- Top Countries Tables -->
-  <div class="top-countries-container">
-    <!-- Top Countries - Men -->
-    <div class="top-countries" id="top-countries-men">
-      <h3>Top Countries - Men</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Rank</th>
-            <th>Country</th>
-            <th>GM</th>
-            <th>IM</th>
-            <th>FM</th>
-            <th>CM</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Rows populated by script.js -->
-        </tbody>
-      </table>
-    </div>
-    <!-- Top Countries - Women (ranking logic matches Men's) -->
-    <div class="top-countries" id="top-countries-women">
-      <h3>Top Countries - Women</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Rank</th>
-            <th>Country</th>
-            <th>WGM</th>
-            <th>WIM</th>
-            <th>WFM</th>
-            <th>WCM</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Rows populated by script.js -->
-        </tbody>
-      </table>
+    
+    <div class="top-countries-container">
+      <div class="top-countries" id="top-countries-men">
+        <h3>Top Countries - Men</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Country</th>
+              <th>GM</th>
+              <th>IM</th>
+              <th>FM</th>
+              <th>CM</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Rows inserted by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+      <div class="top-countries" id="top-countries-women">
+        <h3>Top Countries - Women</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Country</th>
+              <th>WGM</th>
+              <th>WIM</th>
+              <th>WFM</th>
+              <th>WCM</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Rows inserted by JavaScript -->
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
-
-  <!-- Hidden Countries Covered Section for SEO (hidden from users) -->
-  <div class="countries-list" style="display: none;">
+  
+  <!-- Countries List Section for SEO -->
+  <section class="countries-list">
     <h2>Countries Covered</h2>
     <ul>
       <li>USA (US)</li>
@@ -140,26 +178,13 @@
       <li>India (IN)</li>
       <li>Brazil (BR)</li>
       <li>Canada (CA)</li>
+      <!-- Add more countries as needed -->
     </ul>
-  </div>
-
-  <!-- World Stats Section -->
-  <div class="world-stats">
-    <div>GM: <span id="gm-count">0</span></div>
-    <div>WGM: <span id="wgm-count">0</span></div>
-    <div>IM: <span id="im-count">0</span></div>
-    <div>WIM: <span id="wim-count">0</span></div>
-    <div>FM: <span id="fm-count">0</span></div>
-    <div>WFM: <span id="wfm-count">0</span></div>
-    <div>CM: <span id="cm-count">0</span></div>
-    <div>WCM: <span id="wcm-count">0</span></div>
-  </div>
-
-  <!-- Footer with bug reporting email -->
-  <footer>
-    <p>Report any bug or inconsistencies to faresar@hotmail.com</p>
-  </footer>
-
+  </section>
+  
+  <!-- Info Box -->
+  <div class="info-box" id="info-box"></div>
+  
   <!-- External JavaScript -->
   <script src="script.js"></script>
 </body>
