@@ -29,7 +29,7 @@
     .navbar-brand:hover {
       text-decoration: none;
     }
-    /* Last updated – moved to top center */
+    /* Last updated */
     .last-updated {
       font-size: 14px;
       color: #666;
@@ -39,7 +39,7 @@
     .last-updated span {
       font-weight: normal;
     }
-    /* Map container styles */
+    /* Map container */
     #map-container {
       width: 100%;
       max-width: 1010px;
@@ -54,10 +54,10 @@
     #svg-container {
       width: 100%;
       height: auto;
-      aspect-ratio: 1010/666;
+      aspect-ratio: 1010 / 666;
       position: relative;
     }
-    /* Zoom controls – now 50% smaller */
+    /* Zoom controls – now slightly bigger than the previous “small” size */
     .zoom-controls {
       position: absolute;
       top: 10px;
@@ -71,11 +71,11 @@
       background-color: white;
       border: 1px solid black;
       border-radius: 4px;
-      width: 15px;      /* 50% of original 30px */
-      height: 15px;     /* 50% of original 30px */
+      width: 20px;      /* increased from 15px */
+      height: 20px;     /* increased from 15px */
       cursor: pointer;
       font-family: 'Roboto', sans-serif;
-      font-size: 8px;   /* 50% of original size */
+      font-size: 10px;  /* increased from 8px */
       display: flex;
       align-items: center;
       justify-content: center;
@@ -83,9 +83,9 @@
     }
     @media (max-width: 600px) {
       .zoom-controls button {
-        width: 12px;
-        height: 12px;
-        font-size: 7px;
+        width: 18px;
+        height: 18px;
+        font-size: 9px;
       }
     }
     path {
@@ -102,7 +102,23 @@
     path.highlighted {
       fill: #b05a45;
     }
-    /* World Stats – renamed to World Stats */
+    /* Info box */
+    .info-box {
+      position: fixed;
+      background: rgba(255,255,255,0.95);
+      border-radius: 5px;
+      padding: 5px 10px;
+      pointer-events: auto;
+      display: none;
+      font-family: 'Roboto', sans-serif;
+      font-size: 14px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.2);
+      z-index: 1000;
+    }
+    .info-box.visible {
+      display: block;
+    }
+    /* World Stats box – above the map */
     .world-stats {
       text-align: center;
       background: rgba(0,0,0,0.7);
@@ -126,7 +142,7 @@
         font-size: 0.8rem;
       }
     }
-    /* Container for filter layers */
+    /* Filter Layers Container */
     .filter-wrapper {
       max-width: 1010px;
       margin: 20px auto;
@@ -139,10 +155,10 @@
       border-radius: 5px;
       box-shadow: 0 3px 15px rgba(0,0,0,0.2);
     }
-    /* Make activity filter label larger */
+    /* Slightly bigger headings for filter panels */
     .activity-filter label {
       font-weight: bold;
-      font-size: 14px; /* Increased from 12px */
+      font-size: 14px; /* increased from 12px */
       margin-bottom: 5px;
       display: block;
     }
@@ -171,10 +187,9 @@
       box-shadow: 0 3px 15px rgba(0,0,0,0.2);
       margin-top: 10px;
     }
-    /* Make highlight-titles label larger */
     .highlight-titles label {
       font-weight: bold;
-      font-size: 14px; /* Increased from 12px */
+      font-size: 14px; /* increased from 12px */
       margin-bottom: 5px;
       display: block;
     }
@@ -202,7 +217,7 @@
       color: white;
       border-color: #007bff;
     }
-    /* Top Countries section (new responsive layer) */
+    /* Top Countries section */
     .top-countries-container {
       display: flex;
       flex-wrap: wrap;
@@ -232,12 +247,14 @@
       padding: 5px;
       text-align: center;
     }
-    /* Flag images */
+    /* Flag image styling – now using the FIDE logo from Wikimedia Commons;
+       size set to 1em with a white background */
     .flag {
       height: 1em;
       width: auto;
       vertical-align: middle;
       margin-right: 5px;
+      background-color: white;
     }
     /* AdSense placeholder */
     .ads-placeholder {
@@ -250,28 +267,13 @@
       font-size: 14px;
       color: #666;
     }
-    /* Info box */
-    .info-box {
-      position: fixed;
-      background: rgba(255,255,255,0.95);
-      border-radius: 5px;
-      padding: 5px 10px;
-      pointer-events: auto;
-      display: none;
-      font-family: 'Roboto', sans-serif;
-      font-size: 14px;
-      box-shadow: 0 3px 15px rgba(0,0,0,0.2);
-      z-index: 1000;
-    }
-    .info-box.visible {
-      display: block;
-    }
   </style>
 </head>
 <body>
   <!-- Navigation Bar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
+      <!-- Clickable brand linking to the main page -->
       <a class="navbar-brand" href="index.html">ChessTitlesMap.com</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
               aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -300,7 +302,7 @@
 
   <!-- Map Container -->
   <div id="map-container">
-    <!-- World Stats box -->
+    <!-- World Stats Box -->
     <div class="world-stats" id="world-stats">
       <div><u><b>World Stats</b></u></div>
       <div>
@@ -318,7 +320,7 @@
     </div>
     <!-- SVG Container -->
     <div id="svg-container">
-      <!-- Zoom controls -->
+      <!-- Zoom Controls -->
       <div class="zoom-controls">
          <button id="zoom-in">+</button>
          <button id="zoom-out">-</button>
@@ -332,7 +334,7 @@
     AdSense Placeholder – Recommended here to maximize visibility without disrupting layout.
   </div>
 
-  <!-- Filter Layers Container -->
+  <!-- Filter Layers -->
   <div class="filter-wrapper">
     <!-- Activity Filter -->
     <div class="activity-filter">
@@ -341,8 +343,7 @@
       <button id="filter-active" title="Players who have played rated tournament recently">Active</button>
       <button id="filter-inactive" title="Inactive players that have not played rated tournament recently">Inactive</button>
     </div>
-
-    <!-- Highlight Titles toggles using custom style -->
+    <!-- Highlight Titles (custom toggle-style checkboxes) -->
     <div class="highlight-titles">
       <label>Highlight titles on the map:</label>
       <div class="highlight-titles-buttons">
@@ -375,10 +376,9 @@
         </label>
       </div>
     </div>
-
-    <!-- New responsive Top Countries Layer -->
+    <!-- Top Countries Table Section -->
     <div class="top-countries-container">
-      <!-- Top Countries - Men -->
+      <!-- Top Countries – Men -->
       <div class="top-countries" id="top-countries-men">
         <h3>Top Countries - Men</h3>
         <table>
@@ -393,11 +393,11 @@
             </tr>
           </thead>
           <tbody>
-            <!-- Rows inserted by JavaScript -->
+            <!-- JavaScript will insert rows here -->
           </tbody>
         </table>
       </div>
-      <!-- Top Countries - Women -->
+      <!-- Top Countries – Women -->
       <div class="top-countries" id="top-countries-women">
         <h3>Top Countries - Women</h3>
         <table>
@@ -412,7 +412,7 @@
             </tr>
           </thead>
           <tbody>
-            <!-- Rows inserted by JavaScript -->
+            <!-- JavaScript will insert rows here -->
           </tbody>
         </table>
       </div>
@@ -423,18 +423,18 @@
   <script>
     "use strict";
     let titledPlayersData = {};
-    // Default filter is "both"; currentHighlight defaults to "none"
     let currentFilter = 'both';
     let currentHighlight = 'none';
 
-    // Set default active class on None/Reset toggle label
+    // Set None/Reset toggle selected by default (active class)
     window.addEventListener("DOMContentLoaded", () => {
       document.getElementById("label-highlight-none").classList.add('active');
     });
 
-    // Global function to update world stats based on currentFilter (both, active, inactive)
+    // Global function to update world stats
     function updateWorldwideNumbers() {
-      let gmCount = 0, wgmCount = 0, imCount = 0, wimCount = 0, fmCount = 0, wfmCount = 0, cmCount = 0, wcmCount = 0;
+      let gmCount = 0, wgmCount = 0, imCount = 0, wimCount = 0,
+          fmCount = 0, wfmCount = 0, cmCount = 0, wcmCount = 0;
       Object.values(titledPlayersData).forEach(countryData => {
         let source = countryData.Total;
         if (currentFilter === 'active') {
@@ -461,14 +461,14 @@
       document.getElementById('wcm-count').textContent = wcmCount;
     }
 
-    // Update Top Countries tables based on filter. For each country, choose source = Total/Active/Inactive.
+    // Update Top Countries tables based on currentFilter
     function updateTopCountries() {
       let menData = [];
       let womenData = [];
       Object.keys(titledPlayersData).forEach(countryCode => {
         const data = titledPlayersData[countryCode];
-        // Choose data source based on currentFilter
-        const source = (currentFilter === 'both') ? data.Total : (currentFilter === 'active' ? data.Active : data.Inactive);
+        const source = (currentFilter === 'both') ? data.Total :
+                       (currentFilter === 'active' ? data.Active : data.Inactive);
         menData.push({
           code: countryCode,
           GM: source?.GM || 0,
@@ -484,28 +484,27 @@
           WCM: source?.WCM || 0
         });
       });
-      // Sort men data: descending by GM, then IM, then FM, then CM
+      // Sort men's data by GM then IM then FM then CM
       menData.sort((a, b) => {
         if(b.GM !== a.GM) return b.GM - a.GM;
         if(b.IM !== a.IM) return b.IM - a.IM;
         if(b.FM !== a.FM) return b.FM - a.FM;
         return b.CM - a.CM;
       });
-      // Sort women data: descending by WGM, then WIM, then WFM, then WCM
+      // Sort women's data by WGM then WIM then WFM then WCM
       womenData.sort((a, b) => {
         if(b.WGM !== a.WGM) return b.WGM - a.WGM;
         if(b.WIM !== a.WIM) return b.WIM - a.WIM;
         if(b.WFM !== a.WFM) return b.WFM - a.WFM;
         return b.WCM - a.WCM;
       });
-      // Update men table – now include a row if at least one of GM, IM, FM or CM is nonzero
       const menTbody = document.querySelector('#top-countries-men tbody');
       menTbody.innerHTML = '';
       menData.forEach((item, index) => {
         if (item.GM || item.IM || item.FM || item.CM) {
           const tr = document.createElement('tr');
           tr.innerHTML = `<td>${index+1}</td>
-                          <td><img src="https://ratings.fide.com/svg/${item.code}.svg" class="flag" alt="${item.code} Flag"> ${item.code}</td>
+                          <td><img src="https://upload.wikimedia.org/wikipedia/commons/6/62/Fidelogo.svg" class="flag" alt="${item.code} Flag"> ${item.code}</td>
                           <td>${item.GM}</td>
                           <td>${item.IM}</td>
                           <td>${item.FM}</td>
@@ -513,14 +512,13 @@
           menTbody.appendChild(tr);
         }
       });
-      // Update women table – include row if any title count is nonzero
       const womenTbody = document.querySelector('#top-countries-women tbody');
       womenTbody.innerHTML = '';
       womenData.forEach((item, index) => {
         if (item.WGM || item.WIM || item.WFM || item.WCM) {
           const tr = document.createElement('tr');
           tr.innerHTML = `<td>${index+1}</td>
-                          <td><img src="https://ratings.fide.com/svg/${item.code}.svg" class="flag" alt="${item.code} Flag"> ${item.code}</td>
+                          <td><img src="https://upload.wikimedia.org/wikipedia/commons/6/62/Fidelogo.svg" class="flag" alt="${item.code} Flag"> ${item.code}</td>
                           <td>${item.WGM}</td>
                           <td>${item.WIM}</td>
                           <td>${item.WFM}</td>
@@ -530,7 +528,7 @@
       });
     }
 
-    // Fetch JSON data and update counts and tables initially.
+    // Fetch JSON data and update world stats and top countries
     fetch('titled_players_by_country.json')
       .then(response => response.json())
       .then(data => {
@@ -540,11 +538,9 @@
         updateWorldwideNumbers();
         updateTopCountries();
       })
-      .catch(error => {
-        console.error('Error fetching titled players data:', error);
-      });
-    
-    // Load SVG map
+      .catch(error => console.error('Error fetching data:', error));
+
+    // Load SVG map and initialize pan/zoom and interactions
     fetch('world_fide.svg')
       .then(response => response.text())
       .then(svgContent => {
@@ -576,7 +572,7 @@
         panZoom.resize().fit().center();
       });
 
-      // Filter buttons functionality – update filter and then update both highlights and top countries rankings
+      // Activity filter button events
       document.getElementById("filter-both").addEventListener("click", () => {
         currentFilter = 'both';
         updateFilterButtons();
@@ -598,23 +594,20 @@
         updateWorldwideNumbers();
         updateTopCountries();
       });
-
       function updateFilterButtons() {
         document.getElementById("filter-both").classList.toggle("active", currentFilter === 'both');
         document.getElementById("filter-active").classList.toggle("active", currentFilter === 'active');
         document.getElementById("filter-inactive").classList.toggle("active", currentFilter === 'inactive');
       }
 
-      // Highlight Titles toggles functionality using custom buttons
+      // Highlight Titles toggle events
       const highlightCheckboxes = document.querySelectorAll('.highlight-titles-buttons input[type="checkbox"]');
       highlightCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', () => {
-          // Remove active class from all labels
           document.querySelectorAll('.highlight-titles-buttons label').forEach(label => label.classList.remove('active'));
           if (checkbox.checked) {
             checkbox.parentElement.classList.add('active');
             currentHighlight = checkbox.value;
-            // Uncheck other checkboxes
             highlightCheckboxes.forEach(cb => {
               if (cb !== checkbox) {
                 cb.checked = false;
@@ -623,7 +616,6 @@
             });
           } else {
             currentHighlight = 'none';
-            // Ensure at least one toggle remains active – default to None/Reset
             document.getElementById("highlight-none").checked = true;
             document.getElementById("label-highlight-none").classList.add('active');
           }
@@ -639,41 +631,27 @@
           const countryData = titledPlayersData[countryCode] || {};
           if (currentHighlight !== 'none') {
             let count = 0;
-            let source;
-            if(currentFilter === 'both'){
-              source = countryData.Total;
-            } else if(currentFilter === 'active'){
-              source = countryData.Active;
-            } else {
-              source = countryData.Inactive;
-            }
+            let source = (currentFilter === 'both') ? countryData.Total :
+                         (currentFilter === 'active' ? countryData.Active : countryData.Inactive);
             count = source?.[currentHighlight] || 0;
-            if (count > 0) {
-              path.classList.add('highlighted');
-            }
+            if (count > 0) path.classList.add('highlighted');
           }
         });
       }
 
-      // Info box functionality
-      if (!document.getElementById("info-box")) {
+      // Info box events
+      if (!infoBox) {
         const div = document.createElement("div");
         div.id = "info-box";
         div.className = "info-box";
         document.body.appendChild(div);
       }
-      
       function showInfoBox(countryCode, x, y) {
         const countryData = titledPlayersData[countryCode] || {};
-        const flagUrl = `https://ratings.fide.com/svg/${countryCode}.svg`;
+        const flagUrl = "https://upload.wikimedia.org/wikipedia/commons/6/62/Fidelogo.svg";
         let gmCount, wgmCount, imCount, wimCount, fmCount, wfmCount, cmCount, wcmCount;
-        let source;
-        if (currentFilter === 'both')
-          source = countryData.Total;
-        else if (currentFilter === 'active')
-          source = countryData.Active;
-        else
-          source = countryData.Inactive;
+        let source = (currentFilter === 'both') ? countryData.Total :
+                     (currentFilter === 'active' ? countryData.Active : countryData.Inactive);
         gmCount = source?.GM || 0;
         wgmCount = source?.WGM || 0;
         imCount = source?.IM || 0;
@@ -696,7 +674,6 @@
         infoBox.style.left = `${x - boxWidth/2}px`;
         infoBox.style.top = `${y - boxHeight}px`;
       }
-
       function hideInfoBox() {
         if (selectedCountry) {
           document.querySelector(`path[id="${selectedCountry}"]`).classList.remove('selected');
@@ -704,43 +681,32 @@
         }
         infoBox.classList.remove('visible');
       }
-
       const paths = svgElement.querySelectorAll("path");
       paths.forEach(path => {
         path.addEventListener("mouseenter", (e) => {
-          if (!selectedCountry) {
-            showInfoBox(path.id, e.clientX, e.clientY);
-          }
+          if (!selectedCountry) showInfoBox(path.id, e.clientX, e.clientY);
         });
         path.addEventListener("mouseleave", () => {
           if (!selectedCountry && !infoBox.matches(':hover')) hideInfoBox();
         });
         path.addEventListener("touchstart", (e) => {
           if (e.touches.length === 1) {
-            if (selectedCountry)
-              document.querySelector(`path[id="${selectedCountry}"]`).classList.remove('selected');
+            if (selectedCountry) document.querySelector(`path[id="${selectedCountry}"]`).classList.remove('selected');
             selectedCountry = path.id;
             path.classList.add('selected');
             showInfoBox(path.id, e.touches[0].clientX, e.touches[0].clientY);
           }
         });
       });
-      infoBox.addEventListener('mouseenter', () => {
-        infoBox.classList.add('visible');
-      });
-      infoBox.addEventListener('mouseleave', () => {
-        if (!selectedCountry) hideInfoBox();
-      });
+      infoBox.addEventListener('mouseenter', () => infoBox.classList.add('visible'));
+      infoBox.addEventListener('mouseleave', () => { if (!selectedCountry) hideInfoBox(); });
       document.addEventListener("touchstart", (e) => {
-        if (!infoBox.contains(e.target) && !Array.from(paths).some(path => path.contains(e.target))) {
-          hideInfoBox();
-        }
+        if (!infoBox.contains(e.target) && !Array.from(paths).some(path => path.contains(e.target))) hideInfoBox();
       });
       window.addEventListener('resize', () => {
         panZoom.resize().fit().center();
       });
-      let initialDistance = null;
-      let initialScale = 1;
+      let initialDistance = null, initialScale = 1;
       svgContainer.addEventListener("touchstart", (e) => {
         if (e.touches.length === 2) {
           initialDistance = Math.hypot(
@@ -767,9 +733,7 @@
           panZoom.zoomAtPoint(scale, transformedPoint);
         }
       });
-      svgContainer.addEventListener("touchend", () => {
-        initialDistance = null;
-      });
+      svgContainer.addEventListener("touchend", () => { initialDistance = null; });
     }
   </script>
   <!-- Info Box -->
