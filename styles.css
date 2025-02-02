@@ -1,4 +1,4 @@
-/* General body styles */
+/* General body styling */
 body {
   margin: 0;
   padding: 0;
@@ -7,40 +7,49 @@ body {
   overflow-y: auto;
 }
 
-/* Navigation bar brand styling */
+/* Navigation Bar Styling */
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8f9fa;
+  padding: 10px 20px;
+  border-bottom: 1px solid #ddd;
+}
 .navbar-brand {
-  color: #007bff !important;
+  color: #007bff;
   font-weight: bold;
   text-decoration: none;
 }
-.navbar-brand:hover {
-  text-decoration: none;
+.nav-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
 }
-
-/* Last updated text styling */
+.nav-links li {
+  margin-right: 15px;
+}
+.nav-links li a {
+  text-decoration: none;
+  color: #333;
+}
 .last-updated {
   font-size: 14px;
   color: #666;
-  text-align: center;
-  margin: 10px 0;
-}
-.last-updated span {
-  font-weight: normal;
 }
 
-/* Styles for the map container */
+/* Map Container and SVG styling */
 #map-container {
   width: 100%;
   max-width: 1010px;
-  margin: 0 auto;
+  margin: 20px auto;
   position: relative;
   border: 1px solid lightblue;
   background-color: lightblue;
   overflow: hidden;
   touch-action: none;
 }
-
-/* SVG container maintains aspect ratio */
 #svg-container {
   width: 100%;
   height: auto;
@@ -48,7 +57,7 @@ body {
   position: relative;
 }
 
-/* Zoom controls container positioning */
+/* Zoom Controls styling: slightly bigger buttons with blue text */
 .zoom-controls {
   position: absolute;
   top: 10px;
@@ -58,8 +67,6 @@ body {
   gap: 5px;
   z-index: 1002;
 }
-
-/* Zoom button styling; size increased and symbols colored blue */
 .zoom-controls button {
   background-color: white;
   border: 1px solid black;
@@ -68,24 +75,22 @@ body {
   height: 25px;
   cursor: pointer;
   font-family: 'Roboto', sans-serif;
-  font-size: 10px;
+  font-size: 12px;
   color: blue;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
 }
-
-/* Responsive adjustments for zoom buttons on smaller screens */
 @media (max-width: 600px) {
   .zoom-controls button {
     width: 20px;
     height: 20px;
-    font-size: 9px;
+    font-size: 10px;
   }
 }
 
-/* SVG path styles with color transitions */
+/* SVG paths styling for interactive map elements */
 path {
   fill: #548b5b;
   transition: fill 0.3s;
@@ -101,32 +106,21 @@ path.highlighted {
   fill: #b05a45;
 }
 
-/* World statistics container styling */
+/* World Statistics styling */
 .world-stats {
   text-align: center;
   background: rgba(0,0,0,0.7);
   border: 1px solid black;
-  border-radius: 0;
   padding: 10px;
   color: white;
   font-family: 'Roboto', sans-serif;
   font-size: 0.9rem;
   width: 100%;
   box-sizing: border-box;
-}
-.world-stats b {
-  font-weight: bold;
-}
-.world-stats u {
-  text-decoration: underline;
-}
-@media (max-width: 600px) {
-  .world-stats {
-    font-size: 0.8rem;
-  }
+  margin-top: 20px;
 }
 
-/* Filter container styling */
+/* Filter Wrapper and Activity Filter styling */
 .filter-wrapper {
   max-width: 1010px;
   margin: 20px auto;
@@ -138,6 +132,7 @@ path.highlighted {
   padding: 10px;
   border-radius: 5px;
   box-shadow: 0 3px 15px rgba(0,0,0,0.2);
+  margin-bottom: 10px;
 }
 .activity-filter label {
   font-weight: bold;
@@ -163,7 +158,7 @@ path.highlighted {
   color: white;
 }
 
-/* Highlight Titles section styling */
+/* Highlight Titles Section styling */
 .highlight-titles {
   text-align: center;
   background: rgba(255,255,255,0.9);
@@ -203,7 +198,7 @@ path.highlighted {
   border-color: #007bff;
 }
 
-/* Top Countries section styling */
+/* Top Countries Tables styling */
 .top-countries-container {
   display: flex;
   flex-wrap: wrap;
@@ -235,7 +230,7 @@ path.highlighted {
   text-align: center;
 }
 
-/* Flag image styling */
+/* Flag image styling for country icons */
 .flag {
   height: 1em;
   width: auto;
@@ -243,7 +238,7 @@ path.highlighted {
   margin-right: 5px;
 }
 
-/* AdSense placeholder styling */
+/* AdSense Placeholder styling */
 .ads-placeholder {
   width: 100%;
   max-width: 1010px;
@@ -255,7 +250,7 @@ path.highlighted {
   color: #666;
 }
 
-/* Info box styling for map interactions */
+/* Info Box styling for map interactions */
 .info-box {
   position: fixed;
   background: rgba(255,255,255,0.95);
