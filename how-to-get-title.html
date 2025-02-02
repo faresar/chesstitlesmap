@@ -1,117 +1,310 @@
-<!-- Update the styles section with these modified classes -->
-<style>
-/* ... (keep existing styles) ... */
-
-.title-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 40px;
-}
-
-.triangle-image {
-  width: 100%;
-  max-width: 400px;
-  margin: 20px auto 30px;
-  text-align: center;
-}
-
-.triangle-image img {
-  width: 100%;
-  height: auto;
-}
-
-.title-explanation {
-  width: 100%;
-  max-width: 800px;
-}
-
-.bottom-note {
-  max-width: 1000px;
-  margin: 30px auto;
-  padding: 15px;
-  text-align: center;
-  font-size: 0.95rem;
-}
-
-@media (max-width: 768px) {
-  .triangle-image {
-    max-width: 300px;
-  }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>How to get chess title | ChessTitlesMap.com</title>
   
-  .title-explanation {
-    padding: 0 15px;
-  }
-}
-</style>
-
-<!-- Update the content section structure -->
-<div class="container">
-  <h1 class="page-title">How to get chess title</h1>
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Learn how to get chess titles such as Grandmaster, International Master, FIDE Master, Candidate Master, and the corresponding women's titles.">
+  <meta name="keywords" content="How to get chess title, Chess titles, Grandmaster, International Master, FIDE Master, Candidate Master, WGM, WIM, WFM, WCM">
   
-  <!-- Horizontal Ad -->
-  <div class="horizontal-ad">Horizontal Ad Placeholder</div>
+  <!-- External CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
   
-  <p class="intro-text">
-    Chess players can obtain various titles from the International Chess Federation (FIDE) through different methods. Here's a comprehensive overview of how to obtain each title:
-  </p>
-  
-  <!-- Men's Section -->
-  <h2 class="section-heading">Men chess titles</h2>
-  <div class="title-section">
-    <div class="triangle-image">
-      <img src="men-triangle.png" alt="Men's chess titles hierarchy">
-    </div>
-    <div class="title-explanation">
-      <div class="title-card">
-        <h3><strong>Grandmaster (GM)</strong></h3>
-        <!-- ... rest of GM content ... -->
-      </div>
-      <div class="title-card">
-        <h3><strong>International Master (IM)</strong></h3>
-        <!-- ... rest of IM content ... -->
-      </div>
-      <div class="title-card">
-        <h3><strong>FIDE Master (FM)</strong></h3>
-        <!-- ... rest of FM content ... -->
-      </div>
-      <div class="title-card">
-        <h3><strong>Candidate Master (CM)</strong></h3>
-        <!-- ... rest of CM content ... -->
-      </div>
-    </div>
-  </div>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Roboto', sans-serif;
+      width: 100%;
+    }
 
-  <!-- Women's Section -->
-  <h2 class="section-heading">Women chess titles</h2>
-  <div class="title-section">
-    <div class="triangle-image">
-      <img src="women-triangle.png" alt="Women's chess titles hierarchy">
-    </div>
-    <div class="title-explanation">
-      <div class="title-card">
-        <h3><strong>Woman Grandmaster (WGM)</strong></h3>
-        <!-- ... rest of WGM content ... -->
-      </div>
-      <div class="title-card">
-        <h3><strong>Woman International Master (WIM)</strong></h3>
-        <!-- ... rest of WIM content ... -->
-      </div>
-      <div class="title-card">
-        <h3><strong>Woman FIDE Master (WFM)</strong></h3>
-        <!-- ... rest of WFM content ... -->
-      </div>
-      <div class="title-card">
-        <h3><strong>Woman Candidate Master (WCM)</strong></h3>
-        <!-- ... rest of WCM content ... -->
-      </div>
-    </div>
-  </div>
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+    }
 
-  <!-- Bottom Note (without border) -->
-  <div class="bottom-note">
-    <p>
-      It's important to note that for GM, IM, WGM, and WIM titles, players must achieve both the required rating and norms. For FM, CM, WFM, and WCM titles, only the rating requirement needs to be met. Additionally, FIDE may award titles directly in certain high-level tournaments or championships, even if the usual requirements are not fully met.
+    .navbar-brand {
+      color: #007bff !important;
+      font-weight: bold;
+    }
+
+    .page-title {
+      text-align: center;
+      margin: 20px 0;
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    .intro-text {
+      margin: 20px 0;
+      line-height: 1.6;
+    }
+
+    .horizontal-ad {
+      width: 100%;
+      max-width: 1000px;
+      height: auto;
+      aspect-ratio: 728/90;
+      border: 1px dashed #aaa;
+      background: #f0f0f0;
+      color: #666;
+      font-size: 14px;
+      margin: 20px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .section-heading {
+      text-align: center;
+      margin: 40px 0 20px;
+      font-size: 1.6rem;
+      font-weight: 700;
+    }
+
+    .title-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      margin-bottom: 40px;
+      align-items: flex-start;
+    }
+
+    .triangle-image {
+      flex: 0 0 300px;
+      max-width: 300px;
+    }
+
+    .triangle-image img {
+      width: 100%;
+      height: auto;
+    }
+
+    .title-explanation {
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .title-card {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+
+    .title-card h3 {
+      color: #2c3e50;
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+    }
+
+    .title-card ul {
+      list-style-type: none;
+      padding-left: 0;
+      margin-bottom: 10px;
+    }
+
+    .title-card ul ul {
+      padding-left: 20px;
+      margin-top: 5px;
+    }
+
+    .title-card li {
+      margin-bottom: 8px;
+      position: relative;
+      padding-left: 20px;
+    }
+
+    .title-card li:before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: #007bff;
+    }
+
+    .bottom-note {
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 15px;
+      border-top: 1px solid #ddd;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 10px;
+      }
+      
+      .title-section {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .triangle-image {
+        max-width: 250px;
+      }
+
+      .title-explanation {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="index.html">ChessTitlesMap.com</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+         <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+               <a class="nav-link" href="how-to-get-title.html">How to Get Title</a>
+            </li>
+            <li class="nav-item">
+               <a class="nav-link" href="https://ratings.fide.com/" target="_blank">FIDE Ratings</a>
+            </li>
+            <li class="nav-item">
+               <a class="nav-link" href="feedback.html">Feedback</a>
+            </li>
+         </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- Page Title -->
+    <h1 class="page-title">How to get chess title</h1>
+    
+    <!-- Introduction Text -->
+    <p class="intro-text">
+      Chess players can obtain various titles from the International Chess Federation (FIDE) through different methods. Here's a comprehensive overview of how to obtain each title:
     </p>
+    
+    <!-- Horizontal Ad -->
+    <div class="horizontal-ad">Horizontal Ad Placeholder</div>
+    
+    <!-- Men's Section -->
+    <h2 class="section-heading">Men chess titles</h2>
+    <div class="title-section">
+      <div class="triangle-image">
+        <img src="men-triangle.png" alt="Men's chess titles hierarchy">
+      </div>
+      <div class="title-explanation">
+        <div class="title-card">
+          <h3>Grandmaster (GM)</h3>
+          <ul>
+            <li>Achieve a FIDE rating of 2500 or higher</li>
+            <li>Earn three GM norms in tournaments covering at least 27 games</li>
+            <li>Alternative paths:
+              <ul>
+                <li>Reach the final 16 in the FIDE World Cup</li>
+                <li>Win the World Junior Championship (U20)</li>
+                <li>Win the World Senior Championship (50+ or 65+ divisions)</li>
+                <li>Win a Continental championship</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        <div class="title-card">
+          <h3>International Master (IM)</h3>
+          <ul>
+            <li>Achieve a FIDE rating of 2400 or higher</li>
+            <li>Earn three IM norms over 27 or more games</li>
+            <li>Alternative paths:
+              <ul>
+                <li>Qualify for the FIDE World Cup</li>
+                <li>Finish second or third in the World Junior Championship (U20)</li>
+                <li>Finish second or third in the World Senior Championship (50+ or 65+ divisions)</li>
+                <li>Win the World Youth Championship (U18)</li>
+                <li>Win the World Youth Championship (U16) outright</li>
+                <li>Finish second or third in a Continental championship</li>
+                <li>Win a Continental over-50, over-65, or under-20 championship</li>
+                <li>Win a sub-Continental championship</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        <div class="title-card">
+          <h3>FIDE Master (FM)</h3>
+          <ul>
+            <li>Achieve a FIDE rating of 2300 or higher</li>
+            <li>No norms required</li>
+          </ul>
+        </div>
+        <div class="title-card">
+          <h3>Candidate Master (CM)</h3>
+          <ul>
+            <li>Achieve a FIDE rating of 2200 or higher</li>
+            <li>No norms required</li>
+            <li>Alternative paths for players rated 2000-2199:
+              <ul>
+                <li>Finish in top three in World Youth Championship (U8 and U10)</li>
+                <li>Finish second or third in Continental U12, U14, or U16 championship</li>
+                <li>Score 50% or more over at least 7 games at an Olympiad</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Women's Section -->
+    <h2 class="section-heading">Women chess titles</h2>
+    <div class="title-section">
+      <div class="triangle-image">
+        <img src="women-triangle.png" alt="Women's chess titles hierarchy">
+      </div>
+      <div class="title-explanation">
+        <div class="title-card">
+          <h3>Woman Grandmaster (WGM)</h3>
+          <ul>
+            <li>Achieve a FIDE rating of 2300 or higher</li>
+            <li>Earn three WGM norms in international competition</li>
+          </ul>
+        </div>
+        <div class="title-card">
+          <h3>Woman International Master (WIM)</h3>
+          <ul>
+            <li>Achieve a FIDE rating of 2200 or higher</li>
+            <li>Earn three WIM norms in international competition</li>
+          </ul>
+        </div>
+        <div class="title-card">
+          <h3>Woman FIDE Master (WFM)</h3>
+          <ul>
+            <li>Achieve a FIDE rating of 2100 or higher</li>
+            <li>No norms required</li>
+          </ul>
+        </div>
+        <div class="title-card">
+          <h3>Woman Candidate Master (WCM)</h3>
+          <ul>
+            <li>Achieve a FIDE rating of 2000 or higher</li>
+            <li>No norms required</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Note -->
+    <div class="bottom-note">
+      <p>
+        It's important to note that for GM, IM, WGM, and WIM titles, players must achieve both the required rating and norms. For FM, CM, WFM, and WCM titles, only the rating requirement needs to be met. Additionally, FIDE may award titles directly in certain high-level tournaments or championships, even if the usual requirements are not fully met.
+      </p>
+    </div>
   </div>
-</div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
