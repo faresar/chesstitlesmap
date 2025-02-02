@@ -1,3 +1,4 @@
+/* General body styles */
 body {
   margin: 0;
   padding: 0;
@@ -6,6 +7,7 @@ body {
   overflow-y: auto;
 }
 
+/* Navigation bar brand styling */
 .navbar-brand {
   color: #007bff !important;
   font-weight: bold;
@@ -15,6 +17,7 @@ body {
   text-decoration: none;
 }
 
+/* Last updated text styling */
 .last-updated {
   font-size: 14px;
   color: #666;
@@ -25,6 +28,7 @@ body {
   font-weight: normal;
 }
 
+/* Styles for the map container */
 #map-container {
   width: 100%;
   max-width: 1010px;
@@ -36,6 +40,7 @@ body {
   touch-action: none;
 }
 
+/* SVG container maintains aspect ratio */
 #svg-container {
   width: 100%;
   height: auto;
@@ -43,7 +48,7 @@ body {
   position: relative;
 }
 
-/* Zoom controls */
+/* Zoom controls container positioning */
 .zoom-controls {
   position: absolute;
   top: 10px;
@@ -53,29 +58,34 @@ body {
   gap: 5px;
   z-index: 1002;
 }
+
+/* Zoom button styling; size increased and symbols colored blue */
 .zoom-controls button {
   background-color: white;
   border: 1px solid black;
   border-radius: 4px;
-  width: 20px;
-  height: 20px;
+  width: 25px;
+  height: 25px;
   cursor: pointer;
   font-family: 'Roboto', sans-serif;
   font-size: 10px;
-  color: black;
+  color: blue;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
 }
+
+/* Responsive adjustments for zoom buttons on smaller screens */
 @media (max-width: 600px) {
   .zoom-controls button {
-    width: 15px;
-    height: 15px;
+    width: 20px;
+    height: 20px;
     font-size: 9px;
   }
 }
 
+/* SVG path styles with color transitions */
 path {
   fill: #548b5b;
   transition: fill 0.3s;
@@ -91,7 +101,7 @@ path.highlighted {
   fill: #b05a45;
 }
 
-/* World Stats */
+/* World statistics container styling */
 .world-stats {
   text-align: center;
   background: rgba(0,0,0,0.7);
@@ -116,7 +126,7 @@ path.highlighted {
   }
 }
 
-/* Filter container */
+/* Filter container styling */
 .filter-wrapper {
   max-width: 1010px;
   margin: 20px auto;
@@ -153,7 +163,7 @@ path.highlighted {
   color: white;
 }
 
-/* Highlight Titles */
+/* Highlight Titles section styling */
 .highlight-titles {
   text-align: center;
   background: rgba(255,255,255,0.9);
@@ -193,7 +203,7 @@ path.highlighted {
   border-color: #007bff;
 }
 
-/* Top Countries */
+/* Top Countries section styling */
 .top-countries-container {
   display: flex;
   flex-wrap: wrap;
@@ -218,14 +228,14 @@ path.highlighted {
   width: 100%;
   border-collapse: collapse;
 }
-.top-countries th, 
+.top-countries th,
 .top-countries td {
   border: 1px solid #ccc;
   padding: 5px;
   text-align: center;
 }
 
-/* Flag images */
+/* Flag image styling */
 .flag {
   height: 1em;
   width: auto;
@@ -233,7 +243,7 @@ path.highlighted {
   margin-right: 5px;
 }
 
-/* AdSense Placeholder */
+/* AdSense placeholder styling */
 .ads-placeholder {
   width: 100%;
   max-width: 1010px;
@@ -245,7 +255,7 @@ path.highlighted {
   color: #666;
 }
 
-/* Info Box */
+/* Info box styling for map interactions */
 .info-box {
   position: fixed;
   background: rgba(255,255,255,0.95);
@@ -262,28 +272,9 @@ path.highlighted {
   display: block;
 }
 
-/* Countries List Section */
-.countries-list {
-  max-width: 1010px;
-  margin: 40px auto;
-  padding: 20px;
-  background: #f9f9f9;
-  border: 1px solid #ddd;
-  font-size: 14px;
-  line-height: 1.6;
-}
-.countries-list h2 {
-  font-size: 18px;
+/* Footer styling */
+footer {
   text-align: center;
-  margin-bottom: 10px;
-}
-.countries-list ul {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-.countries-list li {
-  margin: 5px 10px;
+  margin: 20px 0;
+  font-size: 14px;
 }
