@@ -1,4 +1,3 @@
-/* General body styling */
 body {
   margin: 0;
   padding: 0;
@@ -7,49 +6,36 @@ body {
   overflow-y: auto;
 }
 
-/* Navigation Bar Styling */
-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #f8f9fa;
-  padding: 10px 20px;
-  border-bottom: 1px solid #ddd;
-}
 .navbar-brand {
-  color: #007bff;
+  color: #007bff !important;
   font-weight: bold;
   text-decoration: none;
 }
-.nav-links {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-}
-.nav-links li {
-  margin-right: 15px;
-}
-.nav-links li a {
+.navbar-brand:hover {
   text-decoration: none;
-  color: #333;
 }
+
 .last-updated {
   font-size: 14px;
   color: #666;
+  text-align: center;
+  margin: 10px 0;
+}
+.last-updated span {
+  font-weight: normal;
 }
 
-/* Map Container and SVG styling */
 #map-container {
   width: 100%;
   max-width: 1010px;
-  margin: 20px auto;
+  margin: 0 auto;
   position: relative;
   border: 1px solid lightblue;
   background-color: lightblue;
   overflow: hidden;
   touch-action: none;
 }
+
 #svg-container {
   width: 100%;
   height: auto;
@@ -57,7 +43,7 @@ nav {
   position: relative;
 }
 
-/* Zoom Controls styling: slightly bigger buttons with blue text */
+/* Zoom controls */
 .zoom-controls {
   position: absolute;
   top: 10px;
@@ -71,12 +57,12 @@ nav {
   background-color: white;
   border: 1px solid black;
   border-radius: 4px;
-  width: 25px;
-  height: 25px;
+  width: 20px;
+  height: 20px;
   cursor: pointer;
   font-family: 'Roboto', sans-serif;
-  font-size: 12px;
-  color: blue;
+  font-size: 10px;
+  color: black;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -84,13 +70,12 @@ nav {
 }
 @media (max-width: 600px) {
   .zoom-controls button {
-    width: 20px;
-    height: 20px;
-    font-size: 10px;
+    width: 15px;
+    height: 15px;
+    font-size: 9px;
   }
 }
 
-/* SVG paths styling for interactive map elements */
 path {
   fill: #548b5b;
   transition: fill 0.3s;
@@ -106,21 +91,32 @@ path.highlighted {
   fill: #b05a45;
 }
 
-/* World Statistics styling */
+/* World Stats */
 .world-stats {
   text-align: center;
   background: rgba(0,0,0,0.7);
   border: 1px solid black;
+  border-radius: 0;
   padding: 10px;
   color: white;
   font-family: 'Roboto', sans-serif;
   font-size: 0.9rem;
   width: 100%;
   box-sizing: border-box;
-  margin-top: 20px;
+}
+.world-stats b {
+  font-weight: bold;
+}
+.world-stats u {
+  text-decoration: underline;
+}
+@media (max-width: 600px) {
+  .world-stats {
+    font-size: 0.8rem;
+  }
 }
 
-/* Filter Wrapper and Activity Filter styling */
+/* Filter container */
 .filter-wrapper {
   max-width: 1010px;
   margin: 20px auto;
@@ -132,7 +128,6 @@ path.highlighted {
   padding: 10px;
   border-radius: 5px;
   box-shadow: 0 3px 15px rgba(0,0,0,0.2);
-  margin-bottom: 10px;
 }
 .activity-filter label {
   font-weight: bold;
@@ -158,7 +153,7 @@ path.highlighted {
   color: white;
 }
 
-/* Highlight Titles Section styling */
+/* Highlight Titles */
 .highlight-titles {
   text-align: center;
   background: rgba(255,255,255,0.9);
@@ -198,7 +193,7 @@ path.highlighted {
   border-color: #007bff;
 }
 
-/* Top Countries Tables styling */
+/* Top Countries */
 .top-countries-container {
   display: flex;
   flex-wrap: wrap;
@@ -223,14 +218,14 @@ path.highlighted {
   width: 100%;
   border-collapse: collapse;
 }
-.top-countries th,
+.top-countries th, 
 .top-countries td {
   border: 1px solid #ccc;
   padding: 5px;
   text-align: center;
 }
 
-/* Flag image styling for country icons */
+/* Flag images */
 .flag {
   height: 1em;
   width: auto;
@@ -238,7 +233,7 @@ path.highlighted {
   margin-right: 5px;
 }
 
-/* AdSense Placeholder styling */
+/* AdSense Placeholder */
 .ads-placeholder {
   width: 100%;
   max-width: 1010px;
@@ -250,7 +245,7 @@ path.highlighted {
   color: #666;
 }
 
-/* Info Box styling for map interactions */
+/* Info Box */
 .info-box {
   position: fixed;
   background: rgba(255,255,255,0.95);
@@ -267,9 +262,28 @@ path.highlighted {
   display: block;
 }
 
-/* Footer styling */
-footer {
-  text-align: center;
-  margin: 20px 0;
+/* Countries List Section */
+.countries-list {
+  max-width: 1010px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
   font-size: 14px;
+  line-height: 1.6;
+}
+.countries-list h2 {
+  font-size: 18px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+.countries-list ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.countries-list li {
+  margin: 5px 10px;
 }
