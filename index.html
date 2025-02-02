@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Meta section for charset and responsive design -->
+  <!-- Meta setup for character set and responsive behavior -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chess Titles Map</title>
@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- Navigation section -->
+  <!-- Navigation Bar -->
   <nav>
     <!-- Brand Name -->
     <a class="navbar-brand" href="#">ChessTitlesMap.com</a>
@@ -18,36 +18,38 @@
       <li><a href="#">How to Get Title</a></li>
       <li><a href="#">FIDE Ratings</a></li>
     </ul>
-    <!-- Last updated information -->
+    <!-- Last updated info -->
     <div class="last-updated">
       Last updated: <span>Jan 31, 2025</span>
     </div>
   </nav>
 
-  <!-- Main Map Container -->
+  <!-- Map Container with SVG and zoom controls -->
   <div id="map-container">
-    <!-- Container for SVG map and zoom controls -->
     <div id="svg-container">
-      <!-- Zoom control buttons with increased size and blue symbols -->
+      <!-- Zoom Control Buttons (now slightly larger with blue text) -->
       <div class="zoom-controls">
         <button id="zoom-in">+</button>
         <button id="zoom-out">-</button>
         <button id="reset-zoom">R</button>
       </div>
-      <!-- SVG map content would be inserted here -->
+      <!-- Placeholder for the SVG map -->
+      <svg width="1010" height="666">
+        <!-- Map paths would go here -->
+      </svg>
     </div>
   </div>
 
   <!-- Filter and Highlight Options -->
   <div class="filter-wrapper">
-    <!-- Filter for player activity -->
+    <!-- Activity Filter -->
     <div class="activity-filter">
       <label>Player Activity Filter:</label>
       <button id="filter-both" class="active">Both</button>
       <button id="filter-active">Active</button>
       <button id="filter-inactive">Inactive</button>
     </div>
-    <!-- Highlight Titles options -->
+    <!-- Highlight Titles Options -->
     <div class="highlight-titles">
       <label>Highlight Titles on the Map:</label>
       <div class="highlight-titles-buttons">
@@ -82,7 +84,7 @@
     </div>
   </div>
 
-  <!-- Top Countries Section -->
+  <!-- Top Countries Tables -->
   <div class="top-countries-container">
     <!-- Top Countries - Men -->
     <div class="top-countries" id="top-countries-men">
@@ -99,11 +101,11 @@
           </tr>
         </thead>
         <tbody>
-          <!-- Table data will be populated by script.js -->
+          <!-- Rows populated by script.js -->
         </tbody>
       </table>
     </div>
-    <!-- Top Countries - Women (now using similar ranking logic as Men) -->
+    <!-- Top Countries - Women (ranking logic matches Men's) -->
     <div class="top-countries" id="top-countries-women">
       <h3>Top Countries - Women</h3>
       <table>
@@ -118,13 +120,13 @@
           </tr>
         </thead>
         <tbody>
-          <!-- Table data will be populated by script.js -->
+          <!-- Rows populated by script.js -->
         </tbody>
       </table>
     </div>
   </div>
 
-  <!-- Hidden Countries Covered Section (for SEO purposes only) -->
+  <!-- Hidden Countries Covered Section for SEO (hidden from users) -->
   <div class="countries-list" style="display: none;">
     <h2>Countries Covered</h2>
     <ul>
@@ -153,12 +155,12 @@
     <div>WCM: <span id="wcm-count">0</span></div>
   </div>
 
-  <!-- Footer with bug reporting information -->
+  <!-- Footer with bug reporting email -->
   <footer>
     <p>Report any bug or inconsistencies to faresar@hotmail.com</p>
   </footer>
 
-  <!-- External JavaScript file -->
+  <!-- External JavaScript -->
   <script src="script.js"></script>
 </body>
 </html>
