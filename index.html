@@ -1,26 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Meta information and SEO tags -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>ChessTitlesMap.com</title>
-  
-  <!-- SEO Meta Tags -->
+  <title>Chess Titles by Country - Grand Master per Country | ChessTitlesMap.com</title>
   <meta name="description" content="Explore chess titles by country, including Grand Master per country and other titles. Discover country-specific statistics and rankings on ChessTitlesMap.com.">
   <meta name="keywords" content="Chess titles by country, Grand Master per country, Country Grand Master, Chess titles, Chess rankings, Chess stats">
-  
-  <!-- Open Graph Tags for social sharing -->
   <meta property="og:title" content="Chess Titles by Country - Grand Master per Country | ChessTitlesMap.com">
   <meta property="og:description" content="Explore chess titles by country and discover national rankings including Grand Masters, International Masters and more on ChessTitlesMap.com.">
   <meta property="og:type" content="website">
-  
-  <!-- Other External CSS and JS -->
+
+  <!-- External CSS and JS libraries -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://unpkg.com/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
   
   <style>
+    /* General body styling */
     body {
       margin: 0;
       padding: 0;
@@ -28,6 +26,7 @@
       width: 100%;
       overflow-y: auto;
     }
+    /* Navbar styling */
     .navbar-brand {
       color: #007bff !important;
       font-weight: bold;
@@ -36,6 +35,7 @@
     .navbar-brand:hover {
       text-decoration: none;
     }
+    /* Last updated text styling */
     .last-updated {
       font-size: 14px;
       color: #666;
@@ -45,6 +45,7 @@
     .last-updated span {
       font-weight: normal;
     }
+    /* Container for the map with border and background */
     #map-container {
       width: 100%;
       max-width: 1010px;
@@ -55,12 +56,14 @@
       overflow: hidden;
       touch-action: none;
     }
+    /* Container for the SVG map ensuring proper aspect ratio */
     #svg-container {
       width: 100%;
       height: auto;
       aspect-ratio: 1010/666;
       position: relative;
     }
+    /* Zoom button controls styling; buttons are now slightly bigger and text in blue */
     .zoom-controls {
       position: absolute;
       top: 10px;
@@ -74,12 +77,12 @@
       background-color: white;
       border: 1px solid black;
       border-radius: 4px;
-      width: 20px;
-      height: 20px;
+      width: 28px;              /* Increased width */
+      height: 28px;             /* Increased height */
       cursor: pointer;
       font-family: 'Roboto', sans-serif;
-      font-size: 10px;
-      color: black;
+      font-size: 14px;          /* Increased font size */
+      color: #007bff;           /* Blue text color */
       display: flex;
       align-items: center;
       justify-content: center;
@@ -87,11 +90,12 @@
     }
     @media (max-width: 600px) {
       .zoom-controls button {
-        width: 15px;
-        height: 15px;
-        font-size: 9px;
+        width: 24px;
+        height: 24px;
+        font-size: 12px;
       }
     }
+    /* Styling for individual country paths on the map */
     path {
       fill: #548b5b;
       transition: fill 0.3s;
@@ -106,11 +110,11 @@
     path.highlighted {
       fill: #b05a45;
     }
+    /* World stats box styling on top of the map */
     .world-stats {
       text-align: center;
       background: rgba(0,0,0,0.7);
       border: 1px solid black;
-      border-radius: 0;
       padding: 10px;
       color: white;
       font-family: 'Roboto', sans-serif;
@@ -129,6 +133,7 @@
         font-size: 0.8rem;
       }
     }
+    /* Filter section container styling */
     .filter-wrapper {
       max-width: 1010px;
       margin: 20px auto;
@@ -164,6 +169,7 @@
       background-color: #007bff;
       color: white;
     }
+    /* Highlight Titles section styling */
     .highlight-titles {
       text-align: center;
       background: rgba(255,255,255,0.9);
@@ -202,6 +208,7 @@
       color: white;
       border-color: #007bff;
     }
+    /* Top countries tables container styling */
     .top-countries-container {
       display: flex;
       flex-wrap: wrap;
@@ -237,6 +244,7 @@
       vertical-align: middle;
       margin-right: 5px;
     }
+    /* Ad placeholder styling */
     .ads-placeholder {
       width: 100%;
       max-width: 1010px;
@@ -247,6 +255,7 @@
       font-size: 14px;
       color: #666;
     }
+    /* Info-box styling for country details on hover/touch */
     .info-box {
       position: fixed;
       background: rgba(255,255,255,0.95);
@@ -262,7 +271,7 @@
     .info-box.visible {
       display: block;
     }
-    /* Countries List Section - visible content that helps search engines connect country codes to names */
+    /* Countries list section for SEO only (hidden from view) */
     .countries-list {
       max-width: 1010px;
       margin: 40px auto;
@@ -271,6 +280,7 @@
       border: 1px solid #ddd;
       font-size: 14px;
       line-height: 1.6;
+      display: none; /* Hidden from users but still in the code for SEO */
     }
     .countries-list h2 {
       font-size: 18px;
@@ -287,10 +297,19 @@
     .countries-list li {
       margin: 5px 10px;
     }
+    /* Footer styling to make it stand out on a mostly white page */
+    footer {
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      padding: 15px;
+      margin-top: 20px;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
-  <!-- Navigation Bar -->
+  <!-- Navigation Bar with removed 'Feedback' link -->
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
       <a class="navbar-brand" href="index.html">ChessTitlesMap.com</a>
@@ -306,20 +325,18 @@
             <li class="nav-item">
                <a class="nav-link" href="https://ratings.fide.com/" target="_blank">FIDE Ratings</a>
             </li>
-            <li class="nav-item">
-               <a class="nav-link" href="feedback.html" target="_blank">Feedback</a>
-            </li>
+            <!-- Removed 'Feedback' link as per instructions -->
          </ul>
       </div>
     </div>
   </nav>
   
-  <!-- Last Updated -->
+  <!-- Last Updated information -->
   <div class="last-updated">
     Last updated: <span>Jan 31, 2025</span>
   </div>
   
-  <!-- Map Container -->
+  <!-- Map Container showing world stats and SVG map -->
   <div id="map-container">
     <div class="world-stats" id="world-stats">
       <div><u><b>World Stats</b></u></div>
@@ -337,18 +354,20 @@
       </div>
     </div>
     <div id="svg-container">
+      <!-- Zoom controls overlaying the SVG -->
       <div class="zoom-controls">
          <button id="zoom-in">+</button>
          <button id="zoom-out">-</button>
          <button id="zoom-reset">R</button>
       </div>
+      <!-- The world map SVG will be loaded here -->
     </div>
   </div>
   
   <!-- AdSense Placeholder -->
   <div class="ads-placeholder">Placeholder</div>
   
-  <!-- Filter Layers Container -->
+  <!-- Filter Layers and Top Countries Tables -->
   <div class="filter-wrapper">
     <div class="activity-filter">
       <label>Player Activity Filter:</label>
@@ -405,7 +424,7 @@
             </tr>
           </thead>
           <tbody>
-            <!-- Rows inserted by JavaScript -->
+            <!-- Men rows will be inserted by JavaScript -->
           </tbody>
         </table>
       </div>
@@ -423,14 +442,14 @@
             </tr>
           </thead>
           <tbody>
-            <!-- Rows inserted by JavaScript -->
+            <!-- Women rows will be inserted by JavaScript -->
           </tbody>
         </table>
       </div>
     </div>
   </div>
   
-  <!-- Countries List Section for SEO -->
+  <!-- Countries List Section for SEO (hidden from users) -->
   <section class="countries-list">
     <h2>Countries Covered</h2>
     <ul>
@@ -444,21 +463,31 @@
       <li>India (IN)</li>
       <li>Brazil (BR)</li>
       <li>Canada (CA)</li>
-      <!-- Add more countries as needed -->
+      <!-- Additional countries for SEO -->
     </ul>
   </section>
   
-  <!-- Scripts -->
+  <!-- Footer with contact information for reporting bugs -->
+  <footer>
+    Report any bug or inconsistencies to <a href="mailto:faresar@hotmail.com" style="color:#007bff;">faresar@hotmail.com</a>
+  </footer>
+  
+  <!-- JavaScript Section with inline comments explaining functionality -->
   <script>
     "use strict";
+    // Object to hold data from the titled_players_by_country.json file
     let titledPlayersData = {};
+    // Current filter (both, active, or inactive)
     let currentFilter = 'both';
+    // Currently selected title for map highlighting (or 'none')
     let currentHighlight = 'none';
 
+    // Once the document is loaded, add initial active class to highlight reset option
     window.addEventListener("DOMContentLoaded", () => {
       document.getElementById("label-highlight-none").classList.add('active');
     });
 
+    // Updates the worldwide numbers for each chess title on the world-stats box
     function updateWorldwideNumbers() {
       let gmCount = 0, wgmCount = 0, imCount = 0, wimCount = 0, fmCount = 0, wfmCount = 0, cmCount = 0, wcmCount = 0;
       Object.values(titledPlayersData).forEach(countryData => {
@@ -484,18 +513,24 @@
       document.getElementById('wcm-count').textContent = wcmCount;
     }
     
+    // Builds and updates the top countries tables for both men and women
     function updateTopCountries() {
       let menData = [];
       let womenData = [];
       Object.keys(titledPlayersData).forEach(countryCode => {
         const data = titledPlayersData[countryCode];
+        // Get the appropriate data set based on currentFilter selection
         const source = currentFilter === 'active' ? data.Active 
                      : currentFilter === 'inactive' ? data.Inactive 
                      : data.Total;
         menData.push({ code: countryCode, GM: source?.GM || 0, IM: source?.IM || 0, FM: source?.FM || 0, CM: source?.CM || 0 });
         womenData.push({ code: countryCode, WGM: source?.WGM || 0, WIM: source?.WIM || 0, WFM: source?.WFM || 0, WCM: source?.WCM || 0 });
       });
+      // Sort men's data by GM, then IM, then FM, then CM (all descending)
       menData.sort((a, b) => b.GM - a.GM || b.IM - a.IM || b.FM - a.FM || b.CM - a.CM);
+      // Sort women's data by WGM, then WIM, then WFM, then WCM (all descending)
+      womenData.sort((a, b) => b.WGM - a.WGM || b.WIM - a.WIM || b.WFM - a.WFM || b.WCM - a.WCM);
+      
       const menTbody = document.querySelector('#top-countries-men tbody');
       menTbody.innerHTML = '';
       menData.forEach((item, index) => {
@@ -528,6 +563,7 @@
       });
     }
     
+    // Fetch the JSON file that contains the chess titled players data
     fetch('titled_players_by_country.json')
       .then(response => response.json())
       .then(data => {
@@ -539,6 +575,7 @@
       })
       .catch(error => { console.error('Error fetching titled players data:', error); });
     
+    // Fetch the SVG map and initialize the interactive map
     fetch('world_fide.svg')
       .then(response => response.text())
       .then(svgContent => {
@@ -546,11 +583,13 @@
         initializeMap();
       });
     
+    // Initialize the interactive map with pan/zoom and info box functionality
     function initializeMap() {
       const svgContainer = document.getElementById('svg-container');
       const svgElement = svgContainer.querySelector('svg');
       const infoBox = document.getElementById("info-box");
       let selectedCountry = null;
+      // Initialize svg-pan-zoom with custom settings
       const panZoom = svgPanZoom(svgElement, {
         zoomEnabled: true,
         controlIconsEnabled: false,
@@ -561,12 +600,14 @@
         zoomScaleSensitivity: 0.2,
       });
       panZoom.disableDblClickZoom();
+      // Zoom button event listeners
       document.getElementById("zoom-in").addEventListener("click", () => panZoom.zoomIn());
       document.getElementById("zoom-out").addEventListener("click", () => panZoom.zoomOut());
       document.getElementById("zoom-reset").addEventListener("click", () => {
         panZoom.reset();
         panZoom.resize().fit().center();
       });
+      // Filter buttons event listeners – update currentFilter and refresh table/stats/highlights
       document.getElementById("filter-both").addEventListener("click", () => {
         currentFilter = 'both';
         updateFilterButtons();
@@ -593,6 +634,7 @@
         document.getElementById("filter-active").classList.toggle("active", currentFilter === 'active');
         document.getElementById("filter-inactive").classList.toggle("active", currentFilter === 'inactive');
       }
+      // Highlight checkbox events: only one title can be highlighted at a time
       const highlightCheckboxes = document.querySelectorAll('.highlight-titles-buttons input[type="checkbox"]');
       highlightCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', () => {
@@ -614,6 +656,7 @@
           updateHighlight();
         });
       });
+      // Update map highlight based on selected title (if count > 0 for that country)
       function updateHighlight() {
         const paths = svgElement.querySelectorAll("path");
         paths.forEach(path => {
@@ -629,19 +672,22 @@
           }
         });
       }
+      // Create info-box if not already present
       if (!document.getElementById("info-box")) {
         const div = document.createElement("div");
         div.id = "info-box";
         div.className = "info-box";
         document.body.appendChild(div);
       }
+      // Show info-box with country details when hovering/touching a country on the map
       function showInfoBox(countryCode, x, y) {
         const flagUrl = (countryCode === "FID") ? "Fidelogo.png" : `https://ratings.fide.com/svg/${countryCode}.svg`;
         const countryData = titledPlayersData[countryCode] || {};
         let source = currentFilter === 'active' ? countryData.Active 
                    : currentFilter === 'inactive' ? countryData.Inactive 
                    : countryData.Total;
-        const gmCount = source?.GM || 0, wgmCount = source?.WGM || 0, imCount = source?.IM || 0, wimCount = source?.WIM || 0, fmCount = source?.FM || 0, wfmCount = source?.WFM || 0, cmCount = source?.CM || 0, wcmCount = source?.WCM || 0;
+        const gmCount = source?.GM || 0, wgmCount = source?.WGM || 0, imCount = source?.IM || 0, wimCount = source?.WIM || 0, 
+              fmCount = source?.FM || 0, wfmCount = source?.WFM || 0, cmCount = source?.CM || 0, wcmCount = source?.WCM || 0;
         infoBox.innerHTML = `
           <img src="${flagUrl}" alt="${countryCode} Flag" class="flag">
           <a href="https://ratings.fide.com/rankings.phtml?country=${countryCode}" target="_blank">${countryCode}</a><br>
@@ -656,6 +702,7 @@
         infoBox.style.left = `${x - boxWidth/2}px`;
         infoBox.style.top = `${y - boxHeight}px`;
       }
+      // Hide the info-box when not hovering over a country
       function hideInfoBox() {
         if (selectedCountry) {
           document.querySelector(`path[id="${selectedCountry}"]`).classList.remove('selected');
@@ -663,6 +710,7 @@
         }
         infoBox.classList.remove('visible');
       }
+      // Event listeners on each country path on the SVG map
       const paths = svgElement.querySelectorAll("path");
       paths.forEach(path => {
         path.addEventListener("mouseenter", (e) => {
@@ -681,12 +729,15 @@
           }
         });
       });
+      // Keep info-box visible when hovered and hide it on touch elsewhere
       infoBox.addEventListener('mouseenter', () => { infoBox.classList.add('visible'); });
       infoBox.addEventListener('mouseleave', () => { if (!selectedCountry) hideInfoBox(); });
       document.addEventListener("touchstart", (e) => {
         if (!infoBox.contains(e.target) && !Array.from(paths).some(path => path.contains(e.target))) hideInfoBox();
       });
+      // Resize the panZoom when window is resized
       window.addEventListener('resize', () => { panZoom.resize().fit().center(); });
+      // Touch events for pinch-zoom support
       let initialDistance = null, initialScale = 1;
       svgContainer.addEventListener("touchstart", (e) => {
         if (e.touches.length === 2) {
@@ -711,6 +762,7 @@
       svgContainer.addEventListener("touchend", () => { initialDistance = null; });
     }
   </script>
+  <!-- The info-box element is used to show country details on mouse hover/touch -->
   <div class="info-box" id="info-box"></div>
 </body>
 </html>
