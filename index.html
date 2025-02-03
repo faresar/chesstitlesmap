@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XJ3XMYTPC6"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-XJ3XMYTPC6');
-</script>
+  <!-- Google tag (gtag.js) with Consent Mode defaulting to denied -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XJ3XMYTPC6"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    // Default consent: if no user choice stored, deny both analytics and ad storage.
+    gtag('consent', 'default', {
+      'analytics_storage': 'denied',
+      'ad_storage': 'denied'
+    });
+    gtag('config', 'G-XJ3XMYTPC6');
+  </script>
 
   <!-- Meta information and SEO tags -->
   <meta charset="UTF-8">
@@ -21,7 +25,6 @@
   <meta property="og:description" content="Explore chess titles by country and discover national rankings including Grand Masters, International Masters and more on ChessTitlesMap.com.">
   <meta property="og:type" content="website">
   
-
   <!-- External CSS and JS libraries -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
@@ -39,7 +42,7 @@
     }
     /* Navbar styling */
     .navbar-brand {
-      color: #007bff !important;
+      color: #333 !important; /* Changed to lighter black (#333) to match world-stats */
       font-weight: bold;
       text-decoration: none;
     }
@@ -88,12 +91,12 @@
       background-color: white;
       border: 1px solid black;
       border-radius: 4px;
-      width: 28px;              /* Increased width */
-      height: 28px;             /* Increased height */
+      width: 28px;
+      height: 28px;
       cursor: pointer;
       font-family: 'Roboto', sans-serif;
-      font-size: 14px;          /* Increased font size */
-      color: #007bff;           /* Blue text color */
+      font-size: 14px;
+      color: #007bff;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -291,7 +294,7 @@
       border: 1px solid #ddd;
       font-size: 14px;
       line-height: 1.6;
-      display: none; /* Hidden from users but still in the code for SEO */
+      display: none;
     }
     .countries-list h2 {
       font-size: 18px;
@@ -308,7 +311,7 @@
     .countries-list li {
       margin: 5px 10px;
     }
-    /* Footer styling to make it stand out on a mostly white page */
+    /* Footer styling with Data Privacy link positioned to the right */
     footer {
       background-color: #333;
       color: #fff;
@@ -316,6 +319,59 @@
       padding: 15px;
       margin-top: 20px;
       font-size: 14px;
+      position: relative;
+    }
+    footer .data-privacy {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+    }
+    footer .data-privacy a {
+      color: #007bff;
+      text-decoration: none;
+    }
+    footer .data-privacy a:hover {
+      text-decoration: underline;
+    }
+    /* Basic GA Consent Popup styling */
+    #ga-consent-popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+    #ga-consent-popup .popup-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      font-family: 'Roboto', sans-serif;
+    }
+    #ga-consent-popup button {
+      margin: 10px 5px 0;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    #ga-consent-popup button.accept {
+      background-color: #28a745;
+      color: #fff;
+    }
+    #ga-consent-popup button.decline {
+      background-color: #dc3545;
+      color: #fff;
     }
   </style>
 </head>
@@ -329,15 +385,14 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
-         <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-               <a class="nav-link" href="how-to-get-title.html" target="_blank">How to Get Title</a>
-            </li>
-            <li class="nav-item">
-               <a class="nav-link" href="https://ratings.fide.com/" target="_blank">FIDE Ratings</a>
-            </li>
-            <!-- Removed 'Feedback' link as per instructions -->
-         </ul>
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="how-to-get-title.html" target="_blank">How to Get Title</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://ratings.fide.com/" target="_blank">FIDE Ratings</a>
+          </li>
+        </ul>
       </div>
     </div>
   </nav>
@@ -347,7 +402,6 @@
     Last updated: <span>Jan 31, 2025</span>
   </div>
 
-  
   <!-- Map Container showing world stats and SVG map -->
   <div id="map-container">
     <div class="world-stats" id="world-stats">
@@ -478,12 +532,22 @@
     </ul>
   </section>
   
-  <!-- Footer with contact information for reporting bugs -->
+  <!-- Footer with Data Privacy link added -->
   <footer>
     Report any bug or inconsistencies to <a href="mailto:tens.gusto-0a@icloud.com" style="color:#007bff;">tens.gusto-0a@icloud.com</a>
+    <div class="data-privacy"><a href="data_privacy.html" target="_blank">Data Privacy</a></div>
   </footer>
   
-  <!-- JavaScript Section with inline comments explaining functionality -->
+  <!-- GA Consent Popup (appears for new users if no consent found) -->
+  <div id="ga-consent-popup" style="display:none;">
+    <div class="popup-content">
+      <p>We use Google Analytics to collect basic data for website analytics and personalized ads. Do you consent to this data collection?</p>
+      <button class="accept" id="ga-accept">Accept</button>
+      <button class="decline" id="ga-decline">Decline</button>
+    </div>
+  </div>
+  
+  <!-- JavaScript Section -->
   <script>
     "use strict";
     // Object to hold data from the titled_players_by_country.json file
@@ -493,9 +557,31 @@
     // Currently selected title for map highlighting (or 'none')
     let currentHighlight = 'none';
 
-    // Once the document is loaded, add initial active class to highlight reset option
+    // Once the document is loaded, add initial active class to highlight reset option and show GA consent popup if not set
     window.addEventListener("DOMContentLoaded", () => {
       document.getElementById("label-highlight-none").classList.add('active');
+      const gaConsent = localStorage.getItem('gaConsent');
+      if (!gaConsent) { 
+        document.getElementById('ga-consent-popup').style.display = 'flex';
+      } else {
+        if (gaConsent === 'granted'){
+          gtag('consent', 'update', {'analytics_storage': 'granted', 'ad_storage': 'granted'});
+        } else {
+          gtag('consent', 'update', {'analytics_storage': 'denied', 'ad_storage': 'denied'});
+        }
+      }
+    });
+
+    // GA Consent Popup button handlers
+    document.getElementById('ga-accept').addEventListener('click', () => {
+      gtag('consent', 'update', {'analytics_storage': 'granted', 'ad_storage': 'granted'});
+      localStorage.setItem('gaConsent', 'granted');
+      document.getElementById('ga-consent-popup').style.display = 'none';
+    });
+    document.getElementById('ga-decline').addEventListener('click', () => {
+      gtag('consent', 'update', {'analytics_storage': 'denied', 'ad_storage': 'denied'});
+      localStorage.setItem('gaConsent', 'declined');
+      document.getElementById('ga-consent-popup').style.display = 'none';
     });
 
     // Updates the worldwide numbers for each chess title on the world-stats box
@@ -523,7 +609,7 @@
       document.getElementById('cm-count').textContent = cmCount;
       document.getElementById('wcm-count').textContent = wcmCount;
     }
-    
+
     // Builds and updates the top countries tables for both men and women
     function updateTopCountries() {
       let menData = [];
@@ -537,9 +623,9 @@
         menData.push({ code: countryCode, GM: source?.GM || 0, IM: source?.IM || 0, FM: source?.FM || 0, CM: source?.CM || 0 });
         womenData.push({ code: countryCode, WGM: source?.WGM || 0, WIM: source?.WIM || 0, WFM: source?.WFM || 0, WCM: source?.WCM || 0 });
       });
-      // Sort men's data by GM, then IM, then FM, then CM (all descending)
+      // Sort men's data by GM then IM then FM then CM (descending)
       menData.sort((a, b) => b.GM - a.GM || b.IM - a.IM || b.FM - a.FM || b.CM - a.CM);
-      // Sort women's data by WGM, then WIM, then WFM, then WCM (all descending)
+      // Sort women's data by WGM then WIM then WFM then WCM (descending)
       womenData.sort((a, b) => b.WGM - a.WGM || b.WIM - a.WIM || b.WFM - a.WFM || b.WCM - a.WCM);
       
       const menTbody = document.querySelector('#top-countries-men tbody');
@@ -549,7 +635,7 @@
           const flagUrl = (item.code === "FID") ? "Fidelogo.png" : `https://ratings.fide.com/svg/${item.code}.svg`;
           const tr = document.createElement('tr');
           tr.innerHTML = `<td>${index+1}</td>
-                          <td><img src="${flagUrl}" class="flag" alt="${item.code} Flag"> ${item.code}</td>
+                          <td><img src="${flagUrl}" class="flag" alt="${item.code} Flag"> <a href="https://ratings.fide.com/rankings.phtml?country=${item.code}" target="_blank">${item.code}</a></td>
                           <td>${item.GM}</td>
                           <td>${item.IM}</td>
                           <td>${item.FM}</td>
@@ -564,7 +650,7 @@
           const flagUrl = (item.code === "FID") ? "Fidelogo.png" : `https://ratings.fide.com/svg/${item.code}.svg`;
           const tr = document.createElement('tr');
           tr.innerHTML = `<td>${index+1}</td>
-                          <td><img src="${flagUrl}" class="flag" alt="${item.code} Flag"> ${item.code}</td>
+                          <td><img src="${flagUrl}" class="flag" alt="${item.code} Flag"> <a href="https://ratings.fide.com/rankings.phtml?country=${item.code}" target="_blank">${item.code}</a></td>
                           <td>${item.WGM}</td>
                           <td>${item.WIM}</td>
                           <td>${item.WFM}</td>
@@ -598,7 +684,14 @@
     function initializeMap() {
       const svgContainer = document.getElementById('svg-container');
       const svgElement = svgContainer.querySelector('svg');
-      const infoBox = document.getElementById("info-box");
+      // Create or get info-box element
+      let infoBox = document.getElementById("info-box");
+      if (!infoBox) {
+        infoBox = document.createElement("div");
+        infoBox.id = "info-box";
+        infoBox.className = "info-box";
+        document.body.appendChild(infoBox);
+      }
       let selectedCountry = null;
       // Initialize svg-pan-zoom with custom settings
       const panZoom = svgPanZoom(svgElement, {
@@ -618,7 +711,7 @@
         panZoom.reset();
         panZoom.resize().fit().center();
       });
-      // Filter buttons event listeners – update currentFilter and refresh table/stats/highlights
+      // Filter buttons event listeners
       document.getElementById("filter-both").addEventListener("click", () => {
         currentFilter = 'both';
         updateFilterButtons();
@@ -645,7 +738,7 @@
         document.getElementById("filter-active").classList.toggle("active", currentFilter === 'active');
         document.getElementById("filter-inactive").classList.toggle("active", currentFilter === 'inactive');
       }
-      // Highlight checkbox events: only one title can be highlighted at a time
+      // Highlight checkbox events: only one title highlighted at a time
       const highlightCheckboxes = document.querySelectorAll('.highlight-titles-buttons input[type="checkbox"]');
       highlightCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', () => {
@@ -667,7 +760,6 @@
           updateHighlight();
         });
       });
-      // Update map highlight based on selected title (if count > 0 for that country)
       function updateHighlight() {
         const paths = svgElement.querySelectorAll("path");
         paths.forEach(path => {
@@ -683,45 +775,7 @@
           }
         });
       }
-      // Create info-box if not already present
-      if (!document.getElementById("info-box")) {
-        const div = document.createElement("div");
-        div.id = "info-box";
-        div.className = "info-box";
-        document.body.appendChild(div);
-      }
-      // Show info-box with country details when hovering/touching a country on the map
-      function showInfoBox(countryCode, x, y) {
-        const flagUrl = (countryCode === "FID") ? "Fidelogo.png" : `https://ratings.fide.com/svg/${countryCode}.svg`;
-        const countryData = titledPlayersData[countryCode] || {};
-        let source = currentFilter === 'active' ? countryData.Active 
-                   : currentFilter === 'inactive' ? countryData.Inactive 
-                   : countryData.Total;
-        const gmCount = source?.GM || 0, wgmCount = source?.WGM || 0, imCount = source?.IM || 0, wimCount = source?.WIM || 0, 
-              fmCount = source?.FM || 0, wfmCount = source?.WFM || 0, cmCount = source?.CM || 0, wcmCount = source?.WCM || 0;
-        infoBox.innerHTML = `
-          <img src="${flagUrl}" alt="${countryCode} Flag" class="flag">
-          <a href="https://ratings.fide.com/rankings.phtml?country=${countryCode}" target="_blank">${countryCode}</a><br>
-          <b>GM:</b> ${gmCount} | <b>WGM:</b> ${wgmCount}<br>
-          <b>IM:</b> ${imCount} | <b>WIM:</b> ${wimCount}<br>
-          <b>FM:</b> ${fmCount} | <b>WFM:</b> ${wfmCount}<br>
-          <b>CM:</b> ${cmCount} | <b>WCM:</b> ${wcmCount}
-        `;
-        infoBox.classList.add('visible');
-        const boxHeight = infoBox.offsetHeight || 50;
-        const boxWidth = infoBox.offsetWidth || 100;
-        infoBox.style.left = `${x - boxWidth/2}px`;
-        infoBox.style.top = `${y - boxHeight}px`;
-      }
-      // Hide the info-box when not hovering over a country
-      function hideInfoBox() {
-        if (selectedCountry) {
-          document.querySelector(`path[id="${selectedCountry}"]`).classList.remove('selected');
-          selectedCountry = null;
-        }
-        infoBox.classList.remove('visible');
-      }
-      // Event listeners on each country path on the SVG map
+      // Info-box functionality for hover/touch on country paths
       const paths = svgElement.querySelectorAll("path");
       paths.forEach(path => {
         path.addEventListener("mouseenter", (e) => {
@@ -740,15 +794,14 @@
           }
         });
       });
-      // Keep info-box visible when hovered and hide it on touch elsewhere
       infoBox.addEventListener('mouseenter', () => { infoBox.classList.add('visible'); });
       infoBox.addEventListener('mouseleave', () => { if (!selectedCountry) hideInfoBox(); });
       document.addEventListener("touchstart", (e) => {
         if (!infoBox.contains(e.target) && !Array.from(paths).some(path => path.contains(e.target))) hideInfoBox();
       });
-      // Resize the panZoom when window is resized
+      // Resize panZoom on window resize
       window.addEventListener('resize', () => { panZoom.resize().fit().center(); });
-      // Touch events for pinch-zoom support
+      // Touch events for pinch zoom support
       let initialDistance = null, initialScale = 1;
       svgContainer.addEventListener("touchstart", (e) => {
         if (e.touches.length === 2) {
@@ -771,9 +824,38 @@
         }
       });
       svgContainer.addEventListener("touchend", () => { initialDistance = null; });
+      
+      function showInfoBox(countryCode, x, y) {
+        const flagUrl = (countryCode === "FID") ? "Fidelogo.png" : `https://ratings.fide.com/svg/${countryCode}.svg`;
+        const countryData = titledPlayersData[countryCode] || {};
+        let source = currentFilter === 'active' ? countryData.Active 
+                   : currentFilter === 'inactive' ? countryData.Inactive 
+                   : countryData.Total;
+        infoBox.innerHTML = `
+          <img src="${flagUrl}" alt="${countryCode} Flag" class="flag">
+          <a href="https://ratings.fide.com/rankings.phtml?country=${countryCode}" target="_blank">${countryCode}</a><br>
+          <b>GM:</b> ${source?.GM || 0} | <b>WGM:</b> ${source?.WGM || 0}<br>
+          <b>IM:</b> ${source?.IM || 0} | <b>WIM:</b> ${source?.WIM || 0}<br>
+          <b>FM:</b> ${source?.FM || 0} | <b>WFM:</b> ${source?.WFM || 0}<br>
+          <b>CM:</b> ${source?.CM || 0} | <b>WCM:</b> ${source?.WCM || 0}
+        `;
+        infoBox.classList.add('visible');
+        const boxHeight = infoBox.offsetHeight || 50;
+        const boxWidth = infoBox.offsetWidth || 100;
+        infoBox.style.left = `${x - boxWidth/2}px`;
+        infoBox.style.top = `${y - boxHeight}px`;
+      }
+      function hideInfoBox() {
+        if (selectedCountry) {
+          document.querySelector(`path[id="${selectedCountry}"]`).classList.remove('selected');
+          selectedCountry = null;
+        }
+        infoBox.classList.remove('visible');
+      }
     }
   </script>
-  <!-- The info-box element is used to show country details on mouse hover/touch -->
+  
+  <!-- The info-box element used to show country details on hover/touch -->
   <div class="info-box" id="info-box"></div>
 </body>
 </html>
