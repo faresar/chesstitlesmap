@@ -511,20 +511,7 @@
     // Currently selected title for map highlighting (or 'none')
     let currentHighlight = 'none';
 
-    // Once the document is loaded, add initial active class to highlight reset option and show GA consent popup if not set
-    window.addEventListener("DOMContentLoaded", () => {
-      document.getElementById("label-highlight-none").classList.add('active');
-      const gaConsent = localStorage.getItem('gaConsent');
-      if (!gaConsent) { 
-        document.getElementById('ga-consent-popup').style.display = 'flex';
-      } else {
-        if (gaConsent === 'granted'){
-          gtag('consent', 'update', {'analytics_storage': 'granted', 'ad_storage': 'granted'});
-        } else {
-          gtag('consent', 'update', {'analytics_storage': 'denied', 'ad_storage': 'denied'});
-        }
-      }
-    });
+  
 
     
     // Updates the worldwide numbers for each chess title on the world-stats box
