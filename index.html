@@ -1,19 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) with Consent Mode defaulting to denied -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XJ3XMYTPC6"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    // Default consent: if no user choice stored, deny both analytics and ad storage.
-    gtag('consent', 'default', {
-      'analytics_storage': 'denied',
-      'ad_storage': 'denied'
-    });
-    gtag('config', 'G-XJ3XMYTPC6');
-  </script>
+
 
   <!-- Meta information and SEO tags -->
   <meta charset="UTF-8">
@@ -542,17 +530,17 @@
   <!-- Footer with Data Privacy link added -->
   <footer>
     Report any bug or inconsistencies to <a href="mailto:tens.gusto-0a@icloud.com" style="color:#007bff;">tens.gusto-0a@icloud.com</a>
-    <div class="data-privacy"><a href="data_privacy.html" target="_blank">Data Privacy</a></div>
+   <!--- <div class="data-privacy"><a href="data_privacy.html" target="_blank">Data Privacy</a></div> --->
   </footer>
   
   <!-- GA Consent Popup (appears for new users if no consent found) -->
-  <div id="ga-consent-popup" style="display:none;">
+ <!-- <div id="ga-consent-popup" style="display:none;">
     <div class="popup-content">
       <p>Website uses Google Analytics to collect anonymous information of how users make use of the website. Do you consent to this data collection? More information in Data Privacy section in the footer</p>
       <button class="accept" id="ga-accept">Accept</button>
       <button class="decline" id="ga-decline">Decline</button>
     </div>
-  </div>
+  </div> -->
   
   <!-- JavaScript Section -->
   <script>
@@ -579,18 +567,18 @@
       }
     });
 
-    // GA Consent Popup button handlers
-    document.getElementById('ga-accept').addEventListener('click', () => {
-      gtag('consent', 'update', {'analytics_storage': 'granted', 'ad_storage': 'granted'});
-      localStorage.setItem('gaConsent', 'granted');
-      document.getElementById('ga-consent-popup').style.display = 'none';
-    });
-    document.getElementById('ga-decline').addEventListener('click', () => {
-      gtag('consent', 'update', {'analytics_storage': 'denied', 'ad_storage': 'denied'});
-      localStorage.setItem('gaConsent', 'declined');
-      document.getElementById('ga-consent-popup').style.display = 'none';
-    });
-
+    // GA Consent Popup button handlers 
+  // document.getElementById('ga-accept').addEventListener('click', () => {
+      //gtag('consent', 'update', {'analytics_storage': 'granted', 'ad_storage': 'granted'});
+      //localStorage.setItem('gaConsent', 'granted');
+     // document.getElementById('ga-consent-popup').style.display = 'none';
+   // });
+    //document.getElementById('ga-decline').addEventListener('click', () => {
+     // gtag('consent', 'update', {'analytics_storage': 'denied', 'ad_storage': 'denied'});
+      //localStorage.setItem('gaConsent', 'declined');
+      //document.getElementById('ga-consent-popup').style.display = 'none';
+    //}); 
+    
     // Updates the worldwide numbers for each chess title on the world-stats box
     function updateWorldwideNumbers() {
       let gmCount = 0, wgmCount = 0, imCount = 0, wimCount = 0, fmCount = 0, wfmCount = 0, cmCount = 0, wcmCount = 0;
