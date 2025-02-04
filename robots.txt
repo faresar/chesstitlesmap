@@ -1,0 +1,15 @@
+User-agent: *
+Disallow: /site.webmanifest
+Disallow: /favicon.ico
+Disallow: /favicon-96x96.png
+Disallow: /apple-touch-icon.png
+Disallow: /world_fide.svg
+Disallow: /titled_players_by_country.json
+
+# Allow crawling of main pages
+Allow: /index.html
+Allow: /how-to-get-title.html
+Allow: /data_privacy.html
+
+# Sitemap location
+Sitemap: https://chesstitlesmap.com/sitemap.xml
