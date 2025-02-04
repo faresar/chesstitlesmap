@@ -542,7 +542,32 @@ gtag("set", "url_passthrough", false);
     // Currently selected title for map highlighting (or 'none')
     let currentHighlight = 'none';
 
-  
+    
+// Cookiebot code to update consent  when user makes a choice 
+  window.addEventListener('CookiebotOnAccept', function (e) {
+  if (Cookiebot.consent.statistics) {
+    gtag('consent', 'update', {
+      'analytics_storage': 'granted'
+    });
+  }
+  if (Cookiebot.consent.marketing) {
+    gtag('consent', 'update', {
+      'ad_storage': 'granted',
+      'ad_user_data': 'granted',
+      'ad_personalization': 'granted'
+    });
+  }
+});
+    function CookiebotCallback(consent) {
+  if (consent.statistics) {
+    // Enable analytics
+  }
+  if (consent.marketing) {
+    // Enable marketing cookies and personalized ads
+  }
+}
+// end of cookiebot codes
+
 
     
     // Updates the worldwide numbers for each chess title on the world-stats box
