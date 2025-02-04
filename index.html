@@ -2,6 +2,37 @@
 <html lang="en">
 <head>
 
+<!-- Cookieboot code -->
+<script data-cookieconsent="ignore">
+window.dataLayer = window.dataLayer || [];
+function gtag() {
+dataLayer.push(arguments);
+}
+gtag("consent", "default", {
+ad_personalization: "denied",
+ad_storage: "denied",
+ad_user_data: "denied",
+analytics_storage: "denied",
+functionality_storage: "denied",
+personalization_storage: "denied",
+security_storage: "granted",
+wait_for_update: 500,
+});
+gtag("set", "ads_data_redaction", true);
+gtag("set", "url_passthrough", false);
+</script>
+  
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XJ3XMYTPC6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XJ3XMYTPC6');
+</script>
+
+  
+
 
   <!-- Meta information and SEO tags -->
   <meta charset="UTF-8">
@@ -784,5 +815,18 @@
   
   <!-- The info-box element used to show country details on hover/touch -->
   <div class="info-box" id="info-box"></div>
+
+  <!-- Cookiebot html code -->
+  <div id="cookiebanner" lang="[#LANGUAGE#]" dir="[#TEXTDIRECTION#]" ng-non-bindable>
+  <div id="c-left">
+    <p class="c-header">[#TITLE#]</p>
+    <p class="c-message">[#TEXT#]</p>
+  </div>
+  <div id="c-right">
+    <a href="javascript:void(0)" onclick="Cookiebot.dialog.submitConsent()" class="c-button">OK</a>
+  </div>
+  <div style="clear:both"></div>
+</div>
+  
 </body>
 </html>
