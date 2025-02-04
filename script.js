@@ -1,33 +1,23 @@
-// Google Consent implemntation
-function updateConsent(consent) {
-  gtag('consent', 'update', {
-    'ad_storage': consent.marketing ? 'granted' : 'denied',
-    'analytics_storage': consent.analytics ? 'granted' : 'denied'
-  });
+
+//Cookiebot code
+var cookieBannerSliderPos = 0;
+
+function showCookieBanner() {
+    var cookiebanner = document.getElementById("cookiebanner");
+    var dialogHeight = parseInt(cookiebanner.offsetHeight);
+    cookiebanner.style.bottom = (cookieBannerSliderPos - dialogHeight) + "px";
+    cookieBannerSliderPos += 4;
+    if (cookieBannerSliderPos < dialogHeight) {
+        setTimeout(function () {
+            showCookieBanner();
+        }, 1);
+    } else {
+        cookieBannerSliderPos = 0;
+        cookiebanner.style.bottom = "0px";
+    }
 }
 
-// Example: User accepts analytics but declines marketing
-updateConsent({ analytics: true, marketing: false });
-
-document.addEventListener('DOMContentLoaded', function() {
-  const consentPopup = document.getElementById('consent-popup');
-  const acceptButton = document.getElementById('accept');
-  const rejectButton = document.getElementById('reject');
-
-  if (!localStorage.getItem('consentGiven')) {
-    consentPopup.style.display = 'block';
-  }
-
-  acceptButton.addEventListener('click', function() {
-    updateConsent({ analytics: true, marketing: true });
-    localStorage.setItem('consentGiven', 'true');
-    consentPopup.style.display = 'none';
-  });
-
-  rejectButton.addEventListener('click', function() {
-    updateConsent({ analytics: false, marketing: false });
-    localStorage.setItem('consentGiven', 'true');
-    consentPopup.style.display = 'none';
-  });
-});
-
+function hideCookieBanner() {
+    var cookiebanner = document.getElementById("cookiebanner");
+    cookiebanner.style.display = "none";
+}
