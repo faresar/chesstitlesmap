@@ -1,46 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-<!-- Cookieboot code -->
+  <!-- Cookiebot code -->
   <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="ae870dc3-8869-4779-9a6b-b3c5fbdcfa27" data-blockingmode="auto" type="text/javascript"></script>
   
-<script data-cookieconsent="ignore">
-window.dataLayer = window.dataLayer || [];
-function gtag() {
-dataLayer.push(arguments);
-}
-gtag("consent", "default", {
-ad_personalization: "denied",
-ad_storage: "denied",
-ad_user_data: "denied",
-analytics_storage: "denied",
-functionality_storage: "denied",
-personalization_storage: "denied",
-security_storage: "granted",
-wait_for_update: 500,
-});
-gtag("set", "ads_data_redaction", true);
-gtag("set", "url_passthrough", false);
-</script>
+  <script data-cookieconsent="ignore">
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("consent", "default", {
+      ad_personalization: "denied",
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      analytics_storage: "denied",
+      functionality_storage: "denied",
+      personalization_storage: "denied",
+      security_storage: "granted",
+      wait_for_update: 500,
+    });
+    gtag("set", "ads_data_redaction", true);
+    gtag("set", "url_passthrough", false);
+  </script>
 
   <!-- Google adsense -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5107229311081771"
-     crossorigin="anonymous"></script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5107229311081771"
+       crossorigin="anonymous"></script>
   
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XJ3XMYTPC6"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-XJ3XMYTPC6');
-</script>
-
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XJ3XMYTPC6"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XJ3XMYTPC6');
+  </script>
   
-
-
-  <!-- Meta information and SEO tags -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>ChessTitlesMap.com</title>
@@ -50,13 +45,12 @@ gtag("set", "url_passthrough", false);
   <meta property="og:description" content="Explore chess titles by country and discover national rankings including Grand Masters, International Masters and more on ChessTitlesMap.com.">
   <meta property="og:type" content="website">
   
-  
-<!-- favicon section -->
+  <!-- favicon section -->
   <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
-<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<link rel="shortcut icon" href="/favicon.ico" />
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-<link rel="manifest" href="/site.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
   
   <!-- External CSS and JS libraries -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -75,7 +69,7 @@ gtag("set", "url_passthrough", false);
     }
     /* Navbar styling */
     .navbar-brand {
-      color: #333 !important; /* Changed to lighter black (#333) to match world-stats */
+      color: #333 !important;
       font-weight: bold;
       text-decoration: none;
     }
@@ -247,13 +241,29 @@ gtag("set", "url_passthrough", false);
       transition: background-color 0.3s;
       font-size: 12px;
     }
-    .highlight-titles-buttons label input {
-      display: none;
-    }
     .highlight-titles-buttons label.active {
       background-color: #007bff;
       color: white;
       border-color: #007bff;
+    }
+    .highlight-titles-buttons label input {
+      display: none;
+    }
+    /* New Title Additions layer styling */
+    .title-additions-layer {
+      background: rgba(0,0,0,0.7);
+      border: 1px solid black;
+      padding: 10px;
+      color: white;
+      font-family: 'Roboto', sans-serif;
+      font-size: 0.9rem;
+      max-width: 1010px;
+      margin: 10px auto;
+      text-align: left;
+      box-sizing: border-box;
+    }
+    .title-additions-layer b {
+      color: #007bff;
     }
     /* Top countries tables container styling */
     .top-countries-container {
@@ -368,7 +378,6 @@ gtag("set", "url_passthrough", false);
     footer .data-privacy a:hover {
       text-decoration: underline;
     }
-   
   </style>
 </head>
 <body>
@@ -397,7 +406,7 @@ gtag("set", "url_passthrough", false);
   <div class="last-updated">
     Last updated: <span>Feb 04, 2025</span>
   </div>
-
+  
   <!-- Map Container showing world stats and SVG map -->
   <div id="map-container">
     <div class="world-stats" id="world-stats">
@@ -441,7 +450,7 @@ gtag("set", "url_passthrough", false);
     <div class="highlight-titles">
       <label>Highlight Titles on the Map:</label>
       <div class="highlight-titles-buttons">
-        <label for="highlight-none" id="label-highlight-none">None/Reset
+        <label for="highlight-none" id="label-highlight-none" class="active">None/Reset
           <input type="checkbox" id="highlight-none" name="highlight" value="none" checked>
         </label>
         <label for="highlight-gm" id="label-highlight-gm">GM
@@ -469,6 +478,13 @@ gtag("set", "url_passthrough", false);
           <input type="checkbox" id="highlight-wcm" name="highlight" value="WCM">
         </label>
       </div>
+    </div>
+    
+    <!-- New Title Additions Layer -->
+    <div class="title-additions-layer">
+      <b>February 2025 title additions:</b><br>
+      <b>IM:</b> 2&nbsp;&nbsp;<b>FM:</b> 11&nbsp;&nbsp;<b>CM:</b> 6&nbsp;&nbsp;
+      <b>WIM:</b> 1&nbsp;&nbsp;<b>WFM:</b> 3&nbsp;&nbsp;<b>WCM:</b> 2
     </div>
     
     <div class="top-countries-container">
@@ -531,9 +547,8 @@ gtag("set", "url_passthrough", false);
   <!-- Footer with Data Privacy link added -->
   <footer>
     Report any bug or inconsistencies to <a href="mailto:tens.gusto-0a@icloud.com" style="color:#007bff;">tens.gusto-0a@icloud.com</a>
-   <div class="data-privacy"><a href="data_privacy.html" target="_blank">Privacy Policy</a></div>
+    <div class="data-privacy"><a href="data_privacy.html" target="_blank">Privacy Policy</a></div>
   </footer>
-  
   
   <!-- JavaScript Section -->
   <script>
@@ -545,34 +560,27 @@ gtag("set", "url_passthrough", false);
     // Currently selected title for map highlighting (or 'none')
     let currentHighlight = 'none';
 
-    
-// Cookiebot code to update consent  when user makes a choice 
-  window.addEventListener('CookiebotOnAccept', function (e) {
-  if (Cookiebot.consent.statistics) {
-    gtag('consent', 'update', {
-      'analytics_storage': 'granted'
+    // Cookiebot code to update consent when user makes a choice 
+    window.addEventListener('CookiebotOnAccept', function (e) {
+      if (Cookiebot.consent.statistics) {
+        gtag('consent', 'update', { 'analytics_storage': 'granted' });
+      }
+      if (Cookiebot.consent.marketing) {
+        gtag('consent', 'update', {
+          'ad_storage': 'granted',
+          'ad_user_data': 'granted',
+          'ad_personalization': 'granted'
+        });
+      }
     });
-  }
-  if (Cookiebot.consent.marketing) {
-    gtag('consent', 'update', {
-      'ad_storage': 'granted',
-      'ad_user_data': 'granted',
-      'ad_personalization': 'granted'
-    });
-  }
-});
     function CookiebotCallback(consent) {
-  if (consent.statistics) {
-    // Enable analytics
-  }
-  if (consent.marketing) {
-    // Enable marketing cookies and personalized ads
-  }
-}
-// end of cookiebot codes
-
-
-    
+      if (consent.statistics) {
+        // Enable analytics
+      }
+      if (consent.marketing) {
+        // Enable marketing cookies and personalized ads
+      }
+    }
     // Updates the worldwide numbers for each chess title on the world-stats box
     function updateWorldwideNumbers() {
       let gmCount = 0, wgmCount = 0, imCount = 0, wimCount = 0, fmCount = 0, wfmCount = 0, cmCount = 0, wcmCount = 0;
@@ -598,23 +606,19 @@ gtag("set", "url_passthrough", false);
       document.getElementById('cm-count').textContent = cmCount;
       document.getElementById('wcm-count').textContent = wcmCount;
     }
-
     // Builds and updates the top countries tables for both men and women
     function updateTopCountries() {
       let menData = [];
       let womenData = [];
       Object.keys(titledPlayersData).forEach(countryCode => {
         const data = titledPlayersData[countryCode];
-        // Get the appropriate data set based on currentFilter selection
         const source = currentFilter === 'active' ? data.Active 
                      : currentFilter === 'inactive' ? data.Inactive 
                      : data.Total;
         menData.push({ code: countryCode, GM: source?.GM || 0, IM: source?.IM || 0, FM: source?.FM || 0, CM: source?.CM || 0 });
         womenData.push({ code: countryCode, WGM: source?.WGM || 0, WIM: source?.WIM || 0, WFM: source?.WFM || 0, WCM: source?.WCM || 0 });
       });
-      // Sort men's data by GM then IM then FM then CM (descending)
       menData.sort((a, b) => b.GM - a.GM || b.IM - a.IM || b.FM - a.FM || b.CM - a.CM);
-      // Sort women's data by WGM then WIM then WFM then WCM (descending)
       womenData.sort((a, b) => b.WGM - a.WGM || b.WIM - a.WIM || b.WFM - a.WFM || b.WCM - a.WCM);
       
       const menTbody = document.querySelector('#top-countries-men tbody');
@@ -673,7 +677,6 @@ gtag("set", "url_passthrough", false);
     function initializeMap() {
       const svgContainer = document.getElementById('svg-container');
       const svgElement = svgContainer.querySelector('svg');
-      // Create or get info-box element
       let infoBox = document.getElementById("info-box");
       if (!infoBox) {
         infoBox = document.createElement("div");
@@ -682,7 +685,6 @@ gtag("set", "url_passthrough", false);
         document.body.appendChild(infoBox);
       }
       let selectedCountry = null;
-      // Initialize svg-pan-zoom with custom settings
       const panZoom = svgPanZoom(svgElement, {
         zoomEnabled: true,
         controlIconsEnabled: false,
@@ -693,14 +695,12 @@ gtag("set", "url_passthrough", false);
         zoomScaleSensitivity: 0.2,
       });
       panZoom.disableDblClickZoom();
-      // Zoom button event listeners
       document.getElementById("zoom-in").addEventListener("click", () => panZoom.zoomIn());
       document.getElementById("zoom-out").addEventListener("click", () => panZoom.zoomOut());
       document.getElementById("zoom-reset").addEventListener("click", () => {
         panZoom.reset();
         panZoom.resize().fit().center();
       });
-      // Filter buttons event listeners
       document.getElementById("filter-both").addEventListener("click", () => {
         currentFilter = 'both';
         updateFilterButtons();
@@ -727,7 +727,6 @@ gtag("set", "url_passthrough", false);
         document.getElementById("filter-active").classList.toggle("active", currentFilter === 'active');
         document.getElementById("filter-inactive").classList.toggle("active", currentFilter === 'inactive');
       }
-      // Highlight checkbox events: only one title highlighted at a time
       const highlightCheckboxes = document.querySelectorAll('.highlight-titles-buttons input[type="checkbox"]');
       highlightCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', () => {
@@ -764,7 +763,6 @@ gtag("set", "url_passthrough", false);
           }
         });
       }
-      // Info-box functionality for hover/touch on country paths
       const paths = svgElement.querySelectorAll("path");
       paths.forEach(path => {
         path.addEventListener("mouseenter", (e) => {
@@ -788,9 +786,7 @@ gtag("set", "url_passthrough", false);
       document.addEventListener("touchstart", (e) => {
         if (!infoBox.contains(e.target) && !Array.from(paths).some(path => path.contains(e.target))) hideInfoBox();
       });
-      // Resize panZoom on window resize
       window.addEventListener('resize', () => { panZoom.resize().fit().center(); });
-      // Touch events for pinch zoom support
       let initialDistance = null, initialScale = 1;
       svgContainer.addEventListener("touchstart", (e) => {
         if (e.touches.length === 2) {
@@ -846,8 +842,6 @@ gtag("set", "url_passthrough", false);
   
   <!-- The info-box element used to show country details on hover/touch -->
   <div class="info-box" id="info-box"></div>
-
-  
   
 </body>
 </html>
