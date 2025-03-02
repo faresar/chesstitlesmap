@@ -10,6 +10,7 @@ Disallow: /titled_players_by_country.json
 Allow: /index.html
 Allow: /how-to-get-title.html
 Allow: /data_privacy.html
+Allow: /ads.txt
 
 # Sitemap location
 Sitemap: https://chesstitlesmap.com/sitemap.xml
