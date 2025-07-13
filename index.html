@@ -154,21 +154,24 @@
     }
     /* ---- Site‐description card (same look as World Stats) ---- */
     .site-description-card{
-      text-align:center;
-      background:rgba(0,0,0,0.7);   /* identical colour */
-      border:1px solid #000;
+     text-align:center;
+      background:rgba(255,255,255,0.9);      /* same translucent white */
       padding:10px;
-      color:#fff;                   /* white text */
+      border-radius:5px;
+      box-shadow:0 3px 15px rgba(0,0,0,.2);  /* same shadow */
       font-family:'Roboto',sans-serif;
-      font-size:.9rem;
-      width:100%;
-      box-sizing:border-box;
-      margin-top:10px;              /* small gap above Stats */
+      font-size:16px;
+      font-weight:bold;                      /* bold black text */
+      color:#000;
+      max-width:1010px;
+      margin:10px auto;                      /* 10 px gap above/below */
     }
     @media(max-width:600px){
-      .site-description-card{font-size:.8rem;}
+      .site-description-card{
+        font-size:14px;                      /* scale down on phones */
+        padding:8px;
+      }
     }
-
     /* World stats box styling on top of the map */
     .world-stats {
       text-align: center;
