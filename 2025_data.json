@@ -1,0 +1,147 @@
+{
+  "months": [
+    {
+      "month": "FEB",
+      "total": 131,
+      "GM": 0,
+      "IM": 1,
+      "FM": 30,
+      "CM": 64,
+      "WGM": 0,
+      "WIM": 1,
+      "WFM": 17,
+      "WCM": 18
+    },
+    {
+      "month": "MAR",
+      "total": 97,
+      "GM": 0,
+      "IM": 0,
+      "FM": 34,
+      "CM": 42,
+      "WGM": 1,
+      "WIM": 0,
+      "WFM": 14,
+      "WCM": 6
+    },
+    {
+      "month": "APR",
+      "total": 110,
+      "GM": 12,
+      "IM": 31,
+      "FM": -13,
+      "CM": 60,
+      "WGM": 0,
+      "WIM": 4,
+      "WFM": 6,
+      "WCM": 10
+    },
+    {
+      "month": "MAY",
+      "total": 111,
+      "GM": 0,
+      "IM": 0,
+      "FM": 49,
+      "CM": 42,
+      "WGM": 0,
+      "WIM": 1,
+      "WFM": 7,
+      "WCM": 12
+    },
+    {
+      "month": "JUN",
+      "total": 82,
+      "GM": -4,
+      "IM": 1,
+      "FM": 25,
+      "CM": 43,
+      "WGM": 0,
+      "WIM": 2,
+      "WFM": 4,
+      "WCM": 11
+    },
+    {
+      "month": "JUL",
+      "total": 98,
+      "GM": 4,
+      "IM": 2,
+      "FM": 26,
+      "CM": 41,
+      "WGM": 0,
+      "WIM": 7,
+      "WFM": 7,
+      "WCM": 11
+    },
+    {
+      "month": "AUG",
+      "total": 125,
+      "GM": 8,
+      "IM": 34,
+      "FM": 16,
+      "CM": 58,
+      "WGM": 0,
+      "WIM": 8,
+      "WFM": 5,
+      "WCM": -4
+    },
+    {
+      "month": "SEP",
+      "total": 142,
+      "GM": 1,
+      "IM": -1,
+      "FM": 44,
+      "CM": 58,
+      "WGM": 0,
+      "WIM": 7,
+      "WFM": 16,
+      "WCM": 17
+    },
+    {
+      "month": "OCT",
+      "total": 87,
+      "GM": -4,
+      "IM": -5,
+      "FM": 36,
+      "CM": 37,
+      "WGM": 0,
+      "WIM": 1,
+      "WFM": 15,
+      "WCM": 7
+    },
+    {
+      "month": "NOV",
+      "total": 155,
+      "GM": 11,
+      "IM": 23,
+      "FM": 31,
+      "CM": 46,
+      "WGM": 1,
+      "WIM": 8,
+      "WFM": 16,
+      "WCM": 19
+    },
+    {
+      "month": "DEC",
+      "total": 117,
+      "GM": 5,
+      "IM": 9,
+      "FM": 39,
+      "CM": 41,
+      "WGM": 3,
+      "WIM": 3,
+      "WFM": 0,
+      "WCM": 17
+    }
+  ],
+  "yearly_totals": {
+    "GM": 33,
+    "IM": 95,
+    "FM": 317,
+    "CM": 532,
+    "WGM": 5,
+    "WIM": 42,
+    "WFM": 107,
+    "WCM": 124
+  },
+  "total": 1255
+}
