@@ -1,0 +1,30 @@
+2026-01-31 15:37:17,873 - INFO - ============================================================
+2026-01-31 15:37:17,873 - INFO - FIDE Data Update Process Started
+2026-01-31 15:37:17,873 - INFO - ============================================================
+2026-01-31 15:37:17,873 - INFO - Downloading FIDE data from https://ratings.fide.com/download/standard_rating_list_xml.zip
+2026-01-31 15:37:19,529 - INFO - Downloaded 13415888 bytes
+2026-01-31 15:37:19,855 - INFO - Extracted XML file: temp/standard_rating_list.xml
+2026-01-31 15:37:20,102 - INFO - New data detected or first run
+2026-01-31 15:37:20,102 - INFO - Parsing XML data...
+2026-01-31 15:37:25,329 - INFO - Parsed 531422 total players, kept 23865 titled players
+2026-01-31 15:37:25,484 - INFO - Aggregating data by country...
+2026-01-31 15:37:25,496 - INFO - Aggregated data for 196 countries
+2026-01-31 15:37:25,496 - INFO - Generating JSON output...
+2026-01-31 15:37:25,497 - INFO - Tracking monthly changes...
+2026-01-31 15:37:25,498 - INFO - NEW COUNTRY with titled players: NON
+2026-01-31 15:37:25,498 - INFO - NEW COUNTRY with titled players: SSD
+2026-01-31 15:37:25,499 - INFO - Monthly changes: +149, -36, net: 113
+2026-01-31 15:37:25,499 - INFO -   GM: +6, -4
+2026-01-31 15:37:25,499 - INFO -   IM: +7, -2
+2026-01-31 15:37:25,499 - INFO -   FM: +32, -4
+2026-01-31 15:37:25,499 - INFO -   CM: +56, -9
+2026-01-31 15:37:25,499 - INFO -   WIM: +11, -1
+2026-01-31 15:37:25,499 - INFO -   WFM: +19, -7
+2026-01-31 15:37:25,499 - INFO -   WCM: +18, -9
+2026-01-31 15:37:25,499 - INFO - Tracking new GMs and WGMs...
+2026-01-31 15:37:25,505 - INFO - Total worldwide: 1879 GMs, 339 WGMs
+2026-01-31 15:37:25,511 - INFO - JSON file saved successfully: titled_players_by_country.json
+2026-01-31 15:37:25,512 - INFO - Metadata saved: January 31, 2026
+2026-01-31 15:37:25,512 - INFO - ============================================================
+2026-01-31 15:37:25,512 - INFO - FIDE Data Update Process Completed Successfully!
+2026-01-31 15:37:25,512 - INFO - ============================================================

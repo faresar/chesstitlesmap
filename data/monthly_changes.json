@@ -1,0 +1,48 @@
+{
+  "2026-01": {
+    "date": "2026-01-31",
+    "added": 149,
+    "removed": 36,
+    "by_title": {
+      "GM": {
+        "added": 6,
+        "removed": 4
+      },
+      "IM": {
+        "added": 7,
+        "removed": 2
+      },
+      "FM": {
+        "added": 32,
+        "removed": 4
+      },
+      "CM": {
+        "added": 56,
+        "removed": 9
+      },
+      "WGM": {
+        "added": 0,
+        "removed": 0
+      },
+      "WIM": {
+        "added": 11,
+        "removed": 1
+      },
+      "WFM": {
+        "added": 19,
+        "removed": 7
+      },
+      "WCM": {
+        "added": 18,
+        "removed": 9
+      }
+    },
+    "new_countries": [
+      "NON",
+      "SSD"
+    ],
+    "removed_countries": [],
+    "total_changes": 185,
+    "net_change": 113
+  }
+}
