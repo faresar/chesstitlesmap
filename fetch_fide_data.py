@@ -1,574 +1,300 @@
 #!/usr/bin/env python3
 """
-FIDE Chess Titles Data Fetcher and Processor - FINAL VERSION with Dates
-Tracks GM/WGM additions with dates for future AI article generation
+FIDE Chess Titles Data Fetcher
+Downloads and processes FIDE rating data to track titled players by country.
+Includes rank tracking, monthly changes, and auto-update metadata.
 """
 
+import requests
+import zipfile
+import io
 import xml.etree.ElementTree as ET
 import json
-import hashlib
 import logging
-import urllib.request
-import zipfile
+import os
 from datetime import datetime
 from collections import defaultdict
-import os
-import sys
 
-# Configure logging
+# Setup logging
+log_dir = 'logs'
+os.makedirs(log_dir, exist_ok=True)
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('logs/fide_update.log', encoding='utf-8'),
-        logging.StreamHandler(sys.stdout)
+        logging.FileHandler(f'{log_dir}/fide_update.log'),
+        logging.StreamHandler()
     ]
 )
 
-logger = logging.getLogger(__name__)
+def download_fide_data():
+    """Download and extract FIDE rating XML data"""
+    url = 'https://ratings.fide.com/download/standard_rating_list_xml.zip'
+    logging.info("="*60)
+    logging.info("FIDE Data Update Process Started")
+    logging.info("="*60)
+    logging.info(f"Downloading FIDE data from {url}")
 
-# FIDE download URL
-FIDE_URL = "https://ratings.fide.com/download/standard_rating_list_xml.zip"
+    response = requests.get(url, timeout=30)
+    response.raise_for_status()
+    logging.info(f"Downloaded {len(response.content)} bytes")
 
-# Valid titles (excluding WH as per your requirements)
-VALID_TITLES = ['GM', 'IM', 'FM', 'CM', 'WGM', 'WIM', 'WFM', 'WCM']
+    with zipfile.ZipFile(io.BytesIO(response.content)) as zip_file:
+        xml_filename = zip_file.namelist()[0]
+        os.makedirs('temp', exist_ok=True)
+        zip_file.extractall('temp')
+        xml_path = f'temp/{xml_filename}'
+        logging.info(f"Extracted XML file: {xml_path}")
+        return xml_path
 
-class FIDEDataProcessor:
-    def __init__(self):
-        self.filtered_data = []
-        self.country_data = defaultdict(lambda: {
-            'Active': {title: 0 for title in VALID_TITLES},
-            'Inactive': {title: 0 for title in VALID_TITLES},
-            'Total': {title: 0 for title in VALID_TITLES}
+def load_previous_data():
+    """Load previous data for comparison"""
+    try:
+        with open('titled_players_by_country.json', 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            previous_data = {item['Country']: item for item in data['titled_players_by_country']}
+            metadata = data.get('metadata', {})
+            logging.info("Loaded previous data for comparison")
+            return previous_data, metadata
+    except FileNotFoundError:
+        logging.info("No previous data found - this is the first run")
+        return {}, {}
+
+def parse_xml_data(xml_path, previous_data):
+    """Parse XML and extract titled players data with change tracking"""
+    logging.info("Parsing XML data...")
+    tree = ET.parse(xml_path)
+    root = tree.getroot()
+
+    country_data = defaultdict(lambda: {
+        'Total': {'GM': 0, 'IM': 0, 'FM': 0, 'CM': 0, 'WGM': 0, 'WIM': 0, 'WFM': 0, 'WCM': 0},
+        'Active': {'GM': 0, 'IM': 0, 'FM': 0, 'CM': 0, 'WGM': 0, 'WIM': 0, 'WFM': 0, 'WCM': 0},
+        'Inactive': {'GM': 0, 'IM': 0, 'FM': 0, 'CM': 0, 'WGM': 0, 'WIM': 0, 'WFM': 0, 'WCM': 0}
+    })
+
+    new_gms = []
+    new_wgms = []
+    title_changes = defaultdict(lambda: {'added': 0, 'removed': 0})
+
+    total_players = 0
+    titled_players = 0
+
+    for player in root.findall('player'):
+        total_players += 1
+        title = player.findtext('title', '').strip()
+        country = player.findtext('country', 'UNK').strip()
+        flag = player.findtext('flag', 'i').strip()
+        name = player.findtext('name', '').strip()
+
+        # Skip players without titles
+        if not title or title not in ['GM', 'IM', 'FM', 'CM', 'WGM', 'WIM', 'WFM', 'WCM']:
+            continue
+
+        titled_players += 1
+
+        # Determine if player is active or inactive
+        is_active = (flag == 'i')
+
+        # Update country totals
+        country_data[country]['Total'][title] += 1
+        if is_active:
+            country_data[country]['Inactive'][title] += 1
+        else:
+            country_data[country]['Active'][title] += 1
+
+        # Track new GMs and WGMs
+        if title == 'GM':
+            # Check if this GM is new
+            if country not in previous_data or previous_data[country]['Total']['GM'] < country_data[country]['Total']['GM']:
+                new_gms.append({'name': name, 'country': country})
+
+        if title == 'WGM':
+            if country not in previous_data or previous_data[country]['Total']['WGM'] < country_data[country]['Total']['WGM']:
+                new_wgms.append({'name': name, 'country': country})
+
+    # Calculate changes for each title
+    for country in country_data.keys():
+        for title in ['GM', 'IM', 'FM', 'CM', 'WGM', 'WIM', 'WFM', 'WCM']:
+            new_count = country_data[country]['Total'][title]
+            old_count = previous_data.get(country, {}).get('Total', {}).get(title, 0)
+            diff = new_count - old_count
+            if diff > 0:
+                title_changes[title]['added'] += diff
+            elif diff < 0:
+                title_changes[title]['removed'] += abs(diff)
+
+    logging.info(f"Parsed {total_players} total players, kept {titled_players} titled players")
+
+    return country_data, title_changes, new_gms, new_wgms
+
+def calculate_rankings(country_data):
+    """Calculate rankings for Open and Women categories"""
+    men_ranking = []
+    women_ranking = []
+
+    for country, data in country_data.items():
+        total = data['Total']
+        men_ranking.append({
+            'country': country,
+            'GM': total['GM'],
+            'IM': total['IM'],
+            'FM': total['FM'],
+            'CM': total['CM']
+        })
+        women_ranking.append({
+            'country': country,
+            'WGM': total['WGM'],
+            'WIM': total['WIM'],
+            'WFM': total['WFM'],
+            'WCM': total['WCM']
         })
 
-    def download_fide_data(self):
-        """Download FIDE XML data"""
-        try:
-            logger.info(f"Downloading FIDE data from {FIDE_URL}")
-
-            os.makedirs('temp', exist_ok=True)
-
-            req = urllib.request.Request(FIDE_URL)
-            req.add_header('User-Agent', 'Mozilla/5.0 (ChessTitlesMap Bot)')
-
-            with urllib.request.urlopen(req, timeout=300) as response:
-                zip_data = response.read()
-
-            zip_path = 'temp/fide_data.zip'
-            with open(zip_path, 'wb') as f:
-                f.write(zip_data)
-
-            logger.info(f"Downloaded {len(zip_data)} bytes")
-
-            # Extract XML from zip
-            with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-                files = [f for f in zip_ref.namelist() if f.endswith('.xml')]
-                if not files:
-                    raise Exception("No XML file found in zip")
-
-                xml_file = files[0]
-                zip_ref.extract(xml_file, 'temp')
-
-            xml_path = f'temp/{xml_file}'
-            logger.info(f"Extracted XML file: {xml_path}")
-
-            return xml_path
-
-        except Exception as e:
-            logger.error(f"Failed to download FIDE data: {e}")
-            raise
-
-    def calculate_file_hash(self, filepath):
-        """Calculate MD5 hash to detect changes"""
-        try:
-            with open(filepath, 'rb') as f:
-                return hashlib.md5(f.read()).hexdigest()
-        except Exception as e:
-            logger.error(f"Failed to calculate hash: {e}")
-            return None
-
-    def check_if_data_changed(self, xml_path):
-        """Check if data changed from last update"""
-        try:
-            current_hash = self.calculate_file_hash(xml_path)
-
-            if os.path.exists('data/metadata.json'):
-                with open('data/metadata.json', 'r') as f:
-                    metadata = json.load(f)
-                    last_hash = metadata.get('file_hash')
-
-                    if current_hash == last_hash:
-                        logger.info("No changes detected in FIDE data (same file hash)")
-                        return False, current_hash
-
-            logger.info("New data detected or first run")
-            return True, current_hash
-
-        except Exception as e:
-            logger.warning(f"Could not check previous hash: {e}. Proceeding with update.")
-            return True, current_hash
-
-    def parse_xml_data(self, xml_path):
-        """Parse FIDE XML and filter data according to your specifications"""
-        try:
-            logger.info("Parsing XML data...")
-
-            tree = ET.parse(xml_path)
-            root = tree.getroot()
-
-            total_players = 0
-            filtered_players = 0
-
-            for player in root.findall('player'):
-                total_players += 1
-
-                # Extract only the fields we need (as per your filters)
-                fideid = self.get_text(player, 'fideid')
-                name = self.get_text(player, 'name')
-                country = self.get_text(player, 'country')
-                title = self.get_text(player, 'title')  # ONLY use title tag
-                flag = self.get_text(player, 'flag')
-
-                # Note: We ignore these fields as per your requirements:
-                # - w_title (redundant)
-                # - o_title (not needed)
-                # - foa_title (not needed)
-                # - games (not needed)
-                # - k (not needed)
-
-                # Filter 1: Remove records where country equals "Non" or empty
-                if country == "Non" or not country:
-                    continue
-
-                # Filter 2: Remove WH title
-                if title == 'WH':
-                    continue
-
-                # Filter 3: Only keep titled players (non-empty title)
-                if not title or title not in VALID_TITLES:
-                    continue
-
-                # Filter 4: Clean flag - erase 'w', replace 'wi' with 'i'
-                if flag:
-                    flag = flag.replace('wi', 'i').replace('w', '')
-
-                # Determine if player is active or inactive
-                # 'i' flag means inactive
-                is_active = 'i' not in flag
-
-                # Store filtered player data
-                self.filtered_data.append({
-                    'fideid': fideid,
-                    'name': name,
-                    'country': country,
-                    'title': title,
-                    'is_active': is_active
-                })
-
-                filtered_players += 1
-
-            logger.info(f"Parsed {total_players} total players, kept {filtered_players} titled players")
-            return True
-
-        except Exception as e:
-            logger.error(f"Failed to parse XML: {e}")
-            import traceback
-            traceback.print_exc()
-            raise
-
-    def get_text(self, element, tag_name):
-        """Safely get text content from XML element"""
-        child = element.find(tag_name)
-        if child is not None and child.text:
-            return child.text.strip()
-        return ''
-
-    def aggregate_by_country(self):
-        """Aggregate player counts by country"""
-        try:
-            logger.info("Aggregating data by country...")
-
-            for player in self.filtered_data:
-                country = player['country']
-                title = player['title']
-                is_active = player['is_active']
-
-                # Increment Total
-                self.country_data[country]['Total'][title] += 1
-
-                # Increment Active or Inactive
-                if is_active:
-                    self.country_data[country]['Active'][title] += 1
-                else:
-                    self.country_data[country]['Inactive'][title] += 1
-
-            logger.info(f"Aggregated data for {len(self.country_data)} countries")
-            return True
-
-        except Exception as e:
-            logger.error(f"Failed to aggregate data: {e}")
-            raise
-
-    def remove_countries_with_no_titles(self):
-        """Remove countries that have ZERO titled players"""
-        try:
-            countries_to_remove = []
-
-            for country, data in self.country_data.items():
-                # Check if country has ANY titled players
-                total_count = sum(data['Total'].values())
-
-                if total_count == 0:
-                    countries_to_remove.append(country)
-
-            for country in countries_to_remove:
-                del self.country_data[country]
-                logger.info(f"Removed country with no titles: {country}")
-
-            if countries_to_remove:
-                logger.info(f"Removed {len(countries_to_remove)} countries with no titled players")
-
-            return True
-
-        except Exception as e:
-            logger.error(f"Failed to remove empty countries: {e}")
-            return False
-
-    def generate_json_output(self):
-        """Generate JSON matching your exact format"""
-        try:
-            logger.info("Generating JSON output...")
-
-            output = {
-                "titled_players_by_country": []
-            }
-
-            # Sort countries alphabetically
-            for country in sorted(self.country_data.keys()):
-                data = self.country_data[country]
-
-                country_entry = {
-                    "Country": country,
-                    "Active": {k: v for k, v in data['Active'].items()},
-                    "Inactive": {k: v for k, v in data['Inactive'].items()},
-                    "Total": {k: v for k, v in data['Total'].items()}
-                }
-
-                output["titled_players_by_country"].append(country_entry)
-
-            return output
-
-        except Exception as e:
-            logger.error(f"Failed to generate JSON: {e}")
-            raise
-
-    def track_monthly_changes(self, new_data):
-        """Track title additions/removals and new/removed countries"""
-        try:
-            logger.info("Tracking monthly changes...")
-
-            os.makedirs('data', exist_ok=True)
-
-            current_month = datetime.now().strftime('%Y-%m')
-            current_date = datetime.now().strftime('%Y-%m-%d')
-
-            # Load existing monthly changes
-            monthly_changes_path = 'data/monthly_changes.json'
-            if os.path.exists(monthly_changes_path):
-                with open(monthly_changes_path, 'r') as f:
-                    monthly_changes = json.load(f)
-            else:
-                monthly_changes = {}
-
-            # Load previous data for comparison
-            if os.path.exists('titled_players_by_country.json'):
-                with open('titled_players_by_country.json', 'r') as f:
-                    old_data_raw = json.load(f)
-
-                # Convert old data to dict
-                old_data = {}
-                for entry in old_data_raw.get('titled_players_by_country', []):
-                    old_data[entry['Country']] = entry
-
-                # Calculate changes
-                changes = {
-                    'date': current_date,
-                    'added': 0,
-                    'removed': 0,
-                    'by_title': {title: {'added': 0, 'removed': 0} for title in VALID_TITLES},
-                    'new_countries': [],
-                    'removed_countries': []
-                }
-
-                # Check for new countries
-                new_countries = set(self.country_data.keys()) - set(old_data.keys())
-                for country in sorted(new_countries):
-                    changes['new_countries'].append(country)
-                    logger.info(f"NEW COUNTRY with titled players: {country}")
-
-                # Check for removed countries
-                removed_countries = set(old_data.keys()) - set(self.country_data.keys())
-                for country in sorted(removed_countries):
-                    changes['removed_countries'].append(country)
-                    logger.info(f"REMOVED COUNTRY (no more titled players): {country}")
-
-                # Compare Total counts
-                all_countries = set(old_data.keys()) | set(self.country_data.keys())
-
-                for country in all_countries:
-                    for title in VALID_TITLES:
-                        old_count = old_data.get(country, {}).get('Total', {}).get(title, 0)
-                        new_count = self.country_data.get(country, {}).get('Total', {}).get(title, 0)
-
-                        diff = new_count - old_count
-
-                        if diff > 0:
-                            changes['added'] += diff
-                            changes['by_title'][title]['added'] += diff
-                        elif diff < 0:
-                            changes['removed'] += abs(diff)
-                            changes['by_title'][title]['removed'] += abs(diff)
-
-                changes['total_changes'] = changes['added'] + changes['removed']
-                changes['net_change'] = changes['added'] - changes['removed']
-
-                monthly_changes[current_month] = changes
-
-                # Save monthly changes
-                with open(monthly_changes_path, 'w') as f:
-                    json.dump(monthly_changes, f, indent=2)
-
-                logger.info(f"Monthly changes: +{changes['added']}, -{changes['removed']}, net: {changes['net_change']}")
-
-                # Log title-specific changes
-                for title in VALID_TITLES:
-                    added = changes['by_title'][title]['added']
-                    removed = changes['by_title'][title]['removed']
-                    if added > 0 or removed > 0:
-                        logger.info(f"  {title}: +{added}, -{removed}")
-
-            else:
-                logger.info("No previous data found for comparison (first run)")
-
-            return True
-
-        except Exception as e:
-            logger.error(f"Failed to track monthly changes: {e}")
-            return False
-
-    def track_new_gm_wgm(self):
-        """Track new GMs and WGMs with names and dates for AI article generation"""
-        try:
-            logger.info("Tracking new GMs and WGMs...")
-
-            current_month = datetime.now().strftime('%Y-%m')
-            current_date = datetime.now().strftime('%Y-%m-%d')
-            current_date_full = datetime.now().strftime('%B %d, %Y')
-
-            # Load existing GM/WGM history
-            gm_history_path = 'data/new_gm_wgm_history.json'
-            if os.path.exists(gm_history_path):
-                with open(gm_history_path, 'r') as f:
-                    gm_history = json.load(f)
-            else:
-                gm_history = {}
-
-            # Build current GM/WGM set with full player info
-            current_gms = {}  # fideid -> player info
-            current_wgms = {}
-
-            for player in self.filtered_data:
-                if player['title'] == 'GM':
-                    current_gms[player['fideid']] = {
-                        'name': player['name'],
-                        'country': player['country'],
-                        'fideid': player['fideid']
-                    }
-                elif player['title'] == 'WGM':
-                    current_wgms[player['fideid']] = {
-                        'name': player['name'],
-                        'country': player['country'],
-                        'fideid': player['fideid']
-                    }
-
-            # Load previous GM/WGM list
-            if os.path.exists('data/gm_wgm_list.json'):
-                with open('data/gm_wgm_list.json', 'r') as f:
-                    previous_list = json.load(f)
-                    previous_gms = set(previous_list.get('GM', []))
-                    previous_wgms = set(previous_list.get('WGM', []))
-
-                # Find NEW GMs and WGMs
-                new_gm_ids = set(current_gms.keys()) - previous_gms
-                new_wgm_ids = set(current_wgms.keys()) - previous_wgms
-
-                # Find REMOVED GMs and WGMs (those who lost their title)
-                removed_gm_ids = previous_gms - set(current_gms.keys())
-                removed_wgm_ids = previous_wgms - set(current_wgms.keys())
-
-                new_gms = []
-                new_wgms = []
-
-                for fideid in new_gm_ids:
-                    player_info = current_gms[fideid]
-                    player_info['date_added'] = current_date
-                    player_info['date_added_full'] = current_date_full
-                    new_gms.append(player_info)
-
-                for fideid in new_wgm_ids:
-                    player_info = current_wgms[fideid]
-                    player_info['date_added'] = current_date
-                    player_info['date_added_full'] = current_date_full
-                    new_wgms.append(player_info)
-
-                if new_gms or new_wgms or removed_gm_ids or removed_wgm_ids:
-                    gm_history[current_month] = {
-                        'date': current_date,
-                        'date_full': current_date_full,
-                        'GM': {
-                            'added': new_gms,
-                            'removed': list(removed_gm_ids) if removed_gm_ids else []
-                        },
-                        'WGM': {
-                            'added': new_wgms,
-                            'removed': list(removed_wgm_ids) if removed_wgm_ids else []
-                        }
-                    }
-
-                    logger.info(f"Found {len(new_gms)} new GMs and {len(new_wgms)} new WGMs")
-
-                    if removed_gm_ids:
-                        logger.info(f"Removed {len(removed_gm_ids)} GMs (title lost)")
-                    if removed_wgm_ids:
-                        logger.info(f"Removed {len(removed_wgm_ids)} WGMs (title lost)")
-
-                    # Log names of new GMs/WGMs
-                    for gm in new_gms:
-                        logger.info(f"  NEW GM: {gm['name']} ({gm['country']}) - Added: {current_date_full}")
-                    for wgm in new_wgms:
-                        logger.info(f"  NEW WGM: {wgm['name']} ({wgm['country']}) - Added: {current_date_full}")
-
-            # Save current GM/WGM list for next comparison
-            with open('data/gm_wgm_list.json', 'w') as f:
-                json.dump({
-                    'GM': list(current_gms.keys()), 
-                    'WGM': list(current_wgms.keys())
-                }, f)
-
-            # Save GM/WGM history
-            with open(gm_history_path, 'w') as f:
-                json.dump(gm_history, f, indent=2)
-
-            logger.info(f"Total worldwide: {len(current_gms)} GMs, {len(current_wgms)} WGMs")
-
-            return True
-
-        except Exception as e:
-            logger.error(f"Failed to track GM/WGM: {e}")
-            import traceback
-            traceback.print_exc()
-            return False
-
-    def save_metadata(self, file_hash):
-        """Save metadata with update date and file hash"""
-        try:
-            metadata = {
-                'last_updated': datetime.now().strftime('%B %d, %Y'),
-                'last_updated_iso': datetime.now().isoformat(),
-                'file_hash': file_hash
-            }
-
-            os.makedirs('data', exist_ok=True)
-
-            with open('data/metadata.json', 'w') as f:
-                json.dump(metadata, f, indent=2)
-
-            logger.info(f"Metadata saved: {metadata['last_updated']}")
-            return True
-
-        except Exception as e:
-            logger.error(f"Failed to save metadata: {e}")
-            return False
-
-    def save_json_file(self, output):
-        """Save the main JSON file"""
-        try:
-            with open('titled_players_by_country.json', 'w') as f:
-                json.dump(output, f, indent=2)
-
-            logger.info("JSON file saved successfully: titled_players_by_country.json")
-            return True
-
-        except Exception as e:
-            logger.error(f"Failed to save JSON file: {e}")
-            raise
-
+    # Sort men by GM, then IM, then FM, then CM
+    men_ranking.sort(key=lambda x: (x['GM'], x['IM'], x['FM'], x['CM']), reverse=True)
+
+    # Sort women by WGM, then WIM, then WFM, then WCM
+    women_ranking.sort(key=lambda x: (x['WGM'], x['WIM'], x['WFM'], x['WCM']), reverse=True)
+
+    # Create rank dictionaries
+    men_ranks = {item['country']: rank + 1 for rank, item in enumerate(men_ranking) if item['GM'] or item['IM'] or item['FM'] or item['CM']}
+    women_ranks = {item['country']: rank + 1 for rank, item in enumerate(women_ranking) if item['WGM'] or item['WIM'] or item['WFM'] or item['WCM']}
+
+    return {'men': men_ranks, 'women': women_ranks}
+
+def save_json_data(country_data, title_changes, new_gms, new_wgms, previous_metadata):
+    """Save data to JSON with metadata for auto-update and rank tracking"""
+    logging.info("Generating JSON output...")
+
+    output_data = []
+    for country, data in sorted(country_data.items()):
+        output_data.append({
+            'Country': country,
+            'Total': data['Total'],
+            'Active': data['Active'],
+            'Inactive': data['Inactive']
+        })
+
+    logging.info(f"Aggregated data for {len(output_data)} countries")
+
+    # Calculate current rankings
+    current_rankings = calculate_rankings(country_data)
+
+    # Get previous rankings from metadata
+    previous_rankings = previous_metadata.get('current_rankings', {'men': {}, 'women': {}})
+
+    # Track monthly changes
+    logging.info("Tracking monthly changes...")
+    current_month = datetime.now().strftime("%B")
+    monthly_changes_list = previous_metadata.get('monthly_changes', [])
+
+    # Calculate net changes
+    total_added = sum(title_changes[title]['added'] for title in title_changes)
+    total_removed = sum(title_changes[title]['removed'] for title in title_changes)
+    net_change = total_added - total_removed
+
+    # Check for new countries
+    previous_countries = set(previous_metadata.get('countries', []))
+    current_countries = set(country_data.keys())
+    new_countries = current_countries - previous_countries
+
+    for country in new_countries:
+        if country != 'UNK' and country != 'NON':  # Skip unknown/non-standard codes
+            logging.info(f"NEW COUNTRY with titled players: {country}")
+
+    # Add current month changes
+    monthly_change = {
+        'month': current_month.upper()[:3],
+        'changes': {
+            'total': net_change,
+            'GM': title_changes['GM']['added'] - title_changes['GM']['removed'],
+            'IM': title_changes['IM']['added'] - title_changes['IM']['removed'],
+            'FM': title_changes['FM']['added'] - title_changes['FM']['removed'],
+            'CM': title_changes['CM']['added'] - title_changes['CM']['removed'],
+            'WGM': title_changes['WGM']['added'] - title_changes['WGM']['removed'],
+            'WIM': title_changes['WIM']['added'] - title_changes['WIM']['removed'],
+            'WFM': title_changes['WFM']['added'] - title_changes['WFM']['removed'],
+            'WCM': title_changes['WCM']['added'] - title_changes['WCM']['removed']
+        }
+    }
+
+    # Update or append monthly changes
+    month_exists = False
+    for i, month_data in enumerate(monthly_changes_list):
+        if month_data['month'] == monthly_change['month']:
+            monthly_changes_list[i] = monthly_change
+            month_exists = True
+            break
+
+    if not month_exists:
+        monthly_changes_list.append(monthly_change)
+
+    logging.info(f"Monthly changes: +{total_added}, -{total_removed}, net: {net_change}")
+    for title in ['GM', 'IM', 'FM', 'CM', 'WIM', 'WFM', 'WCM']:
+        added = title_changes[title]['added']
+        removed = title_changes[title]['removed']
+        if added > 0 or removed > 0:
+            logging.info(f"  {title}: +{added}, -{removed}")
+
+    # Track new GMs and WGMs
+    logging.info("Tracking new GMs and WGMs...")
+    total_gms = sum(data['Total']['GM'] for data in country_data.values())
+    total_wgms = sum(data['Total']['WGM'] for data in country_data.values())
+    logging.info(f"Total worldwide: {total_gms} GMs, {total_wgms} WGMs")
+
+    # Create metadata
+    current_date = datetime.now().strftime("%B %d, %Y")
+    metadata = {
+        'last_updated': current_date,
+        'current_rankings': current_rankings,
+        'previous_rankings': previous_rankings,  # Store for next comparison
+        'monthly_changes': monthly_changes_list,
+        'countries': list(current_countries),
+        'new_gms': new_gms[:10] if new_gms else [],  # Limit to 10 most recent
+        'new_wgms': new_wgms[:10] if new_wgms else [],
+        'total_gms': total_gms,
+        'total_wgms': total_wgms
+    }
+
+    final_output = {
+        'titled_players_by_country': output_data,
+        'metadata': metadata
+    }
+
+    # Save to JSON file
+    with open('titled_players_by_country.json', 'w', encoding='utf-8') as f:
+        json.dump(final_output, f, indent=2, ensure_ascii=False)
+
+    logging.info("JSON file saved successfully: titled_players_by_country.json")
+    logging.info(f"Metadata saved: {current_date}")
+
+    return current_date
 
 def main():
     """Main execution function"""
     try:
-        logger.info("=" * 60)
-        logger.info("FIDE Data Update Process Started")
-        logger.info("=" * 60)
+        # Load previous data
+        previous_data, previous_metadata = load_previous_data()
 
-        # Create necessary directories
-        os.makedirs('logs', exist_ok=True)
-        os.makedirs('data', exist_ok=True)
-        os.makedirs('temp', exist_ok=True)
+        # Check if we have new data (compare with last update)
+        # For now, always process - in production you might check dates
+        logging.info("New data detected or first run")
 
-        processor = FIDEDataProcessor()
+        # Download and extract data
+        xml_path = download_fide_data()
 
-        # Step 1: Download FIDE XML
-        xml_path = processor.download_fide_data()
+        # Parse XML data
+        country_data, title_changes, new_gms, new_wgms = parse_xml_data(xml_path, previous_data)
 
-        # Step 2: Check if data changed
-        data_changed, file_hash = processor.check_if_data_changed(xml_path)
+        # Save JSON with metadata
+        last_updated = save_json_data(country_data, title_changes, new_gms, new_wgms, previous_metadata)
 
-        if not data_changed:
-            logger.info("No update needed. Exiting.")
-            return 0
-
-        # Step 3: Parse XML and filter
-        processor.parse_xml_data(xml_path)
-
-        # Step 4: Aggregate by country
-        processor.aggregate_by_country()
-
-        # Step 5: Remove countries with no titles
-        processor.remove_countries_with_no_titles()
-
-        # Step 6: Generate JSON output
-        output = processor.generate_json_output()
-
-        # Step 7: Track monthly changes (including new/removed countries)
-        processor.track_monthly_changes(output)
-
-        # Step 8: Track new GMs/WGMs with dates
-        processor.track_new_gm_wgm()
-
-        # Step 9: Save JSON file
-        processor.save_json_file(output)
-
-        # Step 10: Save metadata
-        processor.save_metadata(file_hash)
-
-        logger.info("=" * 60)
-        logger.info("FIDE Data Update Process Completed Successfully!")
-        logger.info("=" * 60)
-
-        return 0
+        logging.info("="*60)
+        logging.info("FIDE Data Update Process Completed Successfully!")
+        logging.info("="*60)
 
     except Exception as e:
-        logger.error(f"FATAL ERROR: {e}")
-        import traceback
-        traceback.print_exc()
-        logger.error("=" * 60)
-        logger.error("FIDE Data Update Process FAILED")
-        logger.error("=" * 60)
-        return 1
-
+        logging.error(f"Error during update process: {e}", exc_info=True)
+        raise
 
 if __name__ == "__main__":
-    exit_code = main()
-    sys.exit(exit_code)
+    main()
