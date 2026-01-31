@@ -1,0 +1,79 @@
+name: Update FIDE Chess Data
+
+# Run daily at 3 AM UTC (4 AM CET / 5 AM CEST)
+# Also allow manual triggering
+on:
+  schedule:
+    - cron: '0 3 * * *'  # Daily at 3 AM UTC
+  workflow_dispatch:  # Manual trigger button in GitHub UI
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: Development-Branch
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Create required directories
+        run: |
+          mkdir -p logs
+          mkdir -p data
+          mkdir -p temp
+
+      - name: Run FIDE data fetcher
+        run: |
+          python fetch_fide_data.py
+        continue-on-error: false
+
+      - name: Check if data changed
+        id: check_changes
+        run: |
+          if git diff --quiet titled_players_by_country.json; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No data changes detected"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Data changes detected"
+          fi
+
+      - name: Commit and push changes
+        if: steps.check_changes.outputs.changed == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "FIDE Data Bot"
+          git add titled_players_by_country.json
+          git add data/
+          git add logs/fide_update.log
+          git commit -m "Auto-update: FIDE chess titles data ($(date '+%Y-%m-%d'))"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload logs as artifact
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: fide-update-logs
+          path: logs/fide_update.log
+          retention-days: 30
+
+      - name: Notify on failure
+        if: failure()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '🚨 FIDE Data Update Failed - ' + new Date().toISOString().split('T')[0],
+              body: 'The automated FIDE data update job failed. Please check the [workflow logs](' + context.payload.repository.html_url + '/actions/runs/' + context.runId + ') for details.',
+              labels: ['bug', 'automated']
+            })
