@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
- 
-  
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>ChessTitlesMap.com | Chess titles map and statistics</title>
@@ -11,20 +9,20 @@
   <meta property="og:title" content="Chess Titles by Country | ChessTitlesMap.com">
   <meta property="og:description" content="Explore chess titles by country and discover national rankings including Grand Masters, International Masters Fide Master Candidate Mastersand more on ChessTitlesMap.com.">
   <meta property="og:type" content="website">
-  
+
   <!-- favicon section -->
   <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="shortcut icon" href="/favicon.ico" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <link rel="manifest" href="/site.webmanifest" />
-  
+
   <!-- External CSS and JS libraries -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://unpkg.com/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
-  
+
   <style>
     /* General body styling */
     body {
@@ -43,15 +41,16 @@
     .navbar-brand:hover {
       text-decoration: none;
     }
-    /* Last updated text styling */
+    /* Last updated text styling - BLUE COLOR */
     .last-updated {
       font-size: 14px;
-      color: #666;
+      color: #007bff;
       text-align: center;
       margin: 10px 0;
+      font-weight: 500;
     }
     .last-updated span {
-      font-weight: normal;
+      font-weight: 600;
     }
     /* Container for the map with border and background */
     #map-container {
@@ -71,7 +70,7 @@
       aspect-ratio: 1010/666;
       position: relative;
     }
-    /* Zoom button controls styling; buttons are now slightly bigger and text in blue */
+    /* Zoom button controls */
     .zoom-controls {
       position: absolute;
       top: 10px;
@@ -118,27 +117,29 @@
     path.highlighted {
       fill: #b05a45;
     }
-    /* ---- Site‐description card (same look as World Stats) ---- */
+    /* Site description card */
     .site-description-card{
-     text-align:center;
-      background:rgba(255,255,255,0.9);      /* same translucent white */
-      padding:10px;
-      border-radius:5px;
-      box-shadow:0 3px 15px rgba(0,0,0,.2);  /* same shadow */
-      font-family:'Roboto',sans-serif;
-      font-size:16px;
-      font-weight:bold;                      /* bold black text */
-      color:#000;
-      max-width:1010px;
-      margin:10px auto;                      /* 10 px gap above/below */
+      text-align: center;
+      background: linear-gradient(135deg, rgba(74, 144, 226, 0.1) 0%, rgba(53, 122, 189, 0.1) 100%);
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 3px 15px rgba(0,0,0,.15);
+      font-family: 'Roboto', sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      color: #2c3e50;
+      max-width: 1010px;
+      margin: 15px auto;
+      border-left: 4px solid #4a90e2;
+      line-height: 1.6;
     }
     @media(max-width:600px){
       .site-description-card{
-        font-size:14px;                      /* scale down on phones */
-        padding:8px;
+        font-size: 14px;
+        padding: 12px 15px;
       }
     }
-    /* World stats box styling on top of the map */
+    /* World stats - clean design */
     .world-stats {
       text-align: center;
       background: rgba(0,0,0,0.7);
@@ -150,11 +151,21 @@
       width: 100%;
       box-sizing: border-box;
     }
+    .world-stats .stats-title {
+      font-weight: bold;
+      color: #ffd700;
+      text-decoration: underline;
+    }
+    .world-stats .total-inline {
+      color: white;
+      font-weight: normal;
+    }
     .world-stats b {
       font-weight: bold;
+      color: #ffd700;
     }
-    .world-stats u {
-      text-decoration: underline;
+    .world-stats span {
+      color: white;
     }
     @media (max-width: 600px) {
       .world-stats {
@@ -236,23 +247,175 @@
     .highlight-titles-buttons label input {
       display: none;
     }
-    /* New Title Additions layer styling */
-    .title-additions-layer {
-      background: rgba(0,0,0,0.7);
-      border: 1px solid black;
-      padding: 10px;
+
+    /* Ad placeholder section */
+    .ad-placeholder {
+      text-align: center;
+      background: rgba(240,240,240,0.9);
+      padding: 15px;
+      border-radius: 5px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.2);
+      margin-top: 10px;
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #999;
+      font-size: 14px;
+      border: 2px dashed #ccc;
+    }
+
+    /* Title Additions Section - BLUE THEME */
+    .title-additions-section {
+      background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+      border-radius: 8px;
+      padding: 20px;
       color: white;
       font-family: 'Roboto', sans-serif;
-      font-size: 0.9rem;
       max-width: 1010px;
       margin: 10px auto;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .title-additions-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .title-additions-header h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .title-icon {
+      font-size: 1.2rem;
+    }
+    .year-selector {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 6px;
+      padding: 6px 12px;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      background-size: 16px;
+      padding-right: 32px;
+    }
+    .year-selector:hover {
+      background: rgba(255,255,255,0.3);
+    }
+    .year-selector option {
+      background: #357abd;
+      color: white;
+    }
+    .year-totals {
+      background: rgba(255,255,255,0.15);
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .year-totals .total-item {
+      text-align: center;
+      min-width: 70px;
+    }
+    .year-totals .total-number {
+      font-size: 1.8rem;
+      font-weight: 700;
+      display: block;
+      color: #ffd700;
+    }
+    .year-totals .total-label {
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+    .months-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 12px;
+    }
+    .month-card {
+      background: rgba(255,255,255,0.15);
+      border-radius: 6px;
+      padding: 12px;
+      transition: all 0.3s;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .month-card:hover {
+      background: rgba(255,255,255,0.25);
+      transform: translateY(-2px);
+    }
+    .month-card .month-name {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #ffd700;
+      margin-bottom: 8px;
+    }
+    .month-card .month-total {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+    /* UPDATED: Left-aligned numbers with fixed width for consistency */
+    .month-card .titles-breakdown {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      font-size: 0.85rem;
+    }
+    .month-card .title-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .month-card .title-item .title-label {
+      font-weight: 500;
+      min-width: 35px;
+    }
+    .month-card .title-item .title-value {
+      font-weight: 700;
       text-align: left;
-      box-sizing: border-box;
+      min-width: 32px;
     }
-    .title-additions-layer b {
-      color: #FFFFFF;
+    .month-card .title-item .title-value.positive {
+      color: #4ade80;
     }
-    /* Top countries tables container styling */
+    .month-card .title-item .title-value.negative {
+      color: #fca5a5;
+    }
+
+    @media (max-width: 600px) {
+      .title-additions-section {
+        padding: 15px;
+      }
+      .title-additions-header h3 {
+        font-size: 1rem;
+      }
+      .months-grid {
+        grid-template-columns: 1fr;
+      }
+      .year-totals .total-number {
+        font-size: 1.5rem;
+      }
+    }
+
+    /* Top countries tables with rank tracking */
     .top-countries-container {
       display: flex;
       flex-wrap: wrap;
@@ -264,31 +427,85 @@
     .top-countries {
       flex: 1 1 45%;
       background: rgba(255,255,255,0.9);
-      padding: 10px;
-      border-radius: 5px;
-      box-shadow: 0 3px 15px rgba(0,0,0,0.2);
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
     }
     .top-countries h3 {
       text-align: center;
-      font-weight: bold;
-      margin-bottom: 10px;
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: #333;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .top-countries h3 .chess-icon {
+      font-size: 1.5rem;
     }
     .top-countries table {
       width: 100%;
-      border-collapse: collapse;
+      border-collapse: separate;
+      border-spacing: 0;
     }
-    .top-countries th, .top-countries td {
-      border: 1px solid #ccc;
-      padding: 5px;
+    .top-countries thead {
+      background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+      color: white;
+    }
+    .top-countries th {
+      padding: 10px 5px;
       text-align: center;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border: none;
+    }
+    .top-countries th:first-child {
+      border-top-left-radius: 6px;
+    }
+    .top-countries th:last-child {
+      border-top-right-radius: 6px;
+    }
+    .top-countries td {
+      border-bottom: 1px solid #e5e7eb;
+      padding: 8px 5px;
+      text-align: center;
+      font-size: 0.85rem;
+    }
+    .top-countries tbody tr:hover {
+      background-color: #f3f4f6;
+    }
+    .top-countries tbody tr:last-child td {
+      border-bottom: none;
+    }
+    .rank-cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+    .rank-arrow {
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+    .rank-arrow.up {
+      color: #22c55e;
+    }
+    .rank-arrow.down {
+      color: #ef4444;
+    }
+    .rank-arrow.new {
+      color: #3b82f6;
+      font-size: 0.7rem;
     }
     .flag {
-      height: 1em;
+      height: 1.2em;
       width: auto;
       vertical-align: middle;
       margin-right: 5px;
     }
-   
+
     /* Info-box styling for country details on hover/touch */
     .info-box {
       position: fixed;
@@ -332,10 +549,10 @@
   </style>
 </head>
 <body>
-  <!-- Navigation Bar with removed 'Feedback' link -->
+  <!-- Navigation Bar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-      <a class="navbar-brand" href="index.html"><h1 style="display:inline; font-size:inherit; font-weight:inherit; margin:0;">World FIDE Chess titles</h1></a>
+      <a class="navbar-brand" href="index.html"><h1 style="display:inline; font-size:inherit; font-weight:inherit; margin:0;">World FIDE Chess Titles</h1></a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
               aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -352,26 +569,21 @@
       </div>
     </div>
   </nav>
-  
-  <!-- Last Updated information -->
+
   <div class="last-updated">
-    Last updated: <span>January 3rd, 2026</span>
+    Last updated: <span id="last-updated-date">January 31, 2026</span>
   </div>
 
-  <!-- website description -->
-    <div class="site-description-card">
-  <p>
-    Check out the number of titled chess players in each country and see which
-    nations lead the world in Grandmasters, International Masters and other
-    FIDE titles.
-  </p>
-</div>
-  
+  <div class="site-description-card">
+    <p style="margin: 0;">
+      Check out the number of titled chess players in each country and explore which nations lead the world in Grandmasters, International Masters and other FIDE titles.
+    </p>
+  </div>
+
   <!-- Map Container showing world stats and SVG map -->
   <div id="map-container">
-    
     <div class="world-stats" id="world-stats">
-      <div><u><b>World Stats</b></u></div>
+      <div><span class="stats-title">World Stats:</span> <span class="total-inline"><span id="total-count-inline">0</span> total titles</span></div>
       <div>
          <b>GM:</b> <span id="gm-count">0</span>&emsp;
          <b>IM:</b> <span id="im-count">0</span>&emsp;
@@ -386,17 +598,14 @@
       </div>
     </div>
     <div id="svg-container">
-      <!-- Zoom controls overlaying the SVG -->
       <div class="zoom-controls">
          <button id="zoom-in">+</button>
          <button id="zoom-out">-</button>
          <button id="zoom-reset">R</button>
       </div>
-      <!-- The world map SVG will be loaded here -->
     </div>
   </div>
-  
-  <!-- Filter Layers and Top Countries Tables -->
+
   <div class="filter-wrapper">
     <div class="activity-filter">
       <label>Player Activity Filter:</label>
@@ -404,7 +613,7 @@
       <button id="filter-active" title="Players who have played rated tournament recently">Active</button>
       <button id="filter-inactive" title="Inactive players that have not played rated tournament recently">Inactive</button>
     </div>
-    
+
     <div class="highlight-titles">
       <label>Highlight Titles on the Map:</label>
       <div class="highlight-titles-buttons">
@@ -437,48 +646,31 @@
         </label>
       </div>
     </div>
-    
-    <!-- New Title Additions Layer -->
-    <div class="title-additions-layer">
-      <b>2025 title additions:</b><br>
-      <b style="color: yellow;">FEB:</b> &nbsp;&nbsp;<b>GM:</b> 0&nbsp;&nbsp;<b>IM:</b> 1&nbsp;&nbsp;<b>FM:</b> 30&nbsp;&nbsp;<b>CM:</b> 64&nbsp;&nbsp;
-      <b>WGM:</b> 0&nbsp;&nbsp;<b>WIM:</b> 1&nbsp;&nbsp;<b>WFM:</b> 17&nbsp;&nbsp;<b>WCM:</b> 18
-      <br>
-      <b style="color: yellow;">MAR:</b> &nbsp;&nbsp;<b>GM:</b> 0&nbsp;&nbsp;<b>IM:</b> 0&nbsp;&nbsp;<b>FM:</b> 34&nbsp;&nbsp;<b>CM:</b> 42&nbsp;&nbsp;
-      <b>WGM:</b> 1&nbsp;&nbsp;<b>WIM:</b> 0&nbsp;&nbsp;<b>WFM:</b> 14&nbsp;&nbsp;<b>WCM:</b> 6
-       <br>
-      <b style="color: yellow;">Apr:</b> &nbsp;&nbsp;<b>GM:</b> 12&nbsp;&nbsp;<b>IM:</b> 31&nbsp;&nbsp;<b>FM:</b> -13&nbsp;&nbsp;<b>CM:</b> 60&nbsp;&nbsp;
-      <b>WGM:</b> 0&nbsp;&nbsp;<b>WIM:</b> 4&nbsp;&nbsp;<b>WFM:</b> 6&nbsp;&nbsp;<b>WCM:</b> 10
-      <br>
-      <b style="color: yellow;">May:</b> &nbsp;&nbsp;<b>GM:</b> 0&nbsp;&nbsp;<b>IM:</b> 0&nbsp;&nbsp;<b>FM:</b> 49&nbsp;&nbsp;<b>CM:</b> 42&nbsp;&nbsp;
-      <b>WGM:</b> 0&nbsp;&nbsp;<b>WIM:</b> 1&nbsp;&nbsp;<b>WFM:</b> 7&nbsp;&nbsp;<b>WCM:</b> 12
-      <br>
-      <b style="color: yellow;">Jun:</b> &nbsp;&nbsp;<b>GM:</b> -4&nbsp;&nbsp;<b>IM:</b> 1&nbsp;&nbsp;<b>FM:</b> 25&nbsp;&nbsp;<b>CM:</b> 43&nbsp;&nbsp;
-      <b>WGM:</b> 0&nbsp;&nbsp;<b>WIM:</b> 2&nbsp;&nbsp;<b>WFM:</b> 4&nbsp;&nbsp;<b>WCM:</b> 11
-      <br>
-      <b style="color: yellow;">Jul:</b> &nbsp;&nbsp;<b>GM:</b> 4&nbsp;&nbsp;<b>IM:</b> 2&nbsp;&nbsp;<b>FM:</b> 26&nbsp;&nbsp;<b>CM:</b> 41&nbsp;&nbsp;
-      <b>WGM:</b> 0&nbsp;&nbsp;<b>WIM:</b> 7&nbsp;&nbsp;<b>WFM:</b> 7&nbsp;&nbsp;<b>WCM:</b> 11
-     <br>
-      <b style="color: yellow;">Aug:</b> &nbsp;&nbsp;<b>GM:</b> 8&nbsp;&nbsp;<b>IM:</b> 34&nbsp;&nbsp;<b>FM:</b> 16&nbsp;&nbsp;<b>CM:</b> 58&nbsp;&nbsp;
-      <b>WGM:</b> 0&nbsp;&nbsp;<b>WIM:</b> 8&nbsp;&nbsp;<b>WFM:</b> 5&nbsp;&nbsp;<b>WCM:</b> -4
-     <br>
-      <b style="color: yellow;">Sep:</b> &nbsp;&nbsp;<b>GM:</b> 1&nbsp;&nbsp;<b>IM:</b> -1&nbsp;&nbsp;<b>FM:</b> 44&nbsp;&nbsp;<b>CM:</b> 58&nbsp;&nbsp;
-      <b>WGM:</b> 0&nbsp;&nbsp;<b>WIM:</b> 7&nbsp;&nbsp;<b>WFM:</b> 16&nbsp;&nbsp;<b>WCM:</b> 17
-      <br>
-      <b style="color: yellow;">Oct:</b> &nbsp;&nbsp;<b>GM:</b> -4&nbsp;&nbsp;<b>IM:</b> -5&nbsp;&nbsp;<b>FM:</b> 36&nbsp;&nbsp;<b>CM:</b> 37&nbsp;&nbsp;
-      <b>WGM:</b> 0&nbsp;&nbsp;<b>WIM:</b> 1&nbsp;&nbsp;<b>WFM:</b> 15&nbsp;&nbsp;<b>WCM:</b> 7
-     <br>
-      <b style="color: yellow;">Nov:</b> &nbsp;&nbsp;<b>GM:</b> 11&nbsp;&nbsp;<b>IM:</b> 23&nbsp;&nbsp;<b>FM:</b> 31&nbsp;&nbsp;<b>CM:</b> 46&nbsp;&nbsp;
-      <b>WGM:</b> 1&nbsp;&nbsp;<b>WIM:</b> 8&nbsp;&nbsp;<b>WFM:</b> 16&nbsp;&nbsp;<b>WCM:</b> 19
-     <br>
-      <b style="color: yellow;">Dec:</b> &nbsp;&nbsp;<b>GM:</b> 5&nbsp;&nbsp;<b>IM:</b> 9&nbsp;&nbsp;<b>FM:</b> 39&nbsp;&nbsp;<b>CM:</b> 41&nbsp;&nbsp;
-      <b>WGM:</b> 3&nbsp;&nbsp;<b>WIM:</b> 3&nbsp;&nbsp;<b>WFM:</b> 0&nbsp;&nbsp;<b>WCM:</b> 17
-     
+
+    <div class="ad-placeholder">
+      Advertisement Space
     </div>
-    
+
+    <!-- UPDATED: Title changed to "New title additions" -->
+    <div class="title-additions-section" id="title-additions-section">
+      <div class="title-additions-header">
+        <h3><span class="title-icon">📊</span> New title additions</h3>
+        <select class="year-selector" id="year-selector">
+          <option value="2026" selected>2026</option>
+          <option value="2025">2025</option>
+        </select>
+      </div>
+
+      <div class="year-totals" id="year-totals">
+      </div>
+
+      <div class="months-grid" id="months-grid">
+      </div>
+    </div>
+
     <div class="top-countries-container">
       <div class="top-countries" id="top-countries-men">
-        <h3>Top Countries - Open</h3>
+        <h3><span class="chess-icon">♔</span> Top Countries - Open</h3>
         <table>
           <thead>
             <tr>
@@ -491,12 +683,11 @@
             </tr>
           </thead>
           <tbody>
-            <!-- Men rows will be inserted by JavaScript -->
           </tbody>
         </table>
       </div>
       <div class="top-countries" id="top-countries-women">
-        <h3>Top Countries - Women</h3>
+        <h3><span class="chess-icon">♕</span> Top Countries - Women</h3>
         <table>
           <thead>
             <tr>
@@ -509,33 +700,237 @@
             </tr>
           </thead>
           <tbody>
-            <!-- Women rows will be inserted by JavaScript -->
           </tbody>
         </table>
       </div>
     </div>
   </div>
-  
-  
-  
-  <!-- Footer with Data Privacy link added -->
+
   <footer>
     Report any bug or inconsistencies to <a href="mailto:tens.gusto-0a@icloud.com" style="color:#007bff;">tens.gusto-0a@icloud.com</a>
     <div class="data-privacy"><a href="data_privacy.html" target="_blank">Privacy Policy</a></div>
   </footer>
-  
-  <!-- JavaScript Section -->
+
   <script>
     "use strict";
-    // Object to hold data from the titled_players_by_country.json file
+
+    // 2025 data - FEB to DEC only
+    const data2025 = {
+      "months": [
+        {"month": "FEB", "total": 131, "GM": 0, "IM": 1, "FM": 30, "CM": 64, "WGM": 0, "WIM": 1, "WFM": 17, "WCM": 18},
+        {"month": "MAR", "total": 97, "GM": 0, "IM": 0, "FM": 34, "CM": 42, "WGM": 1, "WIM": 0, "WFM": 14, "WCM": 6},
+        {"month": "APR", "total": 110, "GM": 12, "IM": 31, "FM": -13, "CM": 60, "WGM": 0, "WIM": 4, "WFM": 6, "WCM": 10},
+        {"month": "MAY", "total": 111, "GM": 0, "IM": 0, "FM": 49, "CM": 42, "WGM": 0, "WIM": 1, "WFM": 7, "WCM": 12},
+        {"month": "JUN", "total": 82, "GM": -4, "IM": 1, "FM": 25, "CM": 43, "WGM": 0, "WIM": 2, "WFM": 4, "WCM": 11},
+        {"month": "JUL", "total": 98, "GM": 4, "IM": 2, "FM": 26, "CM": 41, "WGM": 0, "WIM": 7, "WFM": 7, "WCM": 11},
+        {"month": "AUG", "total": 125, "GM": 8, "IM": 34, "FM": 16, "CM": 58, "WGM": 0, "WIM": 8, "WFM": 5, "WCM": -4},
+        {"month": "SEP", "total": 142, "GM": 1, "IM": -1, "FM": 44, "CM": 58, "WGM": 0, "WIM": 7, "WFM": 16, "WCM": 17},
+        {"month": "OCT", "total": 87, "GM": -4, "IM": -5, "FM": 36, "CM": 37, "WGM": 0, "WIM": 1, "WFM": 15, "WCM": 7},
+        {"month": "NOV", "total": 155, "GM": 11, "IM": 23, "FM": 31, "CM": 46, "WGM": 1, "WIM": 8, "WFM": 16, "WCM": 19},
+        {"month": "DEC", "total": 117, "GM": 5, "IM": 9, "FM": 39, "CM": 41, "WGM": 3, "WIM": 3, "WFM": 0, "WCM": 17}
+      ],
+      "yearly_totals": {"GM": 33, "IM": 95, "FM": 317, "CM": 532, "WGM": 5, "WIM": 42, "WFM": 107, "WCM": 124},
+      "total": 1255
+    };
+
     let titledPlayersData = {};
-    // Current filter (both, active, or inactive)
+    let previousRankings = {};
     let currentFilter = 'both';
-    // Currently selected title for map highlighting (or 'none')
     let currentHighlight = 'none';
+    let lastUpdatedDate = '';
+    let monthlyChanges = [];
 
+    function renderTitleAdditions(year) {
+      const yearTotalsDiv = document.getElementById('year-totals');
+      const monthsGridDiv = document.getElementById('months-grid');
 
-    // Updates the worldwide numbers for each chess title on the world-stats box
+      if (year === '2025') {
+        yearTotalsDiv.innerHTML = `
+          <div class="total-item">
+            <span class="total-number">${data2025.total}</span>
+            <span class="total-label">Total</span>
+          </div>
+          <div class="total-item">
+            <span class="total-number">${data2025.yearly_totals.GM}</span>
+            <span class="total-label">GM</span>
+          </div>
+          <div class="total-item">
+            <span class="total-number">${data2025.yearly_totals.IM}</span>
+            <span class="total-label">IM</span>
+          </div>
+          <div class="total-item">
+            <span class="total-number">${data2025.yearly_totals.FM}</span>
+            <span class="total-label">FM</span>
+          </div>
+          <div class="total-item">
+            <span class="total-number">${data2025.yearly_totals.CM}</span>
+            <span class="total-label">CM</span>
+          </div>
+          <div class="total-item">
+            <span class="total-number">${data2025.yearly_totals.WGM}</span>
+            <span class="total-label">WGM</span>
+          </div>
+          <div class="total-item">
+            <span class="total-number">${data2025.yearly_totals.WIM}</span>
+            <span class="total-label">WIM</span>
+          </div>
+          <div class="total-item">
+            <span class="total-number">${data2025.yearly_totals.WFM}</span>
+            <span class="total-label">WFM</span>
+          </div>
+          <div class="total-item">
+            <span class="total-number">${data2025.yearly_totals.WCM}</span>
+            <span class="total-label">WCM</span>
+          </div>
+        `;
+
+        monthsGridDiv.innerHTML = data2025.months.map(month => `
+          <div class="month-card">
+            <div class="month-name">${month.month} 2025</div>
+            <div class="month-total">Total: ${month.total}</div>
+            <div class="titles-breakdown">
+              <div class="title-item">
+                <span class="title-label">GM:</span>
+                <span class="title-value ${month.GM > 0 ? 'positive' : month.GM < 0 ? 'negative' : ''}">${month.GM > 0 ? '+' : ''}${month.GM}</span>
+              </div>
+              <div class="title-item">
+                <span class="title-label">WGM:</span>
+                <span class="title-value ${month.WGM > 0 ? 'positive' : month.WGM < 0 ? 'negative' : ''}">${month.WGM > 0 ? '+' : ''}${month.WGM}</span>
+              </div>
+              <div class="title-item">
+                <span class="title-label">IM:</span>
+                <span class="title-value ${month.IM > 0 ? 'positive' : month.IM < 0 ? 'negative' : ''}">${month.IM > 0 ? '+' : ''}${month.IM}</span>
+              </div>
+              <div class="title-item">
+                <span class="title-label">WIM:</span>
+                <span class="title-value ${month.WIM > 0 ? 'positive' : month.WIM < 0 ? 'negative' : ''}">${month.WIM > 0 ? '+' : ''}${month.WIM}</span>
+              </div>
+              <div class="title-item">
+                <span class="title-label">FM:</span>
+                <span class="title-value ${month.FM > 0 ? 'positive' : month.FM < 0 ? 'negative' : ''}">${month.FM > 0 ? '+' : ''}${month.FM}</span>
+              </div>
+              <div class="title-item">
+                <span class="title-label">WFM:</span>
+                <span class="title-value ${month.WFM > 0 ? 'positive' : month.WFM < 0 ? 'negative' : ''}">${month.WFM > 0 ? '+' : ''}${month.WFM}</span>
+              </div>
+              <div class="title-item">
+                <span class="title-label">CM:</span>
+                <span class="title-value ${month.CM > 0 ? 'positive' : month.CM < 0 ? 'negative' : ''}">${month.CM > 0 ? '+' : ''}${month.CM}</span>
+              </div>
+              <div class="title-item">
+                <span class="title-label">WCM:</span>
+                <span class="title-value ${month.WCM > 0 ? 'positive' : month.WCM < 0 ? 'negative' : ''}">${month.WCM > 0 ? '+' : ''}${month.WCM}</span>
+              </div>
+            </div>
+          </div>
+        `).join('');
+
+      } else if (year === '2026' && monthlyChanges && monthlyChanges.length > 0) {
+        const yearlyTotals = {
+          total: 0,
+          GM: 0, IM: 0, FM: 0, CM: 0,
+          WGM: 0, WIM: 0, WFM: 0, WCM: 0
+        };
+
+        monthlyChanges.forEach(month => {
+          yearlyTotals.total += month.changes.total;
+          ['GM', 'IM', 'FM', 'CM', 'WGM', 'WIM', 'WFM', 'WCM'].forEach(title => {
+            yearlyTotals[title] += month.changes[title] || 0;
+          });
+        });
+
+        yearTotalsDiv.innerHTML = `
+          <div class="total-item">
+            <span class="total-number">${yearlyTotals.total}</span>
+            <span class="total-label">Total</span>
+          </div>
+          <div class="total-item">
+            <span class="total-number">${yearlyTotals.GM}</span>
+            <span class="total-label">GM</span>
+          </div>
+          <div class="total-item">
+            <span class="total-number">${yearlyTotals.IM}</span>
+            <span class="total-label">IM</span>
+          </div>
+          <div class="total-item">
+            <span class="total-number">${yearlyTotals.FM}</span>
+            <span class="total-label">FM</span>
+          </div>
+          <div class="total-item">
+            <span class="total-number">${yearlyTotals.CM}</span>
+            <span class="total-label">CM</span>
+          </div>
+          <div class="total-item">
+            <span class="total-number">${yearlyTotals.WGM}</span>
+            <span class="total-label">WGM</span>
+          </div>
+          <div class="total-item">
+            <span class="total-number">${yearlyTotals.WIM}</span>
+            <span class="total-label">WIM</span>
+          </div>
+          <div class="total-item">
+            <span class="total-number">${yearlyTotals.WFM}</span>
+            <span class="total-label">WFM</span>
+          </div>
+          <div class="total-item">
+            <span class="total-number">${yearlyTotals.WCM}</span>
+            <span class="total-label">WCM</span>
+          </div>
+        `;
+
+        monthsGridDiv.innerHTML = monthlyChanges.map(month => {
+          const changes = month.changes;
+          return `
+            <div class="month-card">
+              <div class="month-name">${month.month} 2026</div>
+              <div class="month-total">Total: ${changes.total}</div>
+              <div class="titles-breakdown">
+                <div class="title-item">
+                  <span class="title-label">GM:</span>
+                  <span class="title-value ${changes.GM > 0 ? 'positive' : changes.GM < 0 ? 'negative' : ''}">${changes.GM > 0 ? '+' : ''}${changes.GM}</span>
+                </div>
+                <div class="title-item">
+                  <span class="title-label">WGM:</span>
+                  <span class="title-value ${changes.WGM > 0 ? 'positive' : changes.WGM < 0 ? 'negative' : ''}">${changes.WGM > 0 ? '+' : ''}${changes.WGM}</span>
+                </div>
+                <div class="title-item">
+                  <span class="title-label">IM:</span>
+                  <span class="title-value ${changes.IM > 0 ? 'positive' : changes.IM < 0 ? 'negative' : ''}">${changes.IM > 0 ? '+' : ''}${changes.IM}</span>
+                </div>
+                <div class="title-item">
+                  <span class="title-label">WIM:</span>
+                  <span class="title-value ${changes.WIM > 0 ? 'positive' : changes.WIM < 0 ? 'negative' : ''}">${changes.WIM > 0 ? '+' : ''}${changes.WIM}</span>
+                </div>
+                <div class="title-item">
+                  <span class="title-label">FM:</span>
+                  <span class="title-value ${changes.FM > 0 ? 'positive' : changes.FM < 0 ? 'negative' : ''}">${changes.FM > 0 ? '+' : ''}${changes.FM}</span>
+                </div>
+                <div class="title-item">
+                  <span class="title-label">WFM:</span>
+                  <span class="title-value ${changes.WFM > 0 ? 'positive' : changes.WFM < 0 ? 'negative' : ''}">${changes.WFM > 0 ? '+' : ''}${changes.WFM}</span>
+                </div>
+                <div class="title-item">
+                  <span class="title-label">CM:</span>
+                  <span class="title-value ${changes.CM > 0 ? 'positive' : changes.CM < 0 ? 'negative' : ''}">${changes.CM > 0 ? '+' : ''}${changes.CM}</span>
+                </div>
+                <div class="title-item">
+                  <span class="title-label">WCM:</span>
+                  <span class="title-value ${changes.WCM > 0 ? 'positive' : changes.WCM < 0 ? 'negative' : ''}">${changes.WCM > 0 ? '+' : ''}${changes.WCM}</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } else {
+        yearTotalsDiv.innerHTML = '<div class="total-item"><span class="total-label">No data available for 2026 yet</span></div>';
+        monthsGridDiv.innerHTML = '';
+      }
+    }
+
+    document.getElementById('year-selector').addEventListener('change', (e) => {
+      renderTitleAdditions(e.target.value);
+    });
+
     function updateWorldwideNumbers() {
       let gmCount = 0, wgmCount = 0, imCount = 0, wimCount = 0, fmCount = 0, wfmCount = 0, cmCount = 0, wcmCount = 0;
       Object.values(titledPlayersData).forEach(countryData => {
@@ -559,8 +954,24 @@
       document.getElementById('wfm-count').textContent = wfmCount;
       document.getElementById('cm-count').textContent = cmCount;
       document.getElementById('wcm-count').textContent = wcmCount;
+
+      const totalCount = gmCount + wgmCount + imCount + wimCount + fmCount + wfmCount + cmCount + wcmCount;
+      document.getElementById('total-count-inline').textContent = totalCount;
     }
-    // Builds and updates the top countries tables for both men and women
+
+    function getRankChangeArrow(currentRank, previousRank) {
+      if (!previousRank || previousRank === 0) {
+        return '';
+      }
+      const diff = previousRank - currentRank;
+      if (diff > 0) {
+        return `<span class="rank-arrow up">▲${diff}</span>`;
+      } else if (diff < 0) {
+        return `<span class="rank-arrow down">▼${Math.abs(diff)}</span>`;
+      }
+      return '';
+    }
+
     function updateTopCountries() {
       let menData = [];
       let womenData = [];
@@ -574,14 +985,18 @@
       });
       menData.sort((a, b) => b.GM - a.GM || b.IM - a.IM || b.FM - a.FM || b.CM - a.CM);
       womenData.sort((a, b) => b.WGM - a.WGM || b.WIM - a.WIM || b.WFM - a.WFM || b.WCM - a.WCM);
-      
+
       const menTbody = document.querySelector('#top-countries-men tbody');
       menTbody.innerHTML = '';
+      let menRank = 0;
       menData.forEach((item, index) => {
         if (item.GM || item.IM || item.FM || item.CM) {
+          menRank++;
+          const previousRank = previousRankings.men ? previousRankings.men[item.code] : 0;
+          const rankArrow = getRankChangeArrow(menRank, previousRank);
           const flagUrl = (item.code === "FID") ? "Fidelogo.png" : `https://ratings.fide.com/svg/${item.code}.svg`;
           const tr = document.createElement('tr');
-          tr.innerHTML = `<td>${index+1}</td>
+          tr.innerHTML = `<td><div class="rank-cell">${menRank}${rankArrow}</div></td>
                           <td><img src="${flagUrl}" class="flag" alt="${item.code} Flag"> <a href="https://ratings.fide.com/rankings.phtml?country=${item.code}" target="_blank">${item.code}</a></td>
                           <td>${item.GM}</td>
                           <td>${item.IM}</td>
@@ -590,13 +1005,18 @@
           menTbody.appendChild(tr);
         }
       });
+
       const womenTbody = document.querySelector('#top-countries-women tbody');
       womenTbody.innerHTML = '';
+      let womenRank = 0;
       womenData.forEach((item, index) => {
         if (item.WGM || item.WIM || item.WFM || item.WCM) {
+          womenRank++;
+          const previousRank = previousRankings.women ? previousRankings.women[item.code] : 0;
+          const rankArrow = getRankChangeArrow(womenRank, previousRank);
           const flagUrl = (item.code === "FID") ? "Fidelogo.png" : `https://ratings.fide.com/svg/${item.code}.svg`;
           const tr = document.createElement('tr');
-          tr.innerHTML = `<td>${index+1}</td>
+          tr.innerHTML = `<td><div class="rank-cell">${womenRank}${rankArrow}</div></td>
                           <td><img src="${flagUrl}" class="flag" alt="${item.code} Flag"> <a href="https://ratings.fide.com/rankings.phtml?country=${item.code}" target="_blank">${item.code}</a></td>
                           <td>${item.WGM}</td>
                           <td>${item.WIM}</td>
@@ -606,28 +1026,43 @@
         }
       });
     }
-    
-    // Fetch the JSON file that contains the chess titled players data
+
     fetch('titled_players_by_country.json')
       .then(response => response.json())
       .then(data => {
         data.titled_players_by_country.forEach(item => {
           titledPlayersData[item.Country] = item;
         });
+
+        if (data.metadata && data.metadata.last_updated) {
+          lastUpdatedDate = data.metadata.last_updated;
+          document.getElementById('last-updated-date').textContent = lastUpdatedDate;
+        }
+
+        if (data.metadata && data.metadata.monthly_changes) {
+          monthlyChanges = data.metadata.monthly_changes;
+        }
+
+        if (data.metadata && data.metadata.previous_rankings) {
+          previousRankings = data.metadata.previous_rankings;
+        }
+
         updateWorldwideNumbers();
         updateTopCountries();
+        renderTitleAdditions('2026');
       })
-      .catch(error => { console.error('Error fetching titled players data:', error); });
-    
-    // Fetch the SVG map and initialize the interactive map
+      .catch(error => { 
+        console.error('Error fetching titled players data:', error);
+        document.getElementById('last-updated-date').textContent = 'January 31, 2026';
+      });
+
     fetch('world_fide.svg')
       .then(response => response.text())
       .then(svgContent => {
         document.getElementById('svg-container').innerHTML += svgContent.trim();
         initializeMap();
       });
-    
-    // Initialize the interactive map with pan/zoom and info box functionality
+
     function initializeMap() {
       const svgContainer = document.getElementById('svg-container');
       const svgElement = svgContainer.querySelector('svg');
@@ -763,7 +1198,7 @@
         }
       });
       svgContainer.addEventListener("touchend", () => { initialDistance = null; });
-      
+
       function showInfoBox(countryCode, x, y) {
         const flagUrl = (countryCode === "FID") ? "Fidelogo.png" : `https://ratings.fide.com/svg/${countryCode}.svg`;
         const countryData = titledPlayersData[countryCode] || {};
@@ -793,13 +1228,8 @@
       }
     }
   </script>
-  
-  <!-- The info-box element used to show country details on hover/touch -->
+
   <div class="info-box" id="info-box"></div>
-
-  <!-- 100% privacy-first analytics - Simple Anlaytics-->
-<script async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
-
-  
+  <script async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
 </body>
 </html>
