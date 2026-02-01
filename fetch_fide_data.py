@@ -2,7 +2,6 @@
 """
 FIDE Chess Titles Data Fetcher
 Downloads and processes FIDE rating data to track titled players by country.
-Includes rank tracking, monthly changes, and auto-update metadata.
 """
 
 import requests
@@ -81,33 +80,50 @@ def parse_xml_data(xml_path, previous_data):
 
     for player in root.findall('player'):
         total_players += 1
+
+        # Get title from <title> tag only (ignore w_title)
         title = player.findtext('title', '').strip()
         country = player.findtext('country', 'UNK').strip()
-        flag = player.findtext('flag', '').strip()  # FIXED: default to '' (active), not 'i'
+        flag = player.findtext('flag', '').strip()
         name = player.findtext('name', '').strip()
 
+        # Filter: Remove players without title or with invalid titles
         if not title or title not in ['GM', 'IM', 'FM', 'CM', 'WGM', 'WIM', 'WFM', 'WCM']:
+            continue
+
+        # Filter: Remove WH (Honorary Women's) title holders
+        if title == 'WH':
+            continue
+
+        # Filter: Remove 'Non' from country (if it appears)
+        country = country.replace('Non', '').strip()
+        if not country or country == 'UNK':
             continue
 
         titled_players += 1
 
-        # FIXED: Better variable naming and logic
+        # CRITICAL FIX: Process flag - remove 'w' prefix (wi → i)
+        flag = flag.replace('w', '').replace('W', '')
         is_inactive = (flag == 'i')
 
+        # Count titles
         country_data[country]['Total'][title] += 1
         if is_inactive:
             country_data[country]['Inactive'][title] += 1
         else:
             country_data[country]['Active'][title] += 1
 
+        # Track new GMs
         if title == 'GM':
             if country not in previous_data or previous_data[country]['Total']['GM'] < country_data[country]['Total']['GM']:
                 new_gms.append({'name': name, 'country': country})
 
+        # Track new WGMs
         if title == 'WGM':
             if country not in previous_data or previous_data[country]['Total']['WGM'] < country_data[country]['Total']['WGM']:
                 new_wgms.append({'name': name, 'country': country})
 
+    # Calculate changes
     for country in country_data.keys():
         for title in ['GM', 'IM', 'FM', 'CM', 'WGM', 'WIM', 'WFM', 'WCM']:
             new_count = country_data[country]['Total'][title]
@@ -153,15 +169,10 @@ def calculate_rankings(country_data):
     return {'men': men_ranks, 'women': women_ranks}
 
 def get_data_month_from_filename(xml_path):
-    """
-    Extract the data month from XML filename
-    Filename format: standard_rating_list_MMYYYY.xml or similar
-    """
+    """Extract the data month from XML filename"""
     import re
     filename = os.path.basename(xml_path)
 
-    # Try to extract month from filename
-    # Common patterns: jan, january, 01, etc.
     month_map = {
         '01': 'JAN', '02': 'FEB', '03': 'MAR', '04': 'APR',
         '05': 'MAY', '06': 'JUN', '07': 'JUL', '08': 'AUG',
@@ -187,7 +198,7 @@ def get_data_month_from_filename(xml_path):
     return datetime.now().strftime("%b").upper()
 
 def save_json_data(country_data, title_changes, new_gms, new_wgms, previous_metadata, xml_path):
-    """Save data to JSON with metadata for auto-update and rank tracking"""
+    """Save data to JSON with metadata"""
     logging.info("Generating JSON output...")
 
     output_data = []
@@ -247,11 +258,6 @@ def save_json_data(country_data, title_changes, new_gms, new_wgms, previous_meta
         monthly_changes_list.append(monthly_change)
 
     logging.info(f"Monthly changes for {data_month}: +{total_added}, -{total_removed}, net: {net_change}")
-    for title in ['GM', 'IM', 'FM', 'CM', 'WIM', 'WFM', 'WCM']:
-        added = title_changes[title]['added']
-        removed = title_changes[title]['removed']
-        if added > 0 or removed > 0:
-            logging.info(f"  {title}: +{added}, -{removed}")
 
     total_gms = sum(data['Total']['GM'] for data in country_data.values())
     total_wgms = sum(data['Total']['WGM'] for data in country_data.values())
