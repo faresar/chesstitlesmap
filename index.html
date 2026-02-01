@@ -117,7 +117,7 @@
     path.highlighted {
       fill: #b05a45;
     }
-    /* UPDATED: Site description card - Better design */
+    /* UPDATED: Site description card */
     .site-description-card{
       text-align: center;
       background: linear-gradient(135deg, rgba(74, 144, 226, 0.1) 0%, rgba(53, 122, 189, 0.1) 100%);
@@ -139,7 +139,7 @@
         padding: 12px 15px;
       }
     }
-    /* UPDATED: World stats box - YELLOW TITLES, WHITE NUMBERS */
+    /* UPDATED: World stats box - YELLOW TITLES, WHITE NUMBERS, COLON AFTER TITLE, TOTAL INLINE */
     .world-stats {
       text-align: center;
       background: rgba(0,0,0,0.7);
@@ -162,22 +162,9 @@
       text-decoration: underline;
       color: white;
     }
-    .world-stats .total-count {
-      font-size: 1rem;
-      color: #ffd700;
-      margin-top: 5px;
-      font-weight: bold;
-    }
-    .world-stats .total-count span {
-      color: white;
-      font-weight: bold;
-    }
     @media (max-width: 600px) {
       .world-stats {
         font-size: 0.8rem;
-      }
-      .world-stats .total-count {
-        font-size: 0.9rem;
       }
     }
     /* Filter section container styling */
@@ -380,26 +367,27 @@
       margin-bottom: 8px;
       color: #fff;
     }
-    /* UPDATED: Titles MUCH closer to numbers */
+    /* UPDATED: Numbers CENTERED between title and edge */
     .month-card .titles-breakdown {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 4px 8px;
+      gap: 4px;
       font-size: 0.85rem;
     }
     .month-card .title-item {
       display: flex;
       justify-content: space-between;
-      gap: 4px;
+      align-items: center;
     }
     .month-card .title-item .title-label {
       font-weight: 500;
       flex-shrink: 0;
+      text-align: left;
     }
     .month-card .title-item .title-value {
       font-weight: 700;
-      text-align: right;
-      margin-left: auto;
+      text-align: center;
+      flex: 1;
     }
     .month-card .title-item .title-value.positive {
       color: #4ade80;
@@ -584,18 +572,18 @@
     Last updated: <span id="last-updated-date">January 31, 2026</span>
   </div>
 
-  <!-- UPDATED: Better design for description -->
+  <!-- UPDATED: Original sentence restored -->
   <div class="site-description-card">
     <p style="margin: 0;">
-      Explore the global distribution of FIDE chess titles by country. Track Grandmasters, International Masters, and all other official chess titles worldwide.
+      Check out the number of titled chess players in each country and explore which nations lead the world in Grandmasters, International Masters and other FIDE titles.
     </p>
   </div>
 
   <!-- Map Container showing world stats and SVG map -->
   <div id="map-container">
-    <!-- UPDATED: Yellow titles, white numbers, total count -->
+    <!-- UPDATED: Colon after World Stats, total inline -->
     <div class="world-stats" id="world-stats">
-      <div><u><b>World Stats</b></u></div>
+      <div><u><b>World Stats: <span id="total-count-inline">0</span> total titles</b></u></div>
       <div>
          <b>GM:</b> <span id="gm-count">0</span>&emsp;
          <b>IM:</b> <span id="im-count">0</span>&emsp;
@@ -607,9 +595,6 @@
          <b>WIM:</b> <span id="wim-count">0</span>&emsp;
          <b>WFM:</b> <span id="wfm-count">0</span>&emsp;
          <b>WCM:</b> <span id="wcm-count">0</span>
-      </div>
-      <div class="total-count">
-         <b>Total:</b> <span id="total-count">0</span>
       </div>
     </div>
     <div id="svg-container">
@@ -729,10 +714,9 @@
   <script>
     "use strict";
 
-    // UPDATED: 2025 data - Added JANUARY
+    // 2025 data - WITHOUT JANUARY (not adding fake data)
     const data2025 = {
       "months": [
-        {"month": "JAN", "total": 113, "GM": 6, "IM": 7, "FM": 32, "CM": 56, "WGM": 0, "WIM": 11, "WFM": 19, "WCM": 18},
         {"month": "FEB", "total": 131, "GM": 0, "IM": 1, "FM": 30, "CM": 64, "WGM": 0, "WIM": 1, "WFM": 17, "WCM": 18},
         {"month": "MAR", "total": 97, "GM": 0, "IM": 0, "FM": 34, "CM": 42, "WGM": 1, "WIM": 0, "WFM": 14, "WCM": 6},
         {"month": "APR", "total": 110, "GM": 12, "IM": 31, "FM": -13, "CM": 60, "WGM": 0, "WIM": 4, "WFM": 6, "WCM": 10},
@@ -745,8 +729,8 @@
         {"month": "NOV", "total": 155, "GM": 11, "IM": 23, "FM": 31, "CM": 46, "WGM": 1, "WIM": 8, "WFM": 16, "WCM": 19},
         {"month": "DEC", "total": 117, "GM": 5, "IM": 9, "FM": 39, "CM": 41, "WGM": 3, "WIM": 3, "WFM": 0, "WCM": 17}
       ],
-      "yearly_totals": {"GM": 39, "IM": 102, "FM": 349, "CM": 588, "WGM": 5, "WIM": 53, "WFM": 126, "WCM": 142},
-      "total": 1368
+      "yearly_totals": {"GM": 33, "IM": 95, "FM": 317, "CM": 532, "WGM": 5, "WIM": 42, "WFM": 107, "WCM": 124},
+      "total": 1255
     };
 
     let titledPlayersData = {};
@@ -972,7 +956,7 @@
       document.getElementById('wcm-count').textContent = wcmCount;
 
       const totalCount = gmCount + wgmCount + imCount + wimCount + fmCount + wfmCount + cmCount + wcmCount;
-      document.getElementById('total-count').textContent = totalCount;
+      document.getElementById('total-count-inline').textContent = totalCount;
     }
 
     function getRankChangeArrow(currentRank, previousRank) {
