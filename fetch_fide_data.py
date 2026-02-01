@@ -83,7 +83,7 @@ def parse_xml_data(xml_path, previous_data):
         total_players += 1
         title = player.findtext('title', '').strip()
         country = player.findtext('country', 'UNK').strip()
-        flag = player.findtext('flag', 'i').strip()
+        flag = player.findtext('flag', '').strip()  # FIXED: default to '' (active), not 'i'
         name = player.findtext('name', '').strip()
 
         if not title or title not in ['GM', 'IM', 'FM', 'CM', 'WGM', 'WIM', 'WFM', 'WCM']:
@@ -91,10 +91,11 @@ def parse_xml_data(xml_path, previous_data):
 
         titled_players += 1
 
-        is_active = (flag == 'i')
+        # FIXED: Better variable naming and logic
+        is_inactive = (flag == 'i')
 
         country_data[country]['Total'][title] += 1
-        if is_active:
+        if is_inactive:
             country_data[country]['Inactive'][title] += 1
         else:
             country_data[country]['Active'][title] += 1
@@ -203,7 +204,6 @@ def save_json_data(country_data, title_changes, new_gms, new_wgms, previous_meta
     current_rankings = calculate_rankings(country_data)
     previous_rankings_for_display = previous_metadata.get('current_rankings', {'men': {}, 'women': {}})
 
-    # FIXED: Determine the correct month for this data
     data_month = get_data_month_from_filename(xml_path)
     logging.info(f"Data is for month: {data_month}")
 
@@ -222,7 +222,7 @@ def save_json_data(country_data, title_changes, new_gms, new_wgms, previous_meta
             logging.info(f"NEW COUNTRY with titled players: {country}")
 
     monthly_change = {
-        'month': data_month,  # Use extracted month, not current month
+        'month': data_month,
         'changes': {
             'total': net_change,
             'GM': title_changes['GM']['added'] - title_changes['GM']['removed'],
@@ -236,7 +236,6 @@ def save_json_data(country_data, title_changes, new_gms, new_wgms, previous_meta
         }
     }
 
-    # Update or append monthly change
     month_exists = False
     for i, month_data in enumerate(monthly_changes_list):
         if month_data['month'] == monthly_change['month']:
