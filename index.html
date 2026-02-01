@@ -41,15 +41,16 @@
     .navbar-brand:hover {
       text-decoration: none;
     }
-    /* Last updated text styling */
+    /* UPDATED: Last updated text styling - BLUE COLOR */
     .last-updated {
       font-size: 14px;
-      color: #666;
+      color: #007bff;
       text-align: center;
       margin: 10px 0;
+      font-weight: 500;
     }
     .last-updated span {
-      font-weight: 500;
+      font-weight: 600;
     }
     /* Container for the map with border and background */
     #map-container {
@@ -69,7 +70,7 @@
       aspect-ratio: 1010/666;
       position: relative;
     }
-    /* FIXED: Zoom button controls - SAME AS ORIGINAL */
+    /* Zoom button controls - SAME AS ORIGINAL */
     .zoom-controls {
       position: absolute;
       top: 10px;
@@ -116,27 +117,29 @@
     path.highlighted {
       fill: #b05a45;
     }
-    /* Site description card */
+    /* UPDATED: Site description card - Better design */
     .site-description-card{
-     text-align:center;
-      background:rgba(255,255,255,0.9);
-      padding:10px;
-      border-radius:5px;
-      box-shadow:0 3px 15px rgba(0,0,0,.2);
-      font-family:'Roboto',sans-serif;
-      font-size:16px;
-      font-weight:bold;
-      color:#000;
-      max-width:1010px;
-      margin:10px auto;
+      text-align: center;
+      background: linear-gradient(135deg, rgba(74, 144, 226, 0.1) 0%, rgba(53, 122, 189, 0.1) 100%);
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 3px 15px rgba(0,0,0,.15);
+      font-family: 'Roboto', sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      color: #2c3e50;
+      max-width: 1010px;
+      margin: 15px auto;
+      border-left: 4px solid #4a90e2;
+      line-height: 1.6;
     }
     @media(max-width:600px){
       .site-description-card{
-        font-size:14px;
-        padding:8px;
+        font-size: 14px;
+        padding: 12px 15px;
       }
     }
-    /* World stats box styling on top of the map - WITH TOTAL COUNT */
+    /* UPDATED: World stats box - YELLOW TITLES, WHITE NUMBERS */
     .world-stats {
       text-align: center;
       background: rgba(0,0,0,0.7);
@@ -150,21 +153,31 @@
     }
     .world-stats b {
       font-weight: bold;
+      color: #ffd700;  /* Yellow for titles */
+    }
+    .world-stats span {
+      color: white;  /* White for numbers */
     }
     .world-stats u {
       text-decoration: underline;
+      color: white;
     }
     .world-stats .total-count {
-      font-size: 1.1rem;
+      font-size: 1rem;
       color: #ffd700;
       margin-top: 5px;
+      font-weight: bold;
+    }
+    .world-stats .total-count span {
+      color: white;
+      font-weight: bold;
     }
     @media (max-width: 600px) {
       .world-stats {
         font-size: 0.8rem;
       }
       .world-stats .total-count {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
       }
     }
     /* Filter section container styling */
@@ -260,7 +273,7 @@
       border: 2px dashed #ccc;
     }
 
-    /* FIXED: Title Additions Section - BLUE THEME */
+    /* Title Additions Section - BLUE THEME */
     .title-additions-section {
       background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
       border-radius: 8px;
@@ -367,17 +380,17 @@
       margin-bottom: 8px;
       color: #fff;
     }
-    /* FIXED: Titles closer to numbers */
+    /* UPDATED: Titles MUCH closer to numbers */
     .month-card .titles-breakdown {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 6px 12px;
+      gap: 4px 8px;
       font-size: 0.85rem;
     }
     .month-card .title-item {
       display: flex;
       justify-content: space-between;
-      gap: 8px;
+      gap: 4px;
     }
     .month-card .title-item .title-label {
       font-weight: 500;
@@ -386,12 +399,14 @@
     .month-card .title-item .title-value {
       font-weight: 700;
       text-align: right;
+      margin-left: auto;
     }
     .month-card .title-item .title-value.positive {
       color: #4ade80;
     }
+    /* UPDATED: Lighter red for better visibility on blue */
     .month-card .title-item .title-value.negative {
-      color: #f87171;
+      color: #fca5a5;
     }
 
     @media (max-width: 600px) {
@@ -409,7 +424,7 @@
       }
     }
 
-    /* IMPROVED: Top countries tables with rank tracking */
+    /* Top countries tables with rank tracking */
     .top-countries-container {
       display: flex;
       flex-wrap: wrap;
@@ -546,7 +561,7 @@
   <!-- Navigation Bar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-      <a class="navbar-brand" href="index.html"><h1 style="display:inline; font-size:inherit; font-weight:inherit; margin:0;">World FIDE Chess titles</h1></a>
+      <a class="navbar-brand" href="index.html"><h1 style="display:inline; font-size:inherit; font-weight:inherit; margin:0;">World FIDE Chess Titles</h1></a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
               aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -564,22 +579,21 @@
     </div>
   </nav>
 
-  <!-- Last Updated information - AUTO-UPDATED FROM JSON -->
+  <!-- UPDATED: Last Updated - BLUE COLOR -->
   <div class="last-updated">
     Last updated: <span id="last-updated-date">January 31, 2026</span>
   </div>
 
-  <!-- website description -->
+  <!-- UPDATED: Better design for description -->
   <div class="site-description-card">
-    <p>
-      Check out the number of titled chess players in each country and see which
-      nations lead the world in Grandmasters, International Masters and other
-      FIDE titles.
+    <p style="margin: 0;">
+      Explore the global distribution of FIDE chess titles by country. Track Grandmasters, International Masters, and all other official chess titles worldwide.
     </p>
   </div>
 
   <!-- Map Container showing world stats and SVG map -->
   <div id="map-container">
+    <!-- UPDATED: Yellow titles, white numbers, total count -->
     <div class="world-stats" id="world-stats">
       <div><u><b>World Stats</b></u></div>
       <div>
@@ -599,17 +613,14 @@
       </div>
     </div>
     <div id="svg-container">
-      <!-- FIXED: Original zoom controls -->
       <div class="zoom-controls">
          <button id="zoom-in">+</button>
          <button id="zoom-out">-</button>
          <button id="zoom-reset">R</button>
       </div>
-      <!-- The world map SVG will be loaded here -->
     </div>
   </div>
 
-  <!-- Filter Layers and Top Countries Tables -->
   <div class="filter-wrapper">
     <div class="activity-filter">
       <label>Player Activity Filter:</label>
@@ -651,12 +662,11 @@
       </div>
     </div>
 
-    <!-- Ad Placeholder -->
     <div class="ad-placeholder">
       Advertisement Space
     </div>
 
-    <!-- FIXED: Title Additions Section - Blue Theme, Smaller Title, Better Layout -->
+    <!-- Title Additions Section -->
     <div class="title-additions-section" id="title-additions-section">
       <div class="title-additions-header">
         <h3><span class="title-icon">📊</span> New Title Additions</h3>
@@ -667,15 +677,12 @@
       </div>
 
       <div class="year-totals" id="year-totals">
-        <!-- Will be populated by JavaScript -->
       </div>
 
       <div class="months-grid" id="months-grid">
-        <!-- Month cards will be populated by JavaScript -->
       </div>
     </div>
 
-    <!-- FIXED: Top Countries Tables with Chess Icons -->
     <div class="top-countries-container">
       <div class="top-countries" id="top-countries-men">
         <h3><span class="chess-icon">♔</span> Top Countries - Open</h3>
@@ -691,7 +698,6 @@
             </tr>
           </thead>
           <tbody>
-            <!-- Men rows will be inserted by JavaScript -->
           </tbody>
         </table>
       </div>
@@ -709,26 +715,24 @@
             </tr>
           </thead>
           <tbody>
-            <!-- Women rows will be inserted by JavaScript -->
           </tbody>
         </table>
       </div>
     </div>
   </div>
 
-  <!-- Footer with Data Privacy link added -->
   <footer>
     Report any bug or inconsistencies to <a href="mailto:tens.gusto-0a@icloud.com" style="color:#007bff;">tens.gusto-0a@icloud.com</a>
     <div class="data-privacy"><a href="data_privacy.html" target="_blank">Privacy Policy</a></div>
   </footer>
 
-  <!-- JavaScript Section -->
   <script>
     "use strict";
 
-    // 2025 data hardcoded
+    // UPDATED: 2025 data - Added JANUARY
     const data2025 = {
       "months": [
+        {"month": "JAN", "total": 113, "GM": 6, "IM": 7, "FM": 32, "CM": 56, "WGM": 0, "WIM": 11, "WFM": 19, "WCM": 18},
         {"month": "FEB", "total": 131, "GM": 0, "IM": 1, "FM": 30, "CM": 64, "WGM": 0, "WIM": 1, "WFM": 17, "WCM": 18},
         {"month": "MAR", "total": 97, "GM": 0, "IM": 0, "FM": 34, "CM": 42, "WGM": 1, "WIM": 0, "WFM": 14, "WCM": 6},
         {"month": "APR", "total": 110, "GM": 12, "IM": 31, "FM": -13, "CM": 60, "WGM": 0, "WIM": 4, "WFM": 6, "WCM": 10},
@@ -741,8 +745,8 @@
         {"month": "NOV", "total": 155, "GM": 11, "IM": 23, "FM": 31, "CM": 46, "WGM": 1, "WIM": 8, "WFM": 16, "WCM": 19},
         {"month": "DEC", "total": 117, "GM": 5, "IM": 9, "FM": 39, "CM": 41, "WGM": 3, "WIM": 3, "WFM": 0, "WCM": 17}
       ],
-      "yearly_totals": {"GM": 33, "IM": 95, "FM": 317, "CM": 532, "WGM": 5, "WIM": 42, "WFM": 107, "WCM": 124},
-      "total": 1255
+      "yearly_totals": {"GM": 39, "IM": 102, "FM": 349, "CM": 588, "WGM": 5, "WIM": 53, "WFM": 126, "WCM": 142},
+      "total": 1368
     };
 
     let titledPlayersData = {};
@@ -752,7 +756,6 @@
     let lastUpdatedDate = '';
     let monthlyChanges = [];
 
-    // Function to render title additions for selected year
     function renderTitleAdditions(year) {
       const yearTotalsDiv = document.getElementById('year-totals');
       const monthsGridDiv = document.getElementById('months-grid');
@@ -968,14 +971,13 @@
       document.getElementById('cm-count').textContent = cmCount;
       document.getElementById('wcm-count').textContent = wcmCount;
 
-      // FIXED: Add total count
       const totalCount = gmCount + wgmCount + imCount + wimCount + fmCount + wfmCount + cmCount + wcmCount;
       document.getElementById('total-count').textContent = totalCount;
     }
 
     function getRankChangeArrow(currentRank, previousRank) {
       if (!previousRank || previousRank === 0) {
-        return '';  // FIXED: No arrow if no previous rank
+        return '';
       }
       const diff = previousRank - currentRank;
       if (diff > 0) {
@@ -983,7 +985,7 @@
       } else if (diff < 0) {
         return `<span class="rank-arrow down">▼${Math.abs(diff)}</span>`;
       }
-      return '';  // No arrow for unchanged rank
+      return '';
     }
 
     function updateTopCountries() {
@@ -1046,7 +1048,6 @@
           titledPlayersData[item.Country] = item;
         });
 
-        // FIXED: Extract and display last updated date
         if (data.metadata && data.metadata.last_updated) {
           lastUpdatedDate = data.metadata.last_updated;
           document.getElementById('last-updated-date').textContent = lastUpdatedDate;
@@ -1056,7 +1057,6 @@
           monthlyChanges = data.metadata.monthly_changes;
         }
 
-        // FIXED: Extract previous rankings properly
         if (data.metadata && data.metadata.previous_rankings) {
           previousRankings = data.metadata.previous_rankings;
         }
@@ -1067,7 +1067,6 @@
       })
       .catch(error => { 
         console.error('Error fetching titled players data:', error);
-        // Set default date if JSON fails
         document.getElementById('last-updated-date').textContent = 'January 31, 2026';
       });
 
