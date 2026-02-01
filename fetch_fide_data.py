@@ -2,6 +2,9 @@
 """
 FIDE Chess Titles Data Fetcher
 Downloads and processes FIDE rating data to track titled players by country.
+Generates:
+  - titled_players_by_country.json (main data file)
+  - monthly_changes.json (for title additions tracking)
 """
 
 import requests
@@ -58,6 +61,17 @@ def load_previous_data():
     except FileNotFoundError:
         logging.info("No previous data found - this is the first run")
         return {}, {}
+
+def load_monthly_changes():
+    """Load existing monthly changes data"""
+    try:
+        with open('monthly_changes.json', 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            logging.info("Loaded existing monthly_changes.json")
+            return data.get('monthly_changes', [])
+    except FileNotFoundError:
+        logging.info("No monthly_changes.json found - will create new")
+        return []
 
 def parse_xml_data(xml_path, previous_data):
     """Parse XML and extract titled players data with change tracking"""
@@ -197,6 +211,54 @@ def get_data_month_from_filename(xml_path):
     logging.warning(f"Could not extract month from filename: {filename}, using current month")
     return datetime.now().strftime("%b").upper()
 
+def update_monthly_changes(existing_changes, title_changes, data_month):
+    """Update monthly_changes.json with new data"""
+    current_year = datetime.now().year
+
+    # Calculate net changes
+    net_changes = {}
+    total_added = 0
+    total_removed = 0
+
+    for title in ['GM', 'IM', 'FM', 'CM', 'WGM', 'WIM', 'WFM', 'WCM']:
+        added = title_changes[title]['added']
+        removed = title_changes[title]['removed']
+        net_changes[title] = added - removed
+        total_added += added
+        total_removed += removed
+
+    # Create new month entry
+    new_entry = {
+        "month": data_month,
+        "year": current_year,
+        "date": datetime.now().strftime("%Y-%m-%d"),
+        "changes": net_changes,
+        "total_added": total_added,
+        "total_removed": total_removed,
+        "net_change": total_added - total_removed
+    }
+
+    # Check if this month already exists
+    month_exists = False
+    for i, entry in enumerate(existing_changes):
+        if entry.get('month') == data_month and entry.get('year') == current_year:
+            existing_changes[i] = new_entry
+            month_exists = True
+            logging.info(f"Updated existing entry for {data_month} {current_year}")
+            break
+
+    if not month_exists:
+        existing_changes.append(new_entry)
+        logging.info(f"Added new entry for {data_month} {current_year}")
+
+    # Save to file
+    with open('monthly_changes.json', 'w', encoding='utf-8') as f:
+        json.dump({"monthly_changes": existing_changes}, f, indent=2, ensure_ascii=False)
+
+    logging.info("Updated monthly_changes.json")
+
+    return net_changes
+
 def save_json_data(country_data, title_changes, new_gms, new_wgms, previous_metadata, xml_path):
     """Save data to JSON with metadata"""
     logging.info("Generating JSON output...")
@@ -218,6 +280,11 @@ def save_json_data(country_data, title_changes, new_gms, new_wgms, previous_meta
     data_month = get_data_month_from_filename(xml_path)
     logging.info(f"Data is for month: {data_month}")
 
+    # Load and update monthly_changes.json
+    existing_monthly_changes = load_monthly_changes()
+    net_changes = update_monthly_changes(existing_monthly_changes, title_changes, data_month)
+
+    # Keep track of monthly changes in metadata too (for backwards compatibility)
     monthly_changes_list = previous_metadata.get('monthly_changes', [])
 
     total_added = sum(title_changes[title]['added'] for title in title_changes)
@@ -234,17 +301,7 @@ def save_json_data(country_data, title_changes, new_gms, new_wgms, previous_meta
 
     monthly_change = {
         'month': data_month,
-        'changes': {
-            'total': net_change,
-            'GM': title_changes['GM']['added'] - title_changes['GM']['removed'],
-            'IM': title_changes['IM']['added'] - title_changes['IM']['removed'],
-            'FM': title_changes['FM']['added'] - title_changes['FM']['removed'],
-            'CM': title_changes['CM']['added'] - title_changes['CM']['removed'],
-            'WGM': title_changes['WGM']['added'] - title_changes['WGM']['removed'],
-            'WIM': title_changes['WIM']['added'] - title_changes['WIM']['removed'],
-            'WFM': title_changes['WFM']['added'] - title_changes['WFM']['removed'],
-            'WCM': title_changes['WCM']['added'] - title_changes['WCM']['removed']
-        }
+        'changes': net_changes
     }
 
     month_exists = False
