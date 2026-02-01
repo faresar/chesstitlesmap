@@ -86,25 +86,20 @@ def parse_xml_data(xml_path, previous_data):
         flag = player.findtext('flag', 'i').strip()
         name = player.findtext('name', '').strip()
 
-        # Skip players without titles
         if not title or title not in ['GM', 'IM', 'FM', 'CM', 'WGM', 'WIM', 'WFM', 'WCM']:
             continue
 
         titled_players += 1
 
-        # Determine if player is active or inactive
         is_active = (flag == 'i')
 
-        # Update country totals
         country_data[country]['Total'][title] += 1
         if is_active:
             country_data[country]['Inactive'][title] += 1
         else:
             country_data[country]['Active'][title] += 1
 
-        # Track new GMs and WGMs
         if title == 'GM':
-            # Check if this GM is new
             if country not in previous_data or previous_data[country]['Total']['GM'] < country_data[country]['Total']['GM']:
                 new_gms.append({'name': name, 'country': country})
 
@@ -112,7 +107,6 @@ def parse_xml_data(xml_path, previous_data):
             if country not in previous_data or previous_data[country]['Total']['WGM'] < country_data[country]['Total']['WGM']:
                 new_wgms.append({'name': name, 'country': country})
 
-    # Calculate changes for each title
     for country in country_data.keys():
         for title in ['GM', 'IM', 'FM', 'CM', 'WGM', 'WIM', 'WFM', 'WCM']:
             new_count = country_data[country]['Total'][title]
@@ -149,13 +143,9 @@ def calculate_rankings(country_data):
             'WCM': total['WCM']
         })
 
-    # Sort men by GM, then IM, then FM, then CM
     men_ranking.sort(key=lambda x: (x['GM'], x['IM'], x['FM'], x['CM']), reverse=True)
-
-    # Sort women by WGM, then WIM, then WFM, then WCM
     women_ranking.sort(key=lambda x: (x['WGM'], x['WIM'], x['WFM'], x['WCM']), reverse=True)
 
-    # Create rank dictionaries
     men_ranks = {item['country']: rank + 1 for rank, item in enumerate(men_ranking) if item['GM'] or item['IM'] or item['FM'] or item['CM']}
     women_ranks = {item['country']: rank + 1 for rank, item in enumerate(women_ranking) if item['WGM'] or item['WIM'] or item['WFM'] or item['WCM']}
 
@@ -176,32 +166,27 @@ def save_json_data(country_data, title_changes, new_gms, new_wgms, previous_meta
 
     logging.info(f"Aggregated data for {len(output_data)} countries")
 
-    # Calculate current rankings
     current_rankings = calculate_rankings(country_data)
 
-    # Get previous rankings from metadata
-    previous_rankings = previous_metadata.get('current_rankings', {'men': {}, 'women': {}})
+    # FIXED: Use current_rankings as previous_rankings for NEXT run
+    previous_rankings_for_display = previous_metadata.get('current_rankings', {'men': {}, 'women': {}})
 
-    # Track monthly changes
     logging.info("Tracking monthly changes...")
     current_month = datetime.now().strftime("%B")
     monthly_changes_list = previous_metadata.get('monthly_changes', [])
 
-    # Calculate net changes
     total_added = sum(title_changes[title]['added'] for title in title_changes)
     total_removed = sum(title_changes[title]['removed'] for title in title_changes)
     net_change = total_added - total_removed
 
-    # Check for new countries
     previous_countries = set(previous_metadata.get('countries', []))
     current_countries = set(country_data.keys())
     new_countries = current_countries - previous_countries
 
     for country in new_countries:
-        if country != 'UNK' and country != 'NON':  # Skip unknown/non-standard codes
+        if country not in ['UNK', 'NON']:
             logging.info(f"NEW COUNTRY with titled players: {country}")
 
-    # Add current month changes
     monthly_change = {
         'month': current_month.upper()[:3],
         'changes': {
@@ -217,7 +202,6 @@ def save_json_data(country_data, title_changes, new_gms, new_wgms, previous_meta
         }
     }
 
-    # Update or append monthly changes
     month_exists = False
     for i, month_data in enumerate(monthly_changes_list):
         if month_data['month'] == monthly_change['month']:
@@ -235,21 +219,19 @@ def save_json_data(country_data, title_changes, new_gms, new_wgms, previous_meta
         if added > 0 or removed > 0:
             logging.info(f"  {title}: +{added}, -{removed}")
 
-    # Track new GMs and WGMs
     logging.info("Tracking new GMs and WGMs...")
     total_gms = sum(data['Total']['GM'] for data in country_data.values())
     total_wgms = sum(data['Total']['WGM'] for data in country_data.values())
     logging.info(f"Total worldwide: {total_gms} GMs, {total_wgms} WGMs")
 
-    # Create metadata
     current_date = datetime.now().strftime("%B %d, %Y")
     metadata = {
         'last_updated': current_date,
         'current_rankings': current_rankings,
-        'previous_rankings': previous_rankings,  # Store for next comparison
+        'previous_rankings': previous_rankings_for_display,  # For website to compare
         'monthly_changes': monthly_changes_list,
         'countries': list(current_countries),
-        'new_gms': new_gms[:10] if new_gms else [],  # Limit to 10 most recent
+        'new_gms': new_gms[:10] if new_gms else [],
         'new_wgms': new_wgms[:10] if new_wgms else [],
         'total_gms': total_gms,
         'total_wgms': total_wgms
@@ -260,7 +242,6 @@ def save_json_data(country_data, title_changes, new_gms, new_wgms, previous_meta
         'metadata': metadata
     }
 
-    # Save to JSON file
     with open('titled_players_by_country.json', 'w', encoding='utf-8') as f:
         json.dump(final_output, f, indent=2, ensure_ascii=False)
 
@@ -272,20 +253,14 @@ def save_json_data(country_data, title_changes, new_gms, new_wgms, previous_meta
 def main():
     """Main execution function"""
     try:
-        # Load previous data
         previous_data, previous_metadata = load_previous_data()
 
-        # Check if we have new data (compare with last update)
-        # For now, always process - in production you might check dates
-        logging.info("New data detected or first run")
+        logging.info("Processing new data...")
 
-        # Download and extract data
         xml_path = download_fide_data()
 
-        # Parse XML data
         country_data, title_changes, new_gms, new_wgms = parse_xml_data(xml_path, previous_data)
 
-        # Save JSON with metadata
         last_updated = save_json_data(country_data, title_changes, new_gms, new_wgms, previous_metadata)
 
         logging.info("="*60)
@@ -294,6 +269,8 @@ def main():
 
     except Exception as e:
         logging.error(f"Error during update process: {e}", exc_info=True)
+        # REMOVED: GitHub Issues notification
+        # Just log the error and exit
         raise
 
 if __name__ == "__main__":
