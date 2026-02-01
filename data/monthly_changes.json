@@ -1,48 +1,22 @@
 {
-  "2026-01": {
-    "date": "2026-01-31",
-    "added": 149,
-    "removed": 36,
-    "by_title": {
-      "GM": {
-        "added": 6,
-        "removed": 4
+  "monthly_changes": [
+    {
+      "month": "JAN",
+      "year": 2026,
+      "date": "2026-01-31",
+      "changes": {
+        "GM": 2,
+        "IM": 5,
+        "FM": 28,
+        "CM": 47,
+        "WGM": 0,
+        "WIM": 10,
+        "WFM": 12,
+        "WCM": 9
       },
-      "IM": {
-        "added": 7,
-        "removed": 2
-      },
-      "FM": {
-        "added": 32,
-        "removed": 4
-      },
-      "CM": {
-        "added": 56,
-        "removed": 9
-      },
-      "WGM": {
-        "added": 0,
-        "removed": 0
-      },
-      "WIM": {
-        "added": 11,
-        "removed": 1
-      },
-      "WFM": {
-        "added": 19,
-        "removed": 7
-      },
-      "WCM": {
-        "added": 18,
-        "removed": 9
-      }
-    },
-    "new_countries": [
-      "NON",
-      "SSD"
-    ],
-    "removed_countries": [],
-    "total_changes": 185,
-    "net_change": 113
-  }
+      "total_added": 149,
+      "total_removed": 36,
+      "net_change": 113
+    }
+  ]
 }
