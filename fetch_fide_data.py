@@ -151,7 +151,41 @@ def calculate_rankings(country_data):
 
     return {'men': men_ranks, 'women': women_ranks}
 
-def save_json_data(country_data, title_changes, new_gms, new_wgms, previous_metadata):
+def get_data_month_from_filename(xml_path):
+    """
+    Extract the data month from XML filename
+    Filename format: standard_rating_list_MMYYYY.xml or similar
+    """
+    import re
+    filename = os.path.basename(xml_path)
+
+    # Try to extract month from filename
+    # Common patterns: jan, january, 01, etc.
+    month_map = {
+        '01': 'JAN', '02': 'FEB', '03': 'MAR', '04': 'APR',
+        '05': 'MAY', '06': 'JUN', '07': 'JUL', '08': 'AUG',
+        '09': 'SEP', '10': 'OCT', '11': 'NOV', '12': 'DEC',
+        'jan': 'JAN', 'feb': 'FEB', 'mar': 'MAR', 'apr': 'APR',
+        'may': 'MAY', 'jun': 'JUN', 'jul': 'JUL', 'aug': 'AUG',
+        'sep': 'SEP', 'oct': 'OCT', 'nov': 'NOV', 'dec': 'DEC'
+    }
+
+    # Try numeric month (01-12)
+    match = re.search(r'\b(0[1-9]|1[0-2])\d{4}\b', filename)
+    if match:
+        month_num = match.group(1)
+        return month_map.get(month_num, datetime.now().strftime("%b").upper())
+
+    # Try text month
+    for key, value in month_map.items():
+        if key.lower() in filename.lower():
+            return value
+
+    # Fallback: use current month
+    logging.warning(f"Could not extract month from filename: {filename}, using current month")
+    return datetime.now().strftime("%b").upper()
+
+def save_json_data(country_data, title_changes, new_gms, new_wgms, previous_metadata, xml_path):
     """Save data to JSON with metadata for auto-update and rank tracking"""
     logging.info("Generating JSON output...")
 
@@ -167,12 +201,12 @@ def save_json_data(country_data, title_changes, new_gms, new_wgms, previous_meta
     logging.info(f"Aggregated data for {len(output_data)} countries")
 
     current_rankings = calculate_rankings(country_data)
-
-    # FIXED: Use current_rankings as previous_rankings for NEXT run
     previous_rankings_for_display = previous_metadata.get('current_rankings', {'men': {}, 'women': {}})
 
-    logging.info("Tracking monthly changes...")
-    current_month = datetime.now().strftime("%B")
+    # FIXED: Determine the correct month for this data
+    data_month = get_data_month_from_filename(xml_path)
+    logging.info(f"Data is for month: {data_month}")
+
     monthly_changes_list = previous_metadata.get('monthly_changes', [])
 
     total_added = sum(title_changes[title]['added'] for title in title_changes)
@@ -188,7 +222,7 @@ def save_json_data(country_data, title_changes, new_gms, new_wgms, previous_meta
             logging.info(f"NEW COUNTRY with titled players: {country}")
 
     monthly_change = {
-        'month': current_month.upper()[:3],
+        'month': data_month,  # Use extracted month, not current month
         'changes': {
             'total': net_change,
             'GM': title_changes['GM']['added'] - title_changes['GM']['removed'],
@@ -202,6 +236,7 @@ def save_json_data(country_data, title_changes, new_gms, new_wgms, previous_meta
         }
     }
 
+    # Update or append monthly change
     month_exists = False
     for i, month_data in enumerate(monthly_changes_list):
         if month_data['month'] == monthly_change['month']:
@@ -212,14 +247,13 @@ def save_json_data(country_data, title_changes, new_gms, new_wgms, previous_meta
     if not month_exists:
         monthly_changes_list.append(monthly_change)
 
-    logging.info(f"Monthly changes: +{total_added}, -{total_removed}, net: {net_change}")
+    logging.info(f"Monthly changes for {data_month}: +{total_added}, -{total_removed}, net: {net_change}")
     for title in ['GM', 'IM', 'FM', 'CM', 'WIM', 'WFM', 'WCM']:
         added = title_changes[title]['added']
         removed = title_changes[title]['removed']
         if added > 0 or removed > 0:
             logging.info(f"  {title}: +{added}, -{removed}")
 
-    logging.info("Tracking new GMs and WGMs...")
     total_gms = sum(data['Total']['GM'] for data in country_data.values())
     total_wgms = sum(data['Total']['WGM'] for data in country_data.values())
     logging.info(f"Total worldwide: {total_gms} GMs, {total_wgms} WGMs")
@@ -228,7 +262,7 @@ def save_json_data(country_data, title_changes, new_gms, new_wgms, previous_meta
     metadata = {
         'last_updated': current_date,
         'current_rankings': current_rankings,
-        'previous_rankings': previous_rankings_for_display,  # For website to compare
+        'previous_rankings': previous_rankings_for_display,
         'monthly_changes': monthly_changes_list,
         'countries': list(current_countries),
         'new_gms': new_gms[:10] if new_gms else [],
@@ -261,7 +295,7 @@ def main():
 
         country_data, title_changes, new_gms, new_wgms = parse_xml_data(xml_path, previous_data)
 
-        last_updated = save_json_data(country_data, title_changes, new_gms, new_wgms, previous_metadata)
+        last_updated = save_json_data(country_data, title_changes, new_gms, new_wgms, previous_metadata, xml_path)
 
         logging.info("="*60)
         logging.info("FIDE Data Update Process Completed Successfully!")
@@ -269,8 +303,6 @@ def main():
 
     except Exception as e:
         logging.error(f"Error during update process: {e}", exc_info=True)
-        # REMOVED: GitHub Issues notification
-        # Just log the error and exit
         raise
 
 if __name__ == "__main__":
