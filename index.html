@@ -41,7 +41,7 @@
     .navbar-brand:hover {
       text-decoration: none;
     }
-    /* UPDATED: Last updated text styling - BLUE COLOR */
+    /* Last updated text styling - BLUE COLOR */
     .last-updated {
       font-size: 14px;
       color: #007bff;
@@ -70,7 +70,7 @@
       aspect-ratio: 1010/666;
       position: relative;
     }
-    /* Zoom button controls - SAME AS ORIGINAL */
+    /* Zoom button controls */
     .zoom-controls {
       position: absolute;
       top: 10px;
@@ -117,7 +117,7 @@
     path.highlighted {
       fill: #b05a45;
     }
-    /* UPDATED: Site description card */
+    /* Site description card */
     .site-description-card{
       text-align: center;
       background: linear-gradient(135deg, rgba(74, 144, 226, 0.1) 0%, rgba(53, 122, 189, 0.1) 100%);
@@ -139,7 +139,7 @@
         padding: 12px 15px;
       }
     }
-    /* UPDATED: World stats - NO UNDERLINE, NO BOLD on total, white total */
+    /* World stats - clean design */
     .world-stats {
       text-align: center;
       background: rgba(0,0,0,0.7);
@@ -372,7 +372,7 @@
       margin-bottom: 8px;
       color: #fff;
     }
-    /* UPDATED: Equal width columns for even spacing */
+    /* UPDATED: Left-aligned numbers with fixed width for consistency */
     .month-card .titles-breakdown {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -380,18 +380,18 @@
       font-size: 0.85rem;
     }
     .month-card .title-item {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      gap: 8px;
+      display: flex;
       align-items: center;
+      gap: 6px;
     }
     .month-card .title-item .title-label {
       font-weight: 500;
-      text-align: left;
+      min-width: 35px;
     }
     .month-card .title-item .title-value {
       font-weight: 700;
-      text-align: right;
+      text-align: left;
+      min-width: 32px;
     }
     .month-card .title-item .title-value.positive {
       color: #4ade80;
@@ -570,12 +570,10 @@
     </div>
   </nav>
 
-  <!-- UPDATED: Last Updated - BLUE COLOR -->
   <div class="last-updated">
     Last updated: <span id="last-updated-date">January 31, 2026</span>
   </div>
 
-  <!-- UPDATED: Original sentence restored -->
   <div class="site-description-card">
     <p style="margin: 0;">
       Check out the number of titled chess players in each country and explore which nations lead the world in Grandmasters, International Masters and other FIDE titles.
@@ -584,7 +582,6 @@
 
   <!-- Map Container showing world stats and SVG map -->
   <div id="map-container">
-    <!-- UPDATED: No underline on total, no bold, white text -->
     <div class="world-stats" id="world-stats">
       <div><span class="stats-title">World Stats:</span> <span class="total-inline"><span id="total-count-inline">0</span> total titles</span></div>
       <div>
@@ -635,7 +632,7 @@
         <label for="highlight-cm" id="label-highlight-cm">CM
           <input type="checkbox" id="highlight-cm" name="highlight" value="CM">
         </label>
-        <label for="highlight-gm" id="label-highlight-wgm">WGM
+        <label for="highlight-wgm" id="label-highlight-wgm">WGM
           <input type="checkbox" id="highlight-wgm" name="highlight" value="WGM">
         </label>
         <label for="highlight-wim" id="label-highlight-wim">WIM
@@ -654,10 +651,10 @@
       Advertisement Space
     </div>
 
-    <!-- UPDATED: Title changed to "New Title Additions" -->
+    <!-- UPDATED: Title changed to "New title additions" -->
     <div class="title-additions-section" id="title-additions-section">
       <div class="title-additions-header">
-        <h3><span class="title-icon">📊</span> New Title Additions</h3>
+        <h3><span class="title-icon">📊</span> New title additions</h3>
         <select class="year-selector" id="year-selector">
           <option value="2026" selected>2026</option>
           <option value="2025">2025</option>
@@ -717,7 +714,7 @@
   <script>
     "use strict";
 
-    // 2025 data - FEB to DEC only (no January in actual data)
+    // 2025 data - FEB to DEC only
     const data2025 = {
       "months": [
         {"month": "FEB", "total": 131, "GM": 0, "IM": 1, "FM": 30, "CM": 64, "WGM": 0, "WIM": 1, "WFM": 17, "WCM": 18},
@@ -991,14 +988,15 @@
 
       const menTbody = document.querySelector('#top-countries-men tbody');
       menTbody.innerHTML = '';
+      let menRank = 0;
       menData.forEach((item, index) => {
         if (item.GM || item.IM || item.FM || item.CM) {
-          const currentRank = index + 1;
+          menRank++;
           const previousRank = previousRankings.men ? previousRankings.men[item.code] : 0;
-          const rankArrow = getRankChangeArrow(currentRank, previousRank);
+          const rankArrow = getRankChangeArrow(menRank, previousRank);
           const flagUrl = (item.code === "FID") ? "Fidelogo.png" : `https://ratings.fide.com/svg/${item.code}.svg`;
           const tr = document.createElement('tr');
-          tr.innerHTML = `<td><div class="rank-cell">${currentRank}${rankArrow}</div></td>
+          tr.innerHTML = `<td><div class="rank-cell">${menRank}${rankArrow}</div></td>
                           <td><img src="${flagUrl}" class="flag" alt="${item.code} Flag"> <a href="https://ratings.fide.com/rankings.phtml?country=${item.code}" target="_blank">${item.code}</a></td>
                           <td>${item.GM}</td>
                           <td>${item.IM}</td>
@@ -1010,14 +1008,15 @@
 
       const womenTbody = document.querySelector('#top-countries-women tbody');
       womenTbody.innerHTML = '';
+      let womenRank = 0;
       womenData.forEach((item, index) => {
         if (item.WGM || item.WIM || item.WFM || item.WCM) {
-          const currentRank = index + 1;
+          womenRank++;
           const previousRank = previousRankings.women ? previousRankings.women[item.code] : 0;
-          const rankArrow = getRankChangeArrow(currentRank, previousRank);
+          const rankArrow = getRankChangeArrow(womenRank, previousRank);
           const flagUrl = (item.code === "FID") ? "Fidelogo.png" : `https://ratings.fide.com/svg/${item.code}.svg`;
           const tr = document.createElement('tr');
-          tr.innerHTML = `<td><div class="rank-cell">${currentRank}${rankArrow}</div></td>
+          tr.innerHTML = `<td><div class="rank-cell">${womenRank}${rankArrow}</div></td>
                           <td><img src="${flagUrl}" class="flag" alt="${item.code} Flag"> <a href="https://ratings.fide.com/rankings.phtml?country=${item.code}" target="_blank">${item.code}</a></td>
                           <td>${item.WGM}</td>
                           <td>${item.WIM}</td>
