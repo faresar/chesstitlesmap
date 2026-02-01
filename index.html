@@ -139,7 +139,7 @@
         padding: 12px 15px;
       }
     }
-    /* UPDATED: World stats box - YELLOW TITLES, WHITE NUMBERS, COLON AFTER TITLE, TOTAL INLINE */
+    /* UPDATED: World stats - NO UNDERLINE, NO BOLD on total, white total */
     .world-stats {
       text-align: center;
       background: rgba(0,0,0,0.7);
@@ -151,15 +151,20 @@
       width: 100%;
       box-sizing: border-box;
     }
+    .world-stats .stats-title {
+      font-weight: bold;
+      color: #ffd700;
+      text-decoration: underline;
+    }
+    .world-stats .total-inline {
+      color: white;
+      font-weight: normal;
+    }
     .world-stats b {
       font-weight: bold;
-      color: #ffd700;  /* Yellow for titles */
+      color: #ffd700;
     }
     .world-stats span {
-      color: white;  /* White for numbers */
-    }
-    .world-stats u {
-      text-decoration: underline;
       color: white;
     }
     @media (max-width: 600px) {
@@ -367,32 +372,30 @@
       margin-bottom: 8px;
       color: #fff;
     }
-    /* UPDATED: Numbers CENTERED between title and edge */
+    /* UPDATED: Equal width columns for even spacing */
     .month-card .titles-breakdown {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 4px;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
       font-size: 0.85rem;
     }
     .month-card .title-item {
-      display: flex;
-      justify-content: space-between;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 8px;
       align-items: center;
     }
     .month-card .title-item .title-label {
       font-weight: 500;
-      flex-shrink: 0;
       text-align: left;
     }
     .month-card .title-item .title-value {
       font-weight: 700;
-      text-align: center;
-      flex: 1;
+      text-align: right;
     }
     .month-card .title-item .title-value.positive {
       color: #4ade80;
     }
-    /* UPDATED: Lighter red for better visibility on blue */
     .month-card .title-item .title-value.negative {
       color: #fca5a5;
     }
@@ -581,9 +584,9 @@
 
   <!-- Map Container showing world stats and SVG map -->
   <div id="map-container">
-    <!-- UPDATED: Colon after World Stats, total inline -->
+    <!-- UPDATED: No underline on total, no bold, white text -->
     <div class="world-stats" id="world-stats">
-      <div><u><b>World Stats: <span id="total-count-inline">0</span> total titles</b></u></div>
+      <div><span class="stats-title">World Stats:</span> <span class="total-inline"><span id="total-count-inline">0</span> total titles</span></div>
       <div>
          <b>GM:</b> <span id="gm-count">0</span>&emsp;
          <b>IM:</b> <span id="im-count">0</span>&emsp;
@@ -632,7 +635,7 @@
         <label for="highlight-cm" id="label-highlight-cm">CM
           <input type="checkbox" id="highlight-cm" name="highlight" value="CM">
         </label>
-        <label for="highlight-wgm" id="label-highlight-wgm">WGM
+        <label for="highlight-gm" id="label-highlight-wgm">WGM
           <input type="checkbox" id="highlight-wgm" name="highlight" value="WGM">
         </label>
         <label for="highlight-wim" id="label-highlight-wim">WIM
@@ -651,7 +654,7 @@
       Advertisement Space
     </div>
 
-    <!-- Title Additions Section -->
+    <!-- UPDATED: Title changed to "New Title Additions" -->
     <div class="title-additions-section" id="title-additions-section">
       <div class="title-additions-header">
         <h3><span class="title-icon">📊</span> New Title Additions</h3>
@@ -714,7 +717,7 @@
   <script>
     "use strict";
 
-    // 2025 data - WITHOUT JANUARY (not adding fake data)
+    // 2025 data - FEB to DEC only (no January in actual data)
     const data2025 = {
       "months": [
         {"month": "FEB", "total": 131, "GM": 0, "IM": 1, "FM": 30, "CM": 64, "WGM": 0, "WIM": 1, "WFM": 17, "WCM": 18},
