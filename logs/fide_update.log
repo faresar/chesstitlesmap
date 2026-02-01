@@ -286,3 +286,24 @@
 2026-02-01 11:56:12,188 - INFO - ============================================================
 2026-02-01 11:56:12,188 - INFO - FIDE Data Update Process Completed Successfully!
 2026-02-01 11:56:12,189 - INFO - ============================================================
+2026-02-01 12:15:05,187 - INFO - Loaded previous data for comparison
+2026-02-01 12:15:05,187 - INFO - Processing new data...
+2026-02-01 12:15:05,187 - INFO - ============================================================
+2026-02-01 12:15:05,187 - INFO - FIDE Data Update Process Started
+2026-02-01 12:15:05,187 - INFO - ============================================================
+2026-02-01 12:15:05,187 - INFO - Downloading FIDE data from https://ratings.fide.com/download/standard_rating_list_xml.zip
+2026-02-01 12:15:06,878 - INFO - Downloaded 13581737 bytes
+2026-02-01 12:15:07,217 - INFO - Extracted XML file: temp/standard_rating_list.xml
+2026-02-01 12:15:07,219 - INFO - Parsing XML data...
+2026-02-01 12:15:12,385 - INFO - Parsed 537397 total players, kept 23865 titled players
+2026-02-01 12:15:12,598 - INFO - Generating JSON output...
+2026-02-01 12:15:12,598 - INFO - Aggregated data for 196 countries
+2026-02-01 12:15:12,598 - WARNING - Could not extract month from filename: standard_rating_list.xml, using current month
+2026-02-01 12:15:12,599 - INFO - Data is for month: FEB
+2026-02-01 12:15:12,599 - INFO - Monthly changes for FEB: +0, -0, net: 0
+2026-02-01 12:15:12,599 - INFO - Total worldwide: 1879 GMs, 339 WGMs
+2026-02-01 12:15:12,606 - INFO - JSON file saved successfully: titled_players_by_country.json
+2026-02-01 12:15:12,606 - INFO - Metadata saved: February 01, 2026
+2026-02-01 12:15:12,606 - INFO - ============================================================
+2026-02-01 12:15:12,606 - INFO - FIDE Data Update Process Completed Successfully!
+2026-02-01 12:15:12,606 - INFO - ============================================================
