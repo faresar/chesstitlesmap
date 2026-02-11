@@ -523,3 +523,27 @@
 2026-02-10 05:08:55,095 - INFO - ============================================================
 2026-02-10 05:08:55,095 - INFO - FIDE Data Update Process Completed Successfully!
 2026-02-10 05:08:55,095 - INFO - ============================================================
+2026-02-11 05:07:22,012 - INFO - Loaded previous data for comparison
+2026-02-11 05:07:22,012 - INFO - Processing new data...
+2026-02-11 05:07:22,012 - INFO - ============================================================
+2026-02-11 05:07:22,013 - INFO - FIDE Data Update Process Started
+2026-02-11 05:07:22,013 - INFO - ============================================================
+2026-02-11 05:07:22,013 - INFO - Downloading FIDE data from https://ratings.fide.com/download/standard_rating_list_xml.zip
+2026-02-11 05:07:23,935 - INFO - Downloaded 13582121 bytes
+2026-02-11 05:07:24,273 - INFO - Extracted XML file: temp/standard_rating_list.xml
+2026-02-11 05:07:24,274 - INFO - Parsing XML data...
+2026-02-11 05:07:29,340 - INFO - Parsed 537408 total players, kept 23939 titled players
+2026-02-11 05:07:29,550 - INFO - Generating JSON output...
+2026-02-11 05:07:29,551 - INFO - Aggregated data for 196 countries
+2026-02-11 05:07:29,551 - WARNING - Could not extract month from filename: standard_rating_list.xml, using current month
+2026-02-11 05:07:29,551 - INFO - Data is for month: FEB
+2026-02-11 05:07:29,551 - INFO - No monthly_changes.json found - will create new
+2026-02-11 05:07:29,552 - INFO - Added new entry for FEB 2026
+2026-02-11 05:07:29,552 - INFO - Updated monthly_changes.json
+2026-02-11 05:07:29,552 - INFO - Monthly changes for FEB: +13, -3, net: 10
+2026-02-11 05:07:29,552 - INFO - Total worldwide: 1879 GMs, 339 WGMs
+2026-02-11 05:07:29,560 - INFO - JSON file saved successfully: titled_players_by_country.json
+2026-02-11 05:07:29,560 - INFO - Metadata saved: February 11, 2026
+2026-02-11 05:07:29,561 - INFO - ============================================================
+2026-02-11 05:07:29,561 - INFO - FIDE Data Update Process Completed Successfully!
+2026-02-11 05:07:29,561 - INFO - ============================================================
