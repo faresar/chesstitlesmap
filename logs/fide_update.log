@@ -2203,3 +2203,28 @@
 2026-05-06 06:08:47,608 - INFO - ============================================================
 2026-05-06 06:08:47,609 - INFO - FIDE Data Update Process Completed Successfully!
 2026-05-06 06:08:47,609 - INFO - ============================================================
+2026-05-08 05:32:43,935 - INFO - Loaded previous data for comparison
+2026-05-08 05:32:43,935 - INFO - Processing new data...
+2026-05-08 05:32:43,935 - INFO - ============================================================
+2026-05-08 05:32:43,935 - INFO - FIDE Data Update Process Started
+2026-05-08 05:32:43,935 - INFO - ============================================================
+2026-05-08 05:32:43,935 - INFO - Downloading FIDE data from https://ratings.fide.com/download/standard_rating_list_xml.zip
+2026-05-08 05:32:46,046 - INFO - Downloaded 13851516 bytes
+2026-05-08 05:32:46,346 - INFO - Extracted XML file: temp/standard_rating_list.xml
+2026-05-08 05:32:46,347 - INFO - Parsing XML data...
+2026-05-08 05:32:51,592 - INFO - Parsed 549334 total players, kept 24224 titled players
+2026-05-08 05:32:51,810 - INFO - Generating JSON output...
+2026-05-08 05:32:51,810 - INFO - Aggregated data for 196 countries
+2026-05-08 05:32:51,811 - WARNING - Could not extract month from filename: standard_rating_list.xml, using current month
+2026-05-08 05:32:51,811 - INFO - Data is for month: MAY
+2026-05-08 05:32:51,811 - INFO - No monthly_changes.json found - will create new
+2026-05-08 05:32:51,811 - INFO - Added new entry for MAY 2026
+2026-05-08 05:32:51,811 - INFO - Updated monthly_changes.json
+2026-05-08 05:32:51,811 - INFO - NEW COUNTRY with titled players: CUR
+2026-05-08 05:32:51,811 - INFO - Monthly changes for MAY: +39, -8, net: 31
+2026-05-08 05:32:51,811 - INFO - Total worldwide: 1890 GMs, 341 WGMs
+2026-05-08 05:32:51,818 - INFO - JSON file saved successfully: titled_players_by_country.json
+2026-05-08 05:32:51,818 - INFO - Metadata saved: May 08, 2026
+2026-05-08 05:32:51,819 - INFO - ============================================================
+2026-05-08 05:32:51,819 - INFO - FIDE Data Update Process Completed Successfully!
+2026-05-08 05:32:51,819 - INFO - ============================================================
