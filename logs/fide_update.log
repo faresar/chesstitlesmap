@@ -2228,3 +2228,27 @@
 2026-05-08 05:32:51,819 - INFO - ============================================================
 2026-05-08 05:32:51,819 - INFO - FIDE Data Update Process Completed Successfully!
 2026-05-08 05:32:51,819 - INFO - ============================================================
+2026-05-09 05:51:16,220 - INFO - Loaded previous data for comparison
+2026-05-09 05:51:16,220 - INFO - Processing new data...
+2026-05-09 05:51:16,220 - INFO - ============================================================
+2026-05-09 05:51:16,220 - INFO - FIDE Data Update Process Started
+2026-05-09 05:51:16,220 - INFO - ============================================================
+2026-05-09 05:51:16,220 - INFO - Downloading FIDE data from https://ratings.fide.com/download/standard_rating_list_xml.zip
+2026-05-09 05:51:19,202 - INFO - Downloaded 13851606 bytes
+2026-05-09 05:51:19,497 - INFO - Extracted XML file: temp/standard_rating_list.xml
+2026-05-09 05:51:19,498 - INFO - Parsing XML data...
+2026-05-09 05:51:24,670 - INFO - Parsed 549334 total players, kept 24224 titled players
+2026-05-09 05:51:24,882 - INFO - Generating JSON output...
+2026-05-09 05:51:24,882 - INFO - Aggregated data for 196 countries
+2026-05-09 05:51:24,883 - WARNING - Could not extract month from filename: standard_rating_list.xml, using current month
+2026-05-09 05:51:24,883 - INFO - Data is for month: MAY
+2026-05-09 05:51:24,883 - INFO - No monthly_changes.json found - will create new
+2026-05-09 05:51:24,883 - INFO - Added new entry for MAY 2026
+2026-05-09 05:51:24,883 - INFO - Updated monthly_changes.json
+2026-05-09 05:51:24,883 - INFO - Monthly changes for MAY: +1, -1, net: 0
+2026-05-09 05:51:24,884 - INFO - Total worldwide: 1890 GMs, 341 WGMs
+2026-05-09 05:51:24,890 - INFO - JSON file saved successfully: titled_players_by_country.json
+2026-05-09 05:51:24,890 - INFO - Metadata saved: May 09, 2026
+2026-05-09 05:51:24,891 - INFO - ============================================================
+2026-05-09 05:51:24,891 - INFO - FIDE Data Update Process Completed Successfully!
+2026-05-09 05:51:24,891 - INFO - ============================================================
