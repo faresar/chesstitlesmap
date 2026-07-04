@@ -3236,3 +3236,27 @@
 2026-07-02 06:44:28,760 - INFO - ============================================================
 2026-07-02 06:44:28,760 - INFO - FIDE Data Update Process Completed Successfully!
 2026-07-02 06:44:28,760 - INFO - ============================================================
+2026-07-04 06:23:46,581 - INFO - Loaded previous data for comparison
+2026-07-04 06:23:46,581 - INFO - Processing new data...
+2026-07-04 06:23:46,582 - INFO - ============================================================
+2026-07-04 06:23:46,582 - INFO - FIDE Data Update Process Started
+2026-07-04 06:23:46,582 - INFO - ============================================================
+2026-07-04 06:23:46,582 - INFO - Downloading FIDE data from https://ratings.fide.com/download/standard_rating_list_xml.zip
+2026-07-04 06:23:49,433 - INFO - Downloaded 14030374 bytes
+2026-07-04 06:23:49,745 - INFO - Extracted XML file: temp/standard_rating_list.xml
+2026-07-04 06:23:49,747 - INFO - Parsing XML data...
+2026-07-04 06:23:54,913 - INFO - Parsed 557639 total players, kept 24469 titled players
+2026-07-04 06:23:55,129 - INFO - Generating JSON output...
+2026-07-04 06:23:55,129 - INFO - Aggregated data for 196 countries
+2026-07-04 06:23:55,130 - WARNING - Could not extract month from filename: standard_rating_list.xml, using current month
+2026-07-04 06:23:55,130 - INFO - Data is for month: JUL
+2026-07-04 06:23:55,131 - INFO - No monthly_changes.json found - will create new
+2026-07-04 06:23:55,131 - INFO - Added new entry for JUL 2026
+2026-07-04 06:23:55,131 - INFO - Updated monthly_changes.json
+2026-07-04 06:23:55,131 - INFO - Monthly changes for JUL: +5, -3, net: 2
+2026-07-04 06:23:55,131 - INFO - Total worldwide: 1891 GMs, 341 WGMs
+2026-07-04 06:23:55,144 - INFO - JSON file saved successfully: titled_players_by_country.json
+2026-07-04 06:23:55,144 - INFO - Metadata saved: July 04, 2026
+2026-07-04 06:23:55,144 - INFO - ============================================================
+2026-07-04 06:23:55,144 - INFO - FIDE Data Update Process Completed Successfully!
+2026-07-04 06:23:55,144 - INFO - ============================================================
